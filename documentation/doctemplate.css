@@ -1,0 +1,47 @@
+@page { 
+    size: 8.27in 11.69in; 
+    margin-left: 0.79in; 
+    margin-right: 0.79in; 
+    margin-top: 0.59in; 
+    margin-bottom: 0.59in 
+}
+
+p { 
+    font-family: "Liberation Sans", sans-serif;
+    line-height: 115%; 
+    margin-bottom: 0.1in; 
+    background: transparent 
+}
+
+h1 { 
+    font-family: "Liberation Sans", sans-serif; 
+    font-size: 18pt; 
+    font-weight: bold ;
+    margin-bottom: 0.08in; 
+    background: transparent; 
+    page-break-after: avoid 
+} 
+
+h2 { 
+    font-family: "Liberation Sans", sans-serif; 
+    font-size: 16pt; 
+    font-weight: bold;
+    margin-top: 0.14in; 
+    margin-bottom: 0.08in; 
+    background: transparent; 
+    page-break-after: avoid 
+} 
+
+
+h3 { 
+    font-family: "Liberation Sans", sans-serif; 
+    font-size: 14pt; 
+    font-weight: bold ;
+    margin-top: 0.1in; 
+    margin-bottom: 0.08in; 
+    background: transparent; 
+    page-break-after: avoid 
+} 
+
+
+td p { orphans: 0; widows: 0; background: transparent }
