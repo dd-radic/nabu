@@ -141,7 +141,10 @@
         <tr>
             <td>Top Level Domain</td>
             <td>High</td>
-            <td>React.js</td>
+        </tr>
+        <tr>
+            <td>React.js</td>           
+            <td>High</td>
             <td>Frontend</td>
         </tr>
         <tr>
@@ -189,7 +192,7 @@
             <td>High</td>
         </tr>
         <tr>
-            <td>Comply with relevant laws and standards (???</td>
+            <td>Comply with relevant laws and standards (???)</td>
             <td>High</td>
             <td>High</td>
         </tr>
