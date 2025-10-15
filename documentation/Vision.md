@@ -1,18 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<title>Vision Document</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="doctemplate.css"> 
 </head>
 <body>
-	<h1>Nabu</h1>
-	<h2>Vision Document</h2>
-	<p>Initial Draft: 13.10.2025</p>
-	<p>Latest Revision: 15.10.2025</p>
-	<br>
-	<h2><strong>Nabu</strong></h2>
-	<h3>Vision Document</h3>
 	<h1>1. Introduction</h1>
 	<p> [TODO write a preamble <br> maybe include increased digitalization, overworked teachers, ubiquity of smartphones, short attention spans, briefly pitch learning app as solution] </p>
 	<h1>2. Positioning</h1>
