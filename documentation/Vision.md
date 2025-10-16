@@ -7,7 +7,12 @@
 </head>
 <body>
 	<h1>1. Introduction</h1>
-	<p> [TODO write a preamble <br> maybe include increased digitalization, overworked teachers, ubiquity of smartphones, short attention spans, briefly pitch learning app as solution] </p>
+	<p> Learning is often more effective when it feels like play. Many educational apps use quizzes,
+but these can become repetitive and boring. A learning app with interactive puzzles and
+gamification can improve engagement while reinforcing knowledge.
+This project focuses on developing a mobile/web application that delivers various puzzle-
+based learning activities with progress tracking and rewards. The emphasis is on app
+development (frontend + backend), user experience, and gamification mechanics.</p>
 	<h1>2. Positioning</h1>
 	<h2>2.1 Problem Statement</h2>
 	<table>
@@ -30,7 +35,7 @@
 		</tr>
 	</table>
 	<br>
-	<p> [TODO elaborate on table info] </p>
+
 	<h2>2.2 Product Position Statement</h2>
 	<table>
 		<tr>
@@ -116,7 +121,7 @@
 		</tr>
 	</table>
 	<br> 
-	<p> [TODO describe goals and roles of dev team] </p>
+	<p> The goal of the development team is to produce a usable learning app with gameified elements. </p>
 	<h3>3.1.2 External Stakeholders</h3>
 	<table>
 		<tr>
@@ -171,11 +176,13 @@
 		</tr>
 	</table>
 	<br> 
-	<p> [TODO explain use cases further, explain difference between learning in a learning environment and independent learning/teaching, and why we split them up into two distinct groups] </p>
 	<h2>3.2 User Environment</h2>
-	<p> [TODO elaborate further on previous chapter re:different use cases.  Give concrete examples] </p>
 	<br>
-	<p><em>[Detail the working environment of the target user. Here are some suggestions: Number of people involved in completing the task? Is this changing? How long is a task cycle? Amount of time spent in each activity? Is this changing? Any unique environmental constraints: mobile, outdoors, in-flight, and so on? Which system platforms are in use today? Future platforms? What other applications are in use? Does your application need to integrate with them? This is where extracts from the Business Model could be included to outline the task and roles involved, and so on.]</em></p>
+	<p><em>There are several groups of target users: lecturers, students, and independent learners. 
+	Lecturers will be working alone to develop supplementary learning materials in the app. These learning materials will then be distributed to the students in their class so they can interact with the app, thus helping their learning. These lecturers will most likely want to set up private classrooms for their students to participate in. Today, teachers commonly use apps like Kahoot or Quizlet to promote learning among their class through academic competition. 
+	Students will be working in groups to participate in games organized by the lecturers, or on their own to develop independent learning materials such as flashcards or quizzes. The students could be the end user for material developed by the lecturer or the end user of material they developed themselves. Students will most likely want to create public classrooms where they can share material they have created with their peers.
+	Independent learners are effectively students for the purpose of creating learning materials for themselves. These learners will also want to search for learning materials available on the app's public classrooms. 
+	</em></p>
 	<h1>4. Product Overview</h1>
 	<h2>4.1 Needs and Features</h2>
 	<table>
@@ -226,9 +233,6 @@
 			<td>Low</td>
 			<td>TODO</td>
 			<td>Roadmap</td>
-		</tr>
-		<tr>
-			<td>[TODO: maybe think of some more]</td>
 		</tr>
 	</table>
 	<br>
