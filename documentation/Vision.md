@@ -5,14 +5,12 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
+<!DOCTYPE html>
 <body>
+	<h1>Vision Document</h1>
 	<h1>1. Introduction</h1>
-	<p> Learning is often more effective when it feels like play. Many educational apps use quizzes,
-but these can become repetitive and boring. A learning app with interactive puzzles and
-gamification can improve engagement while reinforcing knowledge.
-This project focuses on developing a mobile/web application that delivers various puzzle-
-based learning activities with progress tracking and rewards. The emphasis is on app
-development (frontend + backend), user experience, and gamification mechanics.</p>
+	<p> Learning is often more effective when it feels like play. Many educational apps use quizzes,but these can become repetitive and boring. A learning app with interactive puzzles and gamification can improve engagement while reinforcing knowledge. This project focuses on developing a mobile/web application that delivers various puzzle-based learning activities with progress tracking and rewards. The emphasis is on app development (frontend + backend), user experience, and gamification mechanics.</p>
 	<h1>2. Positioning</h1>
 	<h2>2.1 Problem Statement</h2>
 	<table>
@@ -35,7 +33,6 @@ development (frontend + backend), user experience, and gamification mechanics.</
 		</tr>
 	</table>
 	<br>
-
 	<h2>2.2 Product Position Statement</h2>
 	<table>
 		<tr>
@@ -64,11 +61,8 @@ development (frontend + backend), user experience, and gamification mechanics.</
 		</tr>
 	</table>
 	<br>
-	<p> [TODO explain theoretical benefit of gamification, compare similarities and differences with Kahoot <br>
-	Maybe also mention other similar sites/apps e.g. khan academy, duolingo, moodle<br>
-	Also elaborate on "gamification scope"] </p>
-	<p><em>[A product position statement communicates the intent of the application and the importance of the project to all concerned personnel.]</em></p>
-	<p><em>[Provide an overall statement summarizing, at the highest level, the unique position the product intends to fill in the marketplace. The following format may be used:]</em></p>
+	<p> Gamification has been shown in numerous studies to have an incentivizing effect toward continued - even habitual - use of software products. </p>
+	<p> This element has been leveraged by numerous previous learning productivity products e.g. Kahoot, Duolingo, Quizlet, Khan Academy. Nabu aims toward a similar goal, with the most analogous example being Kahoot, however Nabu aims to include more explicitly gamified elements for users e.g. Duolingo.</p> <p>This broader and deeper presence of gamified elements will drive continued and repetitive use by prospective users.</p>
 	<h1>3. Stakeholder Descriptions</h1>
 	<h2>3.1 Stakeholder Summary</h2>
 	<h3>3.1.1 Internal Stakeholders</h3>
@@ -121,7 +115,7 @@ development (frontend + backend), user experience, and gamification mechanics.</
 		</tr>
 	</table>
 	<br> 
-	<p> The goal of the development team is to produce a usable learning app with gameified elements. </p>
+	<p> The primary goal of the development team is to produce a usable learning app with gamified elements, focusing on functionality and aesthetic appeal. </p>
 	<h3>3.1.2 External Stakeholders</h3>
 	<table>
 		<tr>
@@ -178,11 +172,13 @@ development (frontend + backend), user experience, and gamification mechanics.</
 	<br> 
 	<h2>3.2 User Environment</h2>
 	<br>
-	<p><em>There are several groups of target users: lecturers, students, and independent learners. 
-	Lecturers will be working alone to develop supplementary learning materials in the app. These learning materials will then be distributed to the students in their class so they can interact with the app, thus helping their learning. These lecturers will most likely want to set up private classrooms for their students to participate in. Today, teachers commonly use apps like Kahoot or Quizlet to promote learning among their class through academic competition. 
-	Students will be working in groups to participate in games organized by the lecturers, or on their own to develop independent learning materials such as flashcards or quizzes. The students could be the end user for material developed by the lecturer or the end user of material they developed themselves. Students will most likely want to create public classrooms where they can share material they have created with their peers.
+	<p>There are several groups of target users: lecturers, students, and independent learners. 
+	Lecturers will be working alone to develop supplementary learning materials in the app. These learning materials will then be distributed to the students in their class so they can interact with the app, thus helping their learning. These lecturers will most likely want to set up private classrooms for their students to participate in. </p>
+	<p>Today, teachers commonly use apps like Kahoot or Quizlet to promote learning among their class through academic competition. 
+	Students will be working in groups to participate in games organized by the lecturers, or on their own to develop independent learning materials such as flashcards or quizzes. The students could be the end user for material developed by the lecturer or the end user of material they developed themselves. </p>
+	<p>Students will most likely want to create public classrooms where they can share material they have created with their peers.
 	Independent learners are effectively students for the purpose of creating learning materials for themselves. These learners will also want to search for learning materials available on the app's public classrooms. 
-	</em></p>
+	</p>
 	<h1>4. Product Overview</h1>
 	<h2>4.1 Needs and Features</h2>
 	<table>
@@ -193,51 +189,54 @@ development (frontend + backend), user experience, and gamification mechanics.</
 			<th>Planned Release</th>
 		</tr>
 		<tr>
-			<td>Top Level Domain</td>
+			<td>JavaScript</td>
 			<td>High</td>
-			<td>TODO</td>
-			<td>TODO</td>
+			<td>Primary development language</td>
+			<td>N/A (Const.)</td>
 		</tr>
 		<tr>
 			<td>React.js</td>           
 			<td>High</td>
 			<td>Frontend</td>
-			<td>TODO</td>
+			<td>Incr1 or Incr2</td>
 		</tr>
 		<tr>
 			<td>Node.js</td>
 			<td>High</td>
 			<td>Backend</td>
-			<td>TODO</td>
+			<td>Incr1</td>
 		</tr>
 		<tr>
 			<td>SQL</td>
 			<td>High</td>
 			<td>Database</td>
-			<td>TODO</td>
+			<td>Incr1</td>
 		</tr>
 		<tr>
 			<td>GitHub repository</td>
 			<td>High</td>
 			<td>Internal Version Control</td>
-			<td>TODO</td>
+			<td>ORG</td>
+		</tr>
+			<td>Jira</td>
+			<td>High</td>
+			<td>Scrum</td>
+			<td>ORG</td>
 		</tr>
 		<tr>
-			<td>TODO (Lua/PHP)?</td>
+			<td>Additional Scripting Languages</td>
 			<td>Low</td>
-			<td>Additional Scripting</td>
-			<td>TODO</td>
+			<td>Feature Development</td>
+			<td>Where Applicable, starting with Incr2</td>
 		</tr>
 		<tr>
 			<td>Mobile Application</td>
 			<td>Low</td>
-			<td>TODO</td>
+			<td>Accompaniment to WebApp</td>
 			<td>Roadmap</td>
 		</tr>
 	</table>
 	<br>
-	<p> [TODO justify choices, figure out releases] </p>
-	<p><em>[Avoid design. Keep feature descriptions at a general level. Focus on capabilities needed and why (not how) they should be implemented. Capture the stakeholder priority and planned release for each feature.]</em></p>
 	<h2>4.2 Other Product Requirements</h2>
 	<table>
 		<tr>
@@ -246,50 +245,39 @@ development (frontend + backend), user experience, and gamification mechanics.</
 			<th>Planned Release</th>
 		</tr>
 		<tr>
-			<td>Information Security (ISO 27001)</td>
+			<td>Legal Compliance</td>
 			<td>High</td>
-			<td>TODO</td>
+			<td>N/A (Const.)</td>
 		</tr>
 		<tr>
-			<td>Data Privacy (GDPR, ISO 27701)</td>
+			<td>Regulatory Compliance</td>
 			<td>High</td>
-			<td>TODO</td>
+			<td>N/A (Const.)</td>
 		</tr>
 		<tr>
-			<td>Comply with relevant laws and standards (???)</td>
+			<td>Availability</td>
 			<td>High</td>
-			<td>TODO</td>
+			<td>Roadmap</td>
 		</tr>
 		<tr>
-			<td>TODO: Find additional requirements</td>
-			<td>TODO</td>
-			<td>TODO</td>
+			<td>Creative Direction</td>
+			<td>Medium</td>
+			<td>Starting Incr1</td>
 		</tr>
 		<tr>
-			<td>.</td>
-			<td></td>
-			<td></td>
+			<td>Usability</td>
+			<td>High</td>
+			<td>Starting Incr1</td>
 		</tr>
 		<tr>
-			<td>.</td>
-			<td>.</td>
-			<td>.</td>
-		</tr>
-		<tr>
-			<td>.</td>
-			<td>.</td>
-			<td>.</td>
-		</tr>
-		<tr>
-			<td>.</td>
-			<td>.</td>
-			<td>.</td>
+			<td>UI Design</td>
+			<td>Medium</td>
+			<td>Starting Incr2</td>
 		</tr>
 	</table>
 	<br>
-	<p> [TODO elaborate (see below paragraph)] </p>
-	<p><em>[At a high level, list applicable standards, hardware, or platform requirements; performance requirements; and environmental requirements. Define the quality ranges for performance, robustness, fault tolerance, usability, and similar characteristics that are not captured in the Feature Set.]</em></p>
-	<br>
+	<p>As the product will broadly handle data from private persons it is paramount to ensure compliance with laws, regulations, standards and best practices pertaining to secure coding, cybersecurity, data integrity, server stability and availability.</p>
+	<p>A sleek design and art direction combined with usbility will underpin and reinforce the gamified aesthetic of the final product. </p>
 	<p>©Nabu UG (2025)</p>
 </body>
 
