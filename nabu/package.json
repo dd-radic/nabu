@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "name": "nabu-root",
+  "scripts": {
+    "start": "npm --prefix client start",
+    "build": "npm --prefix client build",
+    "test": "npm --prefix client test"
+  }
+}
