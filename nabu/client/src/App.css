@@ -37,6 +37,14 @@
   }
 } */
 
+/*
+Define color constants here so we don't have to memorize color codes
+*/
+:root {
+  NABU_RED: #f0f0f0;
+  NABU_PINK: #000000;
+}
+
 
 *{
   box-sizing: border-box;
