@@ -4,6 +4,7 @@
 		-	@dd-radic	2025-22-10*/
 
 	"markdown-pdf.type": ["pdf"],
+	"markdown-pdf.outputDirectory": "documentation/pdf/",
 	"markdown-pdf.convertOnSave": true,
 	"markdown-pdf.omitBackground": true,
 	"markdown-pdf.displayHeaderFooter": true,

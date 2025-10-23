@@ -28,7 +28,7 @@ title: Vision Document
 		<td>Customizable, user-friendly gamified learning platform</td>
 	</tr>
 </table>
-<div class='newpage'></div>
+<div class="page"/>
 
 #### Product Position Statement
 <table>
@@ -62,7 +62,7 @@ Gamification has been shown in numerous studies to have an incentivizing effect 
 
 This element has been leveraged by numerous previous learning productivity products e.g. Kahoot, Duolingo, Quizlet, Khan Academy. Nabu aims toward a similar goal, with the most analogous example being Kahoot, however Nabu aims to include more explicitly gamified elements for users e.g. Duolingo. This broader and deeper presence of gamified elements will drive continued and repetitive use by prospective users.
 
-<div class='newpage'></div>	
+<div class="page"/>	
 
 ### Stakeholder Descriptions
 #### Stakeholder Summary
@@ -118,7 +118,7 @@ This element has been leveraged by numerous previous learning productivity produ
 	
 The primary goal of the development team is to produce a usable learning app with gamified elements, focusing on functionality and aesthetic appeal. 
 
-<div class='newpage'></div>	
+<div class="page"/>	
 
 ##### External Stakeholders
 <table>
@@ -185,7 +185,7 @@ Students will be working in groups to participate in games organized by the lect
 Students will most likely want to create public classrooms where they can share material they have created with their peers.
 Independent learners are effectively students for the purpose of creating learning materials for themselves. These learners will also want to search for learning materials available on the app's public classrooms. 
 
-<div class='newpage'></div>	
+<div class="page"/>	
 
 ### Product Overview
 #### Needs and Features

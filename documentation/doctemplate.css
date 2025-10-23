@@ -7,6 +7,7 @@
 		- Headers 3-6 are auto-counted
 	- If image insert isn't working, try encoding the image to base64
 	
+	- use markdown-pdf "page" subclass of div to break page
 		@dd-radic 2025-10-20	*/
 
 @page { 
@@ -26,14 +27,6 @@
 #bind {
 	page-break-inside: avoid;
 	break-inside: avoid;
-}
-
-/*break page in pdf*/
-/*intended for single line use*/
-/*open and close div to break page*/
-div.newpage{
-	page-break-after: always;
-	break-after: always;
 }
 
 h1,h2,h3,h4,h5,h6, body {
@@ -63,6 +56,7 @@ body {
 /*  https://www.colorhexa.com/ff9999    for reference */
 
 table {
+  counter-reset: cellid;
   width: 100%;
   table-layout: auto;
   border-bottom: 1px solid black;
@@ -102,3 +96,15 @@ h4{counter-reset: h5count;}
 h5::before{counter-increment: h5count;content: counter(h3count)"."counter(h4count)"."counter(h5count)". ";}
 h5{counter-reset: h6count;}
 h6::before{counter-increment: h6count;content: counter(h3count)"."counter(h4count)"."counter(h5count)"."counter(h6count)". ";}
+
+	/*	cell auto-index	*/
+/* class td as index and leave blank, rest is done for you */
+td.index {
+	width: 5%;
+	font-weight: bold;
+}
+
+td.index::before {
+	counter-increment: cellid;
+	content: counter(cellid);
+}
