@@ -1,14 +1,19 @@
 {
+	//		DOCUMENTATION
+	/*		See doctemplate.css for basic guidelines on writing documentation		
+		-	@dd-radic	2025-22-10*/
+
 	"markdown-pdf.type": ["pdf"],
 	"markdown-pdf.convertOnSave": true,
+	"markdown-pdf.omitBackground": true,
 	"markdown-pdf.displayHeaderFooter": true,
-	"markdown-pdf.styles": ["doctemplate.css"],
-	"markdown-pdf.stylesRelativePathFile": true,
+	"markdown-pdf.stylesRelativePathFile": false,
+	"markdown-pdf.styles": ["documentation/doctemplate.css"],
 
+	//Yes, to the best of my knowledge because of how JSON works you have to fit the entire template into 1 line
 	"markdown-pdf.headerTemplate": 
-	"<div style=\"font-size: 9px; margin-left: 1cm;\"> <span class='title'></span></div> <div style=\"font-size: 9px; margin-left: auto; margin-right: 1cm; \">%%ISO-DATE%%</div>",
-
+		 "<style>div{font-size: 12px; margin: 0px 20px 0px;font-family: 'Ubuntu Regular', 'Ubuntu', 'Lucida Sans', 'Roboto', sans-serif;}</style>       <div style='margin:left'> Nabu Project File<br>Generated From <span class='title'></span> </div>        <div style='margin:auto'>%%ISO-DATE%%</div>    <div style='margin:right'> [Logo] </div>" ,	
 	"markdown-pdf.footerTemplate": 
-	"<div style=\"font-size: 9px; margin: 0 auto;\"> <span class='pageNumber'></span> / <span class='totalPages'></span></div>"
-	
+		"<style>div{font-size: 12px; margin: 0px 20px 0px;font-family: 'Ubuntu Regular', 'Ubuntu', 'Lucida Sans', 'Roboto', sans-serif;}</style>        <div style='margin:left'> ©Nabu UG (2025) </div>        <div style='margin:auto;color: red'><i>CLASSIFIED</i></div>    <div style='margin:right'> Page <span class='pageNumber'></span> of <span class='totalPages'></span> </div>"
+
 }
