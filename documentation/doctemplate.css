@@ -1,57 +1,104 @@
+/*
+	- Tables are written in HTML as it is easier to stylize
+	- Do not put double line breaks between connected HTML blocks
+		(It will break the formatting)
+
+	- Use H1 for title, H2 for subtitle, H3-H6 for headings
+		- Headers 3-6 are auto-counted
+	- If image insert isn't working, try encoding the image to base64
+	
+		@dd-radic 2025-10-20	*/
+
 @page { 
-    size: 8.27in 11.69in; 
-    margin-left: 0.79in; 
-    margin-right: 0.79in; 
-    margin-top: 0.59in; 
-    margin-bottom: 0.59in 
+	size: A4; 
+	margin-left: 0.79in; 
+	margin-right: 0.79in;  
+	margin-top: 0.89in;
+	margin-bottom: 0.69in 
 }
 
-p { 
-    font-family: "Liberation Sans", sans-serif;
-    line-height: 115%; 
-    margin-bottom: 0.1in; 
-    background: transparent 
+	/*	paragraph and header text 	*/
+/*pretty sure the page formatting is messing with font size,
+	made fonts bigger to compensate*/
+
+/*force elements together across pages*/
+/*open and close div to 'bind' children together*/
+#bind {
+	page-break-inside: avoid;
+	break-inside: avoid;
 }
 
-h1 { 
-    font-family: "Liberation Sans", sans-serif; 
-    font-size: 18pt; 
-    font-weight: bold ;
-    margin-bottom: 0.08in; 
-    background: transparent; 
-    page-break-after: avoid 
-} 
+/*break page in pdf*/
+/*intended for single line use*/
+/*open and close div to break page*/
+div.newpage{
+	page-break-after: always;
+	break-after: always;
+}
 
-h2 { 
-    font-family: "Liberation Sans", sans-serif; 
-    font-size: 16pt; 
-    font-weight: bold;
-    margin-top: 0.14in; 
-    margin-bottom: 0.08in; 
-    background: transparent; 
-    page-break-after: avoid 
-} 
+h1,h2,h3,h4,h5,h6, body {
+	font-family: 'Ubuntu Regular', 'Ubuntu', 'Lucida Sans', 'Roboto', sans-serif;
+	font-weight: bold;
+	font-size: 16px;
+}
 
+h1{
+	font-size: 24px;
+}
 
-h3 { 
-    font-family: "Liberation Sans", sans-serif; 
-    font-size: 14pt; 
-    font-weight: bold ;
-    margin-top: 0.1in; 
-    margin-bottom: 0.08in; 
-    background: transparent; 
-    page-break-after: avoid 
-} 
+h2 {
+	font-size: 20px;
+}
+
+h3 {
+	font-size: 18px;
+}
+
+body {
+	font-weight: normal;
+	font-size: 14px;
+}
+
+	/*	table styling	*/
+/*  https://www.colorhexa.com/ff9999    for reference */
 
 table {
   width: 100%;
   table-layout: auto;
-}
-
-th, td {
-  padding: 8px 12px;         
-  border: 1px solid #000;
+  border-bottom: 1px solid black;
+  padding: 1px;
   text-align: left;
   word-wrap: normal;
   word-break: normal;
 }
+
+tr {
+	page-break-inside: avoid;
+	break-inside: avoid;
+}
+
+td:first-child{
+	font-weight: bold;
+}
+
+/*cell colors*/
+th{
+	background-color: #ff6666;
+	color: white;
+} 
+
+tr:nth-child(odd), tr:last-child {
+	background: #ffe6e6;
+}
+
+
+
+	/*	h3-h6 auto-counting	*/
+h1 {counter-reset: h3count;}
+h3::before{counter-increment: h3count;content: counter(h3count)". ";}
+h3{counter-reset: h4count;}
+h4::before{counter-increment: h4count;content: counter(h3count)"."counter(h4count)". ";}
+h4{counter-reset: h5count;}
+h5::before{counter-increment: h5count;content: counter(h3count)"."counter(h4count)"."counter(h5count)". ";}
+h5{counter-reset: h6count;}
+h6::before{counter-increment: h6count;content: counter(h3count)"."counter(h4count)"."counter(h5count)"."counter(h6count)". ";}
