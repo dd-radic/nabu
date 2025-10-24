@@ -24,6 +24,7 @@ app.post("/api/signup", async(req, res) => {
         const encPass = await bcrypt.hash(req.body.password, salt);
 
         //TODO: Use JavaScript to execute a query in the database to sign up the user
+        console.log(req.body.username, req.body.password, encPass);
 
         //Note: res.status(200) means that the API call succeeded
         res.status(200).json({message: "User signed up!", result});
@@ -32,4 +33,29 @@ app.post("/api/signup", async(req, res) => {
         //Example: Another error on this page could have res.status(102) and an error on another page could have res.status(201)
         res.status(101).json({error: err.message});
     }
+});
+
+app.post("/api/login", async(req, res) => {
+    try{
+        const { username, password } = req.body;
+
+        //TODO: Use JavaScript to execute a query in the database to get the user
+        console.log(username, password);
+
+        res.status(200).json({message: "User logged in with accessToken: "});
+    } catch(err) {
+        console.error(err);
+        return res.status(301).json({error: err.message});
+    }
+});
+
+
+//////////////////////////////////////////
+///          START SERVER              ///
+//////////////////////////////////////////
+
+//Establishes where the express app listens from. This will be changed to the full website URl when releasing to production
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
