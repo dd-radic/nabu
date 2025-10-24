@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,59 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+/*
+Define color constants here so we don't have to memorize color codes
+*/
+:root {
+  NABU_RED: #f0f0f0;
+  NABU_PINK: #000000;
 }
+
+
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  padding: 40px;
+  background-color: #FFFFFF;
+  font-family: "Franklin Gothic Medium", Arial;
+}
+
+h2 {
+  color: #f3f3f3;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 48px;
+}
+
+.card-container{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.card {
+  border: '1px solid #4b5362';
+  padding: '20px';
+  background-color: '#31363f';
+  border-radius: '10px';
+  min-height: '100px';
+}
+
+button {
+  border: none;
+  font-size: 30px;
+  background-color: transparent;
+  width: 100%;
+  text-align: right;
+  cursor: pointer; /*makes the button clickable*/
+}
+
+/* #id {} */

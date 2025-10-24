@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+  //Note: To turn off Strict Mode (only do this when releasing to production), remove the React.StrictMode wrapper
   <React.StrictMode>
     <App />
   </React.StrictMode>
