@@ -16,24 +16,22 @@ title: Architecture Design
 <table>
 	<div id='bind'>
 	<tr>
-		<th>	ID	</th>
-		<th>	Topic	</th>
-		<th>	Description	</th>
-		<th>	Consequence	</th>
+		<th>	...	</th>
+		<th>	...	</th>
 	</tr>
 	<tr>
-	</tr>
-	<tr>
-	</tr>
-	<tr>
+		<td>	...	</td>
+		<td>	...	</td>
 	</tr>
 	</div>
+	<tr>
+	</tr>
+	<tr>
+	</tr>
+	<tr>
+	</tr>
 	<div id='bind'>
 	<tr>
-		<th>	ID	</th>
-		<th>	Topic	</th>
-		<th>	Description	</th>
-		<th>	Consequence	</th>
 	</tr>
 	<tr>
 	</tr>
@@ -43,11 +41,39 @@ title: Architecture Design
 
 #### Recommended IDEs and extensions
 
+##### Unified Syntax (dd-radic)
 
 #### List of NPM Modules
 
+### Architecture
 
 
 
-##### Unified Syntax (dd-radic)
+#### File Structure
+
+
+<table>
+	<div id='bind'>
+	<tr>
+		<th>	...	</th>
+		<th>	...	</th>
+	</tr>
+	<tr>
+		<td>	...	</td>
+		<td>	...	</td>
+	</tr>
+	</div>
+	<tr>
+	</tr>
+	<tr>
+	</tr>
+	<tr>
+	</tr>
+	<div id='bind'>
+	<tr>
+	</tr>
+	<tr>
+	</tr>
+	</div>
+</table>
 
