@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Risks.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+<link rel="stylesheet" href="file:///home/ben/Projekte/uni/Nabu/nabu/documentation/doctemplate.css" type="text/css">
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="nabu">Nabu</h1>
+<h2 id="risk-management">Risk Management</h2>
+<h3 id="risks">Risks</h3>
+<!--	match risk id to management id	!-->
+<table>
+	<div id="bind">
+	<tr>
+		<th>	ID	</th>
+		<th>	Topic	</th>
+		<th>	Description	</th>
+		<th>	Consequence	</th>
+	</tr>
+	<tr>
+		<td class="index">R1</td>
+		<td>Authentication Data Integrity</td>
+		<td>User credentials could be stored or transmitted insecurely, leading to unauthorized access.</td>
+		<td>Data breaches, loss of user trust, and legal consequences (GDPR violations).</td>
+	</tr>
+	<tr>
+		<td class="index">R2</td>
+		<td>Server Downtime</td>
+		<td>Server or hosting environment becomes unavailable due to crashes or maintenance failures.</td>
+		<td>Application unavailable, loss of productivity, potential data loss.</td>
+	</tr>
+	<tr>
+		<td class="index">R3</td>
+		<td>Data Loss or Corruption</td>
+		<td>Improper database handling or failed backups may lead to permanent data loss.</td>
+		<td>Loss of important user or system data, costly recovery operations.</td>
+	</tr>
+	<tr>
+		<td class="index">R4</td>
+		<td>Security Vulnerabilities</td>
+		<td>Exploits such as SQL injection, XSS, or insecure APIs remain unpatched.</td>
+		<td>System compromise, unauthorized data access, damaged reputation.</td>
+	</tr>
+	<tr>
+		<td class="index">R5</td>
+		<td>Version Control Conflicts</td>
+		<td>Multiple developers merge conflicting changes in Git without review.</td>
+		<td>Broken features, lost code, and unstable releases.</td>
+	</tr>
+	<tr>
+		<td class="index">R6</td>
+		<td>Dependency or Library Failure</td>
+		<td>External libraries or APIs become outdated, insecure, or unavailable.</td>
+		<td>System malfunction or blocked deployments.</td>
+	</tr>
+	<tr>
+		<td class="index">R7</td>
+		<td>Insufficient Testing</td>
+		<td>Missing unit or integration tests allow bugs into production.</td>
+		<td>System instability, user frustration, increased maintenance cost.</td>
+	</tr>
+	<tr>
+		<td class="index">R8</td>
+		<td>Project Time Overrun</td>
+		<td>Delays in development due to underestimated workload or unclear requirements.</td>
+		<td>Missed deadlines, reduced quality, or incomplete features.</td>
+	</tr>
+	<tr>
+		<td class="index">R9</td>
+		<td>Compliance &amp; Privacy Risk</td>
+		<td>Failure to meet GDPR or other legal data protection requirements.</td>
+		<td>Legal penalties, loss of credibility, and forced project changes.</td>
+	</tr>
+	<div id="bind">
+	<tr>
+		<td class="index">R10</td>
+		<td>Team Communication Issues</td>
+		<td>Unclear responsibilities or poor communication in the team.</td>
+		<td>Redundant work, misunderstandings, slower progress.</td>
+	</tr>
+	</div>
+</div></table>
+<div class="page">
+</div><h3 id="management">Management</h3>
+<table>
+	<div id="bind">
+	<tr>
+		<th>	ID	</th>
+		<th>	Probability	</th>
+		<th>	Impact	</th>
+		<th>	Priority / Prevention Measure	</th>
+	</tr>
+	<tr>
+		<td class="index">R1</td>
+		<td>Medium</td>
+		<td>High</td>
+		<td><b>Use HTTPS, bcrypt for passwords, secure tokens, and regular security audits.</b></td>
+	</tr>
+	</div>
+	<tr>
+		<td class="index">R2</td>
+		<td>Medium</td>
+		<td>Medium</td>
+		<td><b>Set up monitoring (UptimeRobot, Prometheus), redundant backups, and automatic restarts.</b></td>
+	</tr>
+	<tr>
+		<td class="index">R3</td>
+		<td>Low</td>
+		<td>High</td>
+		<td><b>Implement automated database backups and test recovery procedures regularly.</b></td>
+	</tr>
+	<tr>
+		<td class="index">R4</td>
+		<td>Medium</td>
+		<td>High</td>
+		<td><b>Use static code analysis, regular dependency updates, and penetration testing.</b></td>
+	</tr>
+	<tr>
+		<td class="index">R5</td>
+		<td>High</td>
+		<td>Medium</td>
+		<td><b>Use Git branching strategy (feature branches, pull requests) and code review process.</b></td>
+	</tr>
+	<tr>
+		<td class="index">R6</td>
+		<td>Medium</td>
+		<td>Medium</td>
+		<td><b>Regularly check dependency updates and maintain version compatibility matrix.</b></td>
+	</tr>
+	<tr>
+		<td class="index">R7</td>
+		<td>Medium</td>
+		<td>High</td>
+		<td><b>Automate testing with CI/CD (GitHub Actions, PHPUnit, Jest) and enforce test coverage.</b></td>
+	</tr>
+	<tr>
+		<td class="index">R8</td>
+		<td>High</td>
+		<td>High</td>
+		<td><b>Agile sprints, clear milestones, and regular team reviews to track progress.</b></td>
+	</tr>
+	<tr>
+		<td class="index">R9</td>
+		<td>Low</td>
+		<td>High</td>
+		<td><b>Review GDPR compliance, add consent banners, anonymize data, and restrict access logs.</b></td>
+	</tr>
+	<div id="bind">
+	<tr>
+		<td class="index">R10</td>
+		<td>Medium</td>
+		<td>Medium</td>
+		<td><b>Weekly stand-ups, shared task board (Jira/Trello), and clear documentation.</b></td>
+	</tr>
+	</div>
+</table>
+
+</body>
+</html>
