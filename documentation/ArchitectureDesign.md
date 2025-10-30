@@ -132,4 +132,4 @@ Figure 2: The ER diagram shows only the entities and relations present in the da
 
 #### File Structure
 <img src="./File_structure.svg">
-Figure 3: The diagram shows an overview of the structure of the GitHub project. Some paths (such as \nabu\server\routes) may be deprecated during development.
+Figure 3: The diagram shows an overview of the structure of the GitHub project. Some paths highlighted in red (such as \nabu\server\routes) may be deprecated during development. Paths highlighted in green cannot be deprecated.
