@@ -103,6 +103,7 @@ The following packages are necessary for the project to function:
 	<tr>path</tr><br>
 	<tr>bootstrap</tr><br>
 	<tr>react-router-dom</tr><br>
+	<tr>mysql</tr><br>
 </div><br>
 The following packages came with React and are necessary for its function:
 <div>
