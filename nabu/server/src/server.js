@@ -1,15 +1,24 @@
-const express = require("express");
-const app = express();
-const bodyParser = require("body-parser");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const pool = require("./db-connection.js"); // ✅ use pool instead of { connect }
-const path = require("path");
+//const express = require("express");
+//const app = express();
+//const bodyParser = require("body-parser");
+//const jwt = require("jsonwebtoken");
+//const bcrypt = require("bcrypt");
+//const pool = require("./db-connection.js"); // use pool instead of { connect }
+//const path = require("path");
 
 //Not completely sure if these two are needed
-const { exec } = require("child_process");
-const { profile } = require("console");
+//const { exec } = require("child_process");
+//const { profile } = require("console");
 //
+
+import express from "express";
+import bodyParser from "body-parser";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import pool from "./db-connection.js";
+import path from "path";
+
+const app = express();
 
 app.use(bodyParser.json());
 

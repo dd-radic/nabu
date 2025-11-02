@@ -45,7 +45,7 @@ const Login = () => {
         <input type="text" name="username" value={data.username} onChange={changeHandler} required/>
 
         <label>Password:</label>
-        <input type="text" name="password" value={data.password} onChange={changeHandler} required/>
+        <input type="password" name="password" value={data.password} onChange={changeHandler} required/>
 
         <button name="submit">Submit</button>
       </form>
