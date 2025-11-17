@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+	{
+      "label": "Setup Nabu Server",
+      "type": "shell",
+      "command": "cd '${workspaceFolder}/nabu/server/src'; npm install; node server.js &",
+      "problemMatcher": [],
+      "group": "build"
+    },
+	{
+      "label": "Setup Nabu Client",
+      "type": "shell",
+      "command": "cd '${workspaceFolder}/nabu/client'; npm install",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Setup Nabu Server/Client",
+      "type": "shell",
+      "command": "cd '${workspaceFolder}/nabu/client'; npm start",
+      "dependsOn": ["Setup Nabu Server", "Setup Nabu Client"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Terminate Tasks",
+      "type": "shell",
+      "command": "code --command workbench.action.tasks.terminate",
+      "problemMatcher": []
+    }
+  ]
+}

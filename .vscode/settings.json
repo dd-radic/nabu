@@ -1,7 +1,7 @@
 {
 	//		DOCUMENTATION
 	/*		See doctemplate.css for basic guidelines on writing documentation		
-		-	@dd-radic	2025-22-10*/
+		-	@dd-radic	2025-10-22*/
 
 	"markdown-pdf.type": ["pdf"],
 	"markdown-pdf.outputDirectory": "documentation/pdf/",
