@@ -22,10 +22,22 @@ const app = express();
 
 app.use(bodyParser.json());
 
+// Prevent crashing on thrown async errors
+app.use((req, res, next) => {
+  Promise.resolve().then(() => next()).catch(next);
+});
+
+
+app.get("/api/health", (req, res) => { // Health check endpoint
+  res.json({ message: "OK" });
+});
+
+
 //////////////////////////////////////////
 ////              USERS                ////
 //////////////////////////////////////////
 
+// === SIGNUP ===
 // === SIGNUP ===
 app.post("/api/signup", async (req, res) => {
   try {
@@ -35,30 +47,35 @@ app.post("/api/signup", async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Encrypt password with bcrypt
     const salt = await bcrypt.genSalt();
     const encPass = await bcrypt.hash(password, salt);
 
-    // Execute SQL query to insert new user
-    const [result] = await pool.query(
-      "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-      [username, email, encPass]
-    );
+    let result;
+
+    // FIX: wrap db query
+    try {
+      [result] = await pool.query(
+        "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+        [username, email, encPass]
+      );
+    } catch (dbErr) {
+      // throw inside main catch:
+      throw dbErr;
+    }
 
     console.log("New user added:", username, email);
 
-    //Note: res.status(200) means that the API call succeeded
-    res.status(200).json({
+    return res.status(200).json({
       message: "User signed up!",
       userId: result.insertId,
     });
+
   } catch (err) {
     console.error("Signup error:", err);
-    //Note: Each page should throw a different MSB for its status, and each error should throw a different LSB,
-    //Example: Another error on this page could have res.status(102) and an error on another page could have res.status(201)
-    res.status(101).json({ error: err.message });
+    return res.status(101).json({ error: err.message || "Unknown error" });
   }
 });
+
 
 // === LOGIN ===
 app.post("/api/login", async (req, res) => {
@@ -104,7 +121,11 @@ app.post("/api/login", async (req, res) => {
 //////////////////////////////////////////
 
 //Establishes where the express app listens from. This will be changed to the full website URL when releasing to production
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+export default app;
+
+if (process.env.NODE_ENV !== "test") {
+  const PORT = 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}

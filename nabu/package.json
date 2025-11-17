@@ -5,7 +5,9 @@
   "scripts": {
     "start": "npm --prefix client start",
     "build": "npm --prefix client build",
-    "test": "npm --prefix client test"
+    "test": "npm --prefix client test",
+  "test:client": "npm --prefix client test",
+  "test:server": "npm --prefix server test"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -16,5 +18,9 @@
     "mysql2": "^3.15.3",
     "nodemon": "^3.1.10",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "supertest": "^7.1.4",
+    "vitest": "^4.0.10"
   }
 }
