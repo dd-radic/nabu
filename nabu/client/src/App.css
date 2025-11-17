@@ -1,93 +1,315 @@
-/* .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-} */
-
 /*
-Define color constants here so we don't have to memorize color codes
+========================================
+  NABU Global Stylesheet
+========================================
+  1. Root Variables (Colors, Fonts)
+  2. Global Resets & Body Styles
+  3. Utility Classes (btn, container)
+  4. Header / Navigation Bar
+  5. Home Page (Welcome Section)
+  6. Auth Pages (Login / Signup)
+*/
+
+/* ========================================
+  1. Root Variables
+========================================
 */
 :root {
-  NABU_RED: #f0f0f0;
-  NABU_PINK: #000000;
+  /* Brand Colors */
+  --color-brand-red: #FF8080; /* Light red */
+  --color-brand-dark-red: #993333; /* Dark red */
+  
+  /* Gradient: Your new gradient */
+  --color-brand-gradient: linear-gradient(
+    to right,
+    var(--color-brand-red),
+    var(--color-brand-dark-red)
+  );
+
+  /* Neutral Colors */
+  --color-text-dark: #1F2937;  /* For main text */
+  --color-text-light: #6B7280; /* For paragraphs */
+  --color-bg-white: #FFFFFF;
+  --color-bg-light-gray: #F9FAFB;
+  --color-border: #E5E7EB;
+  --color-disabled: #E5E7EB; /* Gray for disabled buttons */
+  --color-disabled-text: #9CA3AF;
 }
 
-
-*{
+/* ========================================
+  2. Global Resets & Body Styles
+========================================
+*/
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-body{
-  padding: 40px;
-  background-color: #FFFFFF;
-  font-family: "Franklin Gothic Medium", Arial;
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-bg-white); /* Clean white background */
+  color: var(--color-text-dark);
+  line-height: 1.6;
 }
 
-h2 {
-  color: #f3f3f3;
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: 48px;
+/* Set up the main layout to fill the screen */
+html, body, #root, .app-layout-wrapper {
+  height: 100%;
 }
 
-.card-container{
+.app-layout-wrapper {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  max-width: 1024px;
+  flex-direction: column;
+}
+
+/* ========================================
+  3. Utility Classes
+========================================
+*/
+
+/* --- Main Content Container --- */
+.container {
+  max-width: 1100px;
   margin: 0 auto;
-}
-
-.card {
-  border: '1px solid #4b5362';
-  padding: '20px';
-  background-color: '#31363f';
-  border-radius: '10px';
-  min-height: '100px';
-}
-
-button {
-  border: none;
-  font-size: 30px;
-  background-color: transparent;
+  padding: 0 20px;
   width: 100%;
-  text-align: right;
-  cursor: pointer; /*makes the button clickable*/
 }
 
-/* #id {} */
+/* --- Base Button (Pill Shape) --- */
+.btn {
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 9999px; /* Pill shape */
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent; /* Added for hover consistency */
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.btn:hover {
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Brand Button (Solid Red, Gradient on Hover) --- */
+.btn-brand {
+  background-color: var(--color-brand-red);
+  color: var(--color-bg-white);
+  border-color: var(--color-brand-red);
+}
+.btn-brand:hover {
+  background-image: var(--color-brand-gradient);
+  color: var(--color-bg-white);
+  border-color: transparent;
+}
+
+/* --- Secondary Button (White, Gradient on Hover) --- */
+.btn-secondary {
+  background-color: var(--color-bg-white);
+  color: var(--color-text-dark);
+  border-color: var(--color-border);
+}
+.btn-secondary:hover {
+  background-image: var(--color-brand-gradient);
+  color: var(--color-bg-white);
+  border-color: transparent; /* Hide border when gradient is active */
+}
+
+
+/* ========================================
+  4. Header / Navigation Bar
+========================================
+*/
+.site-header {
+  background-color: var(--color-bg-white);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 10;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.header-logo-img {
+  height: 32px; /* Set a fixed height for your logo */
+  width: auto;
+}
+
+.header-app-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-dark); /* Dark text on white bg */
+  margin-left: 0.75rem;
+}
+
+
+/* ========================================
+  5. Home Page (Welcome Section)
+========================================
+*/
+.home-content-section {
+  background-color: var(--color-bg-white);
+  color: var(--color-text-dark);
+  flex-grow: 1; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 0;
+}
+
+/* This wrapper centers the content */
+.home-content-wrapper {
+  text-align: center; /* This forces all text inside to center */
+}
+
+.home-content-section h1 {
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--color-text-dark);
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.home-content-section p {
+  font-size: 1.25rem;
+  color: var(--color-text-light);
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+}
+
+.home-actions-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ========================================
+  6. Auth Pages (Login / Signup)
+========================================
+*/
+.auth-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1; 
+  background-color: var(--color-bg-light-gray);
+  padding: 4rem 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.auth-form-box {
+  background-color: var(--color-bg-white);
+  padding: 40px 50px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  max-width: 100%;
+}
+
+/* This fixes the text alignment */
+.auth-form-box h2,
+.auth-form-box h1 {
+  text-align: center;
+}
+
+.auth-form-box h2 {
+  color: var(--color-text-light);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.auth-form-box h1 {
+  color: var(--color-text-dark);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.auth-form-box form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-form-box label {
+  align-self: flex-start;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.auth-form-box input {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.auth-form-box input:focus {
+  outline: none;
+  border-color: var(--color-brand-red);
+  box-shadow: 0 0 0 3px rgba(255, 130, 130, 0.4); /* Use light red for focus */
+}
+
+.auth-form-box button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--color-brand-red); /* Solid red by default */
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 9999px; /* Pill shape */
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.auth-form-box button:hover {
+  background-image: var(--color-brand-gradient); /* Gradient on hover */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/*  Disabled button style */
+.auth-form-box button:disabled {
+  background-color: var(--color-disabled);
+  background-image: none;
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.signup-text {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+.signup-text a {
+  color: var(--color-brand-red);
+  font-weight: 600;
+  text-decoration: none;
+}
+.signup-text a:hover {
+  text-decoration: underline;
+}

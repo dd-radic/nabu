@@ -1,30 +1,26 @@
-import {Link} from "react-router-dom"
+import React from 'react';
 
-export function Navbar(){
-    const handleLogout = () => {
-   
-    localStorage.removeItem("accessToken");
+const Navbar = () => {
+  return (
+    // The main header element, styled with the new gradient
+    <header className="site-header">
+      <div className="container header-content">
+        {/* Logo and Game Name on the left */}
+        <a href="/#" className="header-logo-link">
+          <img
+            src="/icons/nabu.png" // Correct path from your /public/icons folder
+            alt="NABU Logo"
+            className="header-logo-img"
+          />
+          {/* App name added next to the logo */}
+          <span className="header-app-name">NABU</span>
+        </a>
 
-    
-    // localStorage.clear();
+        {/* Navigation Links on the right (REMOVED) */}
+        {/* You can add links back here later if you need them */}
+      </div>
+    </header>
+  );
+};
 
-    
-    window.location.href = "/login";
-    console.log("User logged out");
-  };
-    
-    return(
-        <div>
-            <Link to='/'>
-                <button>Home</button>
-            </Link>
-            <Link to="/login">
-                <button>Log In</button>
-            </Link>
-            <Link to="/signup">
-                <button>Sign Up</button>
-            </Link>
-             <button onClick={handleLogout}>Log Out</button>
-        </div>
-    );
-}
+export default Navbar;
