@@ -5,7 +5,7 @@
 
 	"markdown-pdf.type": ["pdf"],
 	"markdown-pdf.outputDirectory": "documentation/pdf/",
-	"markdown-pdf.convertOnSave": true,
+	"markdown-pdf.convertOnSave": false,
 	"markdown-pdf.omitBackground": true,
 	"markdown-pdf.displayHeaderFooter": true,
 	"markdown-pdf.stylesRelativePathFile": false,

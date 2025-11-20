@@ -26,7 +26,7 @@
     {
       "label": "Terminate Tasks",
       "type": "shell",
-      "command": "code --command workbench.action.tasks.terminate",
+      "command": "echo plsfix",
       "problemMatcher": []
     }
   ]
