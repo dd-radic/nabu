@@ -19,8 +19,8 @@ import { Layout } from './components/Layout.jsx';
  */
 const App = () => {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <Routes>
           {/* The Layout component wraps all other pages.
             This makes the Navbar (which is inside Layout)
@@ -33,8 +33,8 @@ const App = () => {
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

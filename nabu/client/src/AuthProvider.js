@@ -14,6 +14,7 @@ const AuthProvider = ({ children }) => {
     const loginAction = async (data) => {
         
         try {
+            alert("Auth working");
             // Send the data to the /api/login endpoint on the server
             const response = await fetch('/api/login', {
                 method: 'POST',
@@ -37,7 +38,7 @@ const AuthProvider = ({ children }) => {
                 setUser(res.data.user);
                 setToken(res.token);
                 localStorage.setItem("site", res.token);
-                window.location.href = "#/dashboard"
+                window.location.href = "/#/dashboard"
                 //navigate("/dashboard");
                 return;
             }

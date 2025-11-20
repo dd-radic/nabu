@@ -16,6 +16,8 @@ const Navbar = () => {
           <span className="header-app-name">NABU</span>
         </a>
 
+        <span> AAAAAAAA </span>
+
         {/* Navigation Links on the right (REMOVED) */}
         {/* You can add links back here later if you need them */}
       </div>
