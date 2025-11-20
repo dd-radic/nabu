@@ -1,6 +1,12 @@
 {
   "version": "2.0.0",
   "tasks": [
+    /*
+          THIS IS THE SHORTCUT FOR LAUNCHING NABU LOCALLY
+          USE BUILD BUTTON TO LAUNCH NABU 
+          (BY DEFAULT THATS THE LITTLE HAMMER ICON IN THE UI
+          OR CTRL+SHIFT+B ON THE KEYBOARD)
+    */
     {
       "label": "Setup Nabu Server",
       "type": "shell",

@@ -18,7 +18,7 @@ const Dashboard = () => {
           Hey. Hi. Hello. :)
         </p>
         <p>
-          heeheehoohoo
+          bonk logs you out btw. Click on the Nabu icon to go to homepage
         </p>
         
         {/* This group holds the action buttons */}
