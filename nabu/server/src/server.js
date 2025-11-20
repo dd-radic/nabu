@@ -101,17 +101,18 @@ app.post("/api/login", async (req, res) => {
     }
 
     // Create JWT access token
-    const token = jwt.sign(
+    const accesstoken = jwt.sign(
       { id: user.id, username: user.username },
       "supersecretkey", // TODO: move to .env file
       { expiresIn: "1h" }
     );
 
-    console.log("User logged in:", username);
 
+    console.log("User logged in:", user.email);
     res.status(200).json({
-      message: "User logged in successfully!",
-      accessToken: token,
+      user:user.username,
+      mail:user.email,
+      token:accesstoken,
     });
   } catch (err) {
     console.error(err);

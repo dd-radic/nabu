@@ -10,11 +10,11 @@ const AuthProvider = ({ children }) => {
     //const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem("site") || "");
+    const [email, setEmail] = useState(null);
 
     const loginAction = async (data) => {
         
         try {
-            alert("Auth working");
             // Send the data to the /api/login endpoint on the server
             const response = await fetch('/api/login', {
                 method: 'POST',
@@ -32,11 +32,11 @@ const AuthProvider = ({ children }) => {
 
             // Get the JSON response from the server (e.g., user data, token)
             const res = await response.json();
-            console.log('Login successful: ', res);
-        
-            if (res.data){
-                setUser(res.data.user);
+
+            if (res){
+                setUser(res.user);
                 setToken(res.token);
+                setEmail(res.mail);
                 localStorage.setItem("site", res.token);
                 window.location.href = "/#/dashboard"
                 //navigate("/dashboard");
@@ -53,8 +53,17 @@ const AuthProvider = ({ children }) => {
         
     }
 
+    const logOut = () => {
+    setUser(null);
+    setEmail(null);
+    setToken("");
+    localStorage.removeItem("site");
+    window.location.href = "/#/"
+    //navigate("/login");
+    }
 
-    return <AuthContext.Provider value={{user, token, loginAction}}>{children}</AuthContext.Provider>;
+
+    return <AuthContext.Provider value={{user, token, email, loginAction, logOut}}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

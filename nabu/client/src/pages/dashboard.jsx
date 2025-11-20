@@ -1,10 +1,11 @@
-import React from 'react';
-
+import React from "react";
+import { useAuth } from "../AuthProvider";
 
 const Dashboard = () => {
     /**
      * This is (for now) a placeholder Dashboard page
      */
+    const auth = useAuth();
   return (
     // This main container fills the remaining screen space
     <main className="home-content-section">
@@ -25,7 +26,7 @@ const Dashboard = () => {
           {/* This is the "Sign In" button. It will later be the "Log Out" button
             It uses the ".btn-brand" class to get the gradient.
           */}
-          <a href="/#/login" className="btn btn-brand">
+          <a href="/#/" onClick={() => auth.logOut()} className="btn btn-brand">
             bonk
           </a>
         </div>
