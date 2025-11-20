@@ -6,6 +6,9 @@ import Home from './pages/home.jsx';
 import Login from './pages/login.jsx';
 import Signup from './pages/signup.jsx';
 
+// Import Auth Provider
+import AuthProvider from './AuthProvider.js';
+
 // Import Layout Component
 import { Layout } from './components/Layout.jsx';
 
@@ -15,19 +18,21 @@ import { Layout } from './components/Layout.jsx';
  */
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        {/* The Layout component wraps all other pages.
-          This makes the Navbar (which is inside Layout)
-          appear on every page.
-        */}
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-        </Route>
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* The Layout component wraps all other pages.
+            This makes the Navbar (which is inside Layout)
+            appear on every page.
+          */}
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
