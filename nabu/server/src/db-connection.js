@@ -1,12 +1,18 @@
 import mysql from "mysql2/promise";
+import dotenv from "dotenv";
+dotenv.config({ path: "../.env" }); // <-- WICHTIGER FIX
+
 
 // Configuration of the database connection pool
 const pool = mysql.createPool({
-  host: "91.98.132.189",       
-  user: "Benjamin",             // Username
-  password: "NabuProject2025!", // Password
-  database: "nabu",             
-  port: 3306
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 // !!!!!!!!!!!!!!
 // Please dont use these credentials when working on the database. 

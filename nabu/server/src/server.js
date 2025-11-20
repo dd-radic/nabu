@@ -17,6 +17,9 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import pool from "./db-connection.js";
 import path from "path";
+import dotenv from "dotenv";
+dotenv.config({ path: "../.env" });
+
 
 const app = express();
 
