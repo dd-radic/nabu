@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
+import { useAuth } from '../AuthProvider';
 
 /**
  * This is the Login Page component.
@@ -15,37 +16,14 @@ const Login = () => {
   }
 
   // This function runs when the user clicks the "Login" button
-  const submitHandler = async (e) => {
-    e.preventDefault(); // Prevents the page from reloading
-    console.log('User attempting to log in with:', JSON.stringify(data));
-
-    try {
-      // Send the data to the /api/login endpoint on the server
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      // Check if the server responded with an error
-      if (!response.ok) {
-        console.error(`Error logging in: ${response.status}`);
-        // TODO: Show an error message to the user
-        return; 
-      }
-
-      // Get the JSON response from the server (e.g., user data, token)
-      const result = await response.json();
-      console.log('Login successful: ', result);
-
-      // TODO: Save the user's token and redirect to a dashboard
-      // Example: localStorage.setItem('token', result.token);
-      // Example: window.location.href = '/#/dashboard';
-
-    } catch (err) {
-      console.error('Login failed: ', err);
-      // TODO: Show a network error to the user
+   const auth = useAuth();
+  const submitHandler = (e) => {
+    e.preventDefault();
+    if (data.username !== "" && data.password !== "") {
+      auth.loginAction(data);
+      return;
     }
+    alert("pleae provide a valid input");
   };
 
   return (
