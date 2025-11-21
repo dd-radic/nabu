@@ -103,7 +103,7 @@ app.post("/api/login", async (req, res) => {
     // Create JWT access token
     const accesstoken = jwt.sign(
       { id: user.id, username: user.username },
-      "supersecretkey", // TODO: move to .env file
+      process.env.DB_JWT_KEY, 
       { expiresIn: "1h" }
     );
 
