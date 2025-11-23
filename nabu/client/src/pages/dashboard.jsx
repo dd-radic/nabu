@@ -1,147 +1,157 @@
-import React, { useState } from 'react';
-import { useAuth } from '../AuthProvider'; // ⬅️ IMPORT useAuth
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../AuthProvider';
+import DashboardNav from '../components/DashboardNav';
+import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
 
 const Dashboard = () => {
-    // 1. GET AUTH CONTEXT DATA AND FUNCTIONS
     const auth = useAuth();
-    // Use the real data from the context (user and email)
-    const userProfile = {
-        username: auth.user || 'Loading...', // Use real user data
-        email: auth.email || 'N/A', // Use real email data
-        role: 'Student', // Keep the default role for now
-    };
     
-    // 2. STATE AND HANDLERS (UNCHANGED/UPDATED)
-    const [activeTab, setActiveTab] = useState('profile');
+    // We use the real auth data (user, email) for the profile view
+    const userProfile = {
+        username: auth.user || 'Loading...',
+        email: auth.email || 'N/A',
+        role: 'Student', // Still hardcoded for now
+    };
+    const API_URL = "http://localhost:5000/api/classrooms";
 
-    const [classrooms, setClassrooms] = useState([
-        { id: 1, name: 'Math 101', description: 'Algebra basics', type: 'quiz' },
-        { id: 2, name: 'Science Club', description: 'Physics & experiments', type: 'flashcard' },
-    ]);
+    // Controls which view is currently shown: Classrooms list or Profile details
+    const [activeTab, setActiveTab] = useState('classrooms'); 
 
-    // 👇 controls whether the "Flash Card / Quiz" box is visible
-    const [showAddTypeBox, setShowAddTypeBox] = useState(false);
+    // State for the existing classrooms
+   const [classrooms, setClassrooms] = useState([]); // initially empty
 
-    const handleGoHome = () => {
-        window.location.href = '#/';
+   // Load classrooms from backend on page load
+useEffect(() => {
+    const fetchClassrooms = async () => {
+        try {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+
+            setClassrooms(
+                data.map(c => ({
+                    id: c.ID,
+                    name: c.Title,
+                    description: c.Description,
+                    type: "Classroom",
+                }))
+            );
+        } catch (err) {
+            console.error("Failed to load classrooms:", err);
+        }
     };
 
-    // 🎯 Use the real logOut function from AuthContext
-    const handleLogout = () => {
-        auth.logOut();
-    };
+    fetchClassrooms();
+}, []);
+
+
+    // State for managing the "Create Classroom" modal visibility and form data
+    const [showAddClassroomForm, setShowAddClassroomForm] = useState(false);
+    const [newClassroomData, setNewClassroomData] = useState({ name: '', description: '' });
+
+    // ====== Classroom Creation Handlers ======
 
     const handleAddClassroomClick = () => {
-        // open the modal / box
-        setShowAddTypeBox(true);
+        // Opens the classroom creation modal
+        setShowAddClassroomForm(true);
     };
 
-    const closeAddTypeBox = () => {
-        // close the modal / box
-        setShowAddTypeBox(false);
+    const closeAddClassroomForm = () => {
+        // Closes the modal and resets the form data
+        setShowAddClassroomForm(false);
+        setNewClassroomData({ name: '', description: '' });
     };
 
-    const handleCreateClassroom = (type) => {
-        const baseName = type === 'flashcard'
-            ? 'New Flash Card Class'
-            : 'New Quiz Class';
+    const handleFormChange = (e) => {
+        // Captures input from the form fields
+        setNewClassroomData({ ...newClassroomData, [e.target.name]: e.target.value });
+    };
 
-        const description = type === 'flashcard'
-            ? 'Classroom for flash cards'
-            : 'Classroom for quizzes';
+    const handleCreateClassroomSubmit = async (e) => {
+    e.preventDefault();
 
-        setClassrooms((prev) => [
+    // Backend waits for: title, description, ownerID
+    const payload = {
+        title: newClassroomData.name,
+        description: newClassroomData.description,
+        ownerID: auth.id
+    };
+
+    try {
+        const res = await fetch("http://localhost:5000/api/classrooms", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error("Error:", data);
+            return;
+        }
+
+        setClassrooms(prev => [
             ...prev,
             {
-                id: Date.now(),
-                name: baseName,
-                description,
-                type,
-            },
+                id: data.ID,
+                name: data.Title,
+                description: data.Description,
+                type: "Classroom",
+            }
         ]);
 
-        setShowAddTypeBox(false);
-    };
+        closeAddClassroomForm();
 
-    // ====== JSX (UNCHANGED) ======
+    } catch (err) {
+        console.error("Request failed", err);
+    }
+};
+
+
+    // ====== JSX Render ======
 
     return (
         <main className="dashboard-page">
-            {/* Top row tabs */}
-            <div className="dashboard-row">
+            {/* Replaced the old button block with the reusable component */}
+            <DashboardNav 
+                initialActiveTab={activeTab} 
+                onTabChange={setActiveTab} // Updates the local 'activeTab' state
+            />
 
-                <button
-                    className={`dashboard-tab ${activeTab === 'classrooms' ? 'dashboard-tab-active' : ''}`}
-                    type="button"
-                    onClick={() => setActiveTab('classrooms')}
-                >
-                    Classrooms
-                </button>
-
-                <button
-                    className="dashboard-tab"
-                    type="button"
-                    onClick={handleGoHome}
-                >
-                    Home
-                </button>
-                <button
-                    className={`dashboard-tab ${activeTab === 'profile' ? 'dashboard-tab-active' : ''}`}
-                    type="button"
-                    onClick={() => setActiveTab('profile')}
-                >
-                    Profile
-                </button>
-
-                <button
-                    className="dashboard-tab dashboard-tab-logout"
-                    type="button"
-                    // 🎯 Calls the real logOut function
-                    onClick={handleLogout}
-                >
-                    Logout
-                </button>
-            </div>
-
-            {/* PROFILE TAB */}
+            {/* Profile View: Only rendered if 'profile' tab is active */}
             {activeTab === 'profile' && (
                 <section className="dashboard-box">
                     <h2>Profile</h2>
-                    {/* Display real user data from state */}
                     <p><strong>Username:</strong> {userProfile.username}</p>
                     <p><strong>Email:</strong> {userProfile.email}</p>
                     <p><strong>Role:</strong> {userProfile.role}</p>
                 </section>
             )}
 
-            {/* CLASSROOM TAB */}
+            {/* Classrooms List View: Only rendered if 'classrooms' tab is active */}
             {activeTab === 'classrooms' && (
                 <section className="dashboard-box">
                     <div className="dashboard-box-header">
                         <h2>My Classrooms</h2>
                     </div>
 
+                    {/* Check if the list is empty */}
                     {classrooms.length === 0 ? (
-                        <p>You don’t have any classrooms yet. Click the + button to add one.</p>
+                        <p>No recent activity found. Click the + button to add your first classroom.</p> 
                     ) : (
                         <div className="classroom-grid">
+                            {/* Renders the list using the reusable ResourceCard component */}
                             {classrooms.map((room) => (
-                                <article key={room.id} className="classroom-card">
-                                    <h3>{room.name}</h3>
-                                    {room.description && (
-                                        <p className="classroom-description">{room.description}</p>
-                                    )}
-                                    {room.type && (
-                                        <p className="classroom-type">
-                                            Type: {room.type === 'flashcard' ? 'Flash Card' : 'Quiz'}
-                                        </p>
-                                    )}
-                                </article>
+                                <ResourceCard 
+                                    key={room.id}
+                                    resource={room} 
+                                    isClassroomLevel={true} // MUST be true for the card to act as a link
+                                />
                             ))}
                         </div>
                     )}
 
-                    {/* Floating + button */}
+                    {/* Floating Add Button for creating a new Classroom */}
                     <button
                         type="button"
                         className="floating-add-btn"
@@ -150,45 +160,32 @@ const Dashboard = () => {
                         +
                     </button>
 
-                    {/* Add Type Selection Box (Modal) */}
-                    {showAddTypeBox && (
-                        <div className="add-type-overlay" onClick={closeAddTypeBox}>
-                            <div
-                                className="add-type-modal"
-                                onClick={(e) => e.stopPropagation()} // stop closing when clicking inside
-                            >
+                    {/* Classroom Creation Form Modal */}
+                    {showAddClassroomForm && (
+                        <div className="add-type-overlay" onClick={closeAddClassroomForm}>
+                            <div className="add-type-modal" onClick={(e) => e.stopPropagation()}>
                                 <div className="add-type-header">
-                                    <h3>Select Classroom Type</h3>
-                                    <button
-                                        type="button"
-                                        className="add-type-close"
-                                        onClick={closeAddTypeBox}
-                                    >
+                                    <h3>Create New Classroom</h3>
+                                    <button type="button" className="add-type-close" onClick={closeAddClassroomForm}>
                                         ×
                                     </button>
                                 </div>
 
-                                <p className="add-type-text">Choose what you want to create:</p>
+                                <form onSubmit={handleCreateClassroomSubmit}>
+                                    <label>Classroom Name:</label>
+                                    <input type="text" name="name" value={newClassroomData.name}
+                                        onChange={handleFormChange} required className="form-input-text" />
+                                    
+                                    <label>Description:</label>
+                                    <textarea name="description" value={newClassroomData.description}
+                                        onChange={handleFormChange} rows="3" className="form-input-text"
+                                        maxLength="150" />
 
-                                <div className="add-type-options">
-                                    <button
-                                        type="button"
-                                        className="add-type-card"
-                                        onClick={() => handleCreateClassroom('flashcard')}
-                                    >
-                                        <h4>Flash Card</h4>
-                                        <p>Create a classroom based on flash cards.</p>
+                                    <button type="submit" className="dashboard-btn form-submit-btn"
+                                        disabled={!newClassroomData.name}>
+                                        Create Classroom
                                     </button>
-
-                                    <button
-                                        type="button"
-                                        className="add-type-card"
-                                        onClick={() => handleCreateClassroom('quiz')}
-                                    >
-                                        <h4>Quiz</h4>
-                                        <p>Create a classroom based on quizzes.</p>
-                                    </button>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     )}

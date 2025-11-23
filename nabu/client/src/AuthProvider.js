@@ -6,8 +6,11 @@ import { useContext, createContext, useState} from "react";
 
 const AuthContext = createContext();
 
+
+
 const AuthProvider = ({ children }) => {
     //const navigate = useNavigate();
+    const [id, setId] = useState(null);
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem("site") || "");
     const [email, setEmail] = useState(null);
@@ -34,12 +37,15 @@ const AuthProvider = ({ children }) => {
             const res = await response.json();
 
             if (res){
+                 setId(res.id);          
                 setUser(res.user);
                 setToken(res.token);
                 setEmail(res.mail);
+
                 localStorage.setItem("site", res.token);
+                localStorage.setItem("userid", res.id);  // optional
+
                 window.location.href = "/#/dashboard"
-                //navigate("/dashboard");
                 return;
             }
             throw new Error(res.message);
@@ -63,7 +69,7 @@ const AuthProvider = ({ children }) => {
     }
 
 
-    return <AuthContext.Provider value={{user, token, email, loginAction, logOut}}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={{ id, user, token, email, loginAction, logOut}}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;
