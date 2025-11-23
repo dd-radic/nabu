@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthProvider';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
@@ -12,16 +12,37 @@ const Dashboard = () => {
         email: auth.email || 'N/A',
         role: 'Student', // Still hardcoded for now
     };
+    const API_URL = "http://localhost:5000/api/classrooms";
 
     // Controls which view is currently shown: Classrooms list or Profile details
     const [activeTab, setActiveTab] = useState('classrooms'); 
 
-    // Mock data for the list of classrooms. 
-    // IMPORTANT: The backend API must eventually provide this list of objects.
-    const [classrooms, setClassrooms] = useState([
-        { id: '1', name: 'Math 101', description: 'Algebra basics for beginners.', type: 'Classroom' },
-        { id: '2', name: 'Science Club', description: 'Physics and chemistry experiments.', type: 'Classroom' },
-    ]);
+    // State for the existing classrooms
+   const [classrooms, setClassrooms] = useState([]); // initially empty
+
+   // Load classrooms from backend on page load
+useEffect(() => {
+    const fetchClassrooms = async () => {
+        try {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+
+            setClassrooms(
+                data.map(c => ({
+                    id: c.ID,
+                    name: c.Title,
+                    description: c.Description,
+                    type: "Classroom",
+                }))
+            );
+        } catch (err) {
+            console.error("Failed to load classrooms:", err);
+        }
+    };
+
+    fetchClassrooms();
+}, []);
+
 
     // State for managing the "Create Classroom" modal visibility and form data
     const [showAddClassroomForm, setShowAddClassroomForm] = useState(false);
@@ -45,28 +66,53 @@ const Dashboard = () => {
         setNewClassroomData({ ...newClassroomData, [e.target.name]: e.target.value });
     };
 
-    const handleCreateClassroomSubmit = (e) => {
-        e.preventDefault();
-        
-        // TEMPORARY: Adds the new classroom to the frontend state.
-        // NEXT STEP FOR BACKEND: Send newClassroomData to a POST /api/classrooms endpoint here.
-        setClassrooms((prev) => [
+    const handleCreateClassroomSubmit = async (e) => {
+    e.preventDefault();
+
+    // Backend waits for: title, description, ownerID
+    const payload = {
+        title: newClassroomData.name,
+        description: newClassroomData.description,
+        ownerID: auth.id
+    };
+
+    try {
+        const res = await fetch("http://localhost:5000/api/classrooms", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error("Error:", data);
+            return;
+        }
+
+        setClassrooms(prev => [
             ...prev,
             {
-                id: String(Date.now()), // Unique ID for frontend navigation
-                name: newClassroomData.name,
-                description: newClassroomData.description,
-                type: 'Classroom',
-            },
+                id: data.ID,
+                name: data.Title,
+                description: data.Description,
+                type: "Classroom",
+            }
         ]);
+
         closeAddClassroomForm();
-    };
+
+    } catch (err) {
+        console.error("Request failed", err);
+    }
+};
+
 
     // ====== JSX Render ======
 
     return (
         <main className="dashboard-page">
-            {/* The shared navigation bar that controls which section is visible */}
+            {/* Replaced the old button block with the reusable component */}
             <DashboardNav 
                 initialActiveTab={activeTab} 
                 onTabChange={setActiveTab} // Updates the local 'activeTab' state

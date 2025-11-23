@@ -6,12 +6,22 @@ import pool from "./db-connection.js";
 import path from "path";
 import dotenv from "dotenv";
 import generateUniqueId from "./idGenerator.js";
+import classroomRoutes from "./classroom.js";
+import cors from "cors";
+
 dotenv.config({ path: "../.env" });
+
 
 
 const app = express();
 
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(bodyParser.json());
+app.use("/api/classrooms", classroomRoutes);
 
 // Prevent crashing on thrown async errors
 app.use((req, res, next) => {
@@ -107,6 +117,7 @@ app.post("/api/login", async (req, res) => {
     console.log("User logged in:", user.Email);
 
     res.status(200).json({
+      id: user.ID, 
       user: user.Name,
       mail: user.Email,
       token: accesstoken,
@@ -117,7 +128,6 @@ app.post("/api/login", async (req, res) => {
     return res.status(500).json({ error: err.message || "Unknown error" });
   }
 });
-
 
 //////////////////////////////////////////
 ////          START SERVER             ////
