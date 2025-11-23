@@ -37,7 +37,7 @@ const AuthProvider = ({ children }) => {
             const res = await response.json();
 
             if (res){
-                 setId(res.id);          // <--- DIE USERID SPEICHERN
+                 setId(res.id);          
                 setUser(res.user);
                 setToken(res.token);
                 setEmail(res.mail);

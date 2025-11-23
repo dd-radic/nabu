@@ -63,7 +63,7 @@ useEffect(() => {
     const handleCreateClassroomSubmit = async (e) => {
     e.preventDefault();
 
-    // Backend erwartet: title, description, ownerID
+    // Backend waits for: title, description, ownerID
     const payload = {
         title: newClassroomData.name,
         description: newClassroomData.description,
@@ -84,7 +84,6 @@ useEffect(() => {
             return;
         }
 
-        // Direkt in UI einfügen
         setClassrooms(prev => [
             ...prev,
             {
