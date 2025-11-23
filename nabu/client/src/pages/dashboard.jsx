@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthProvider';
-import { Link } from 'react-router-dom';
-import DashboardNav from '../components/DashboardNav'; 
+import DashboardNav from '../components/DashboardNav';
+import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
 
 const Dashboard = () => {
     const auth = useAuth();
+    
+    // We use the real auth data (user, email) for the profile view
     const userProfile = {
         username: auth.user || 'Loading...',
         email: auth.email || 'N/A',
-        role: 'Student',
+        role: 'Student', // Still hardcoded for now
     };
     const API_URL = "http://localhost:5000/api/classrooms";
 
-    // Use 'classrooms' as the default active tab for this page
+    // Controls which view is currently shown: Classrooms list or Profile details
     const [activeTab, setActiveTab] = useState('classrooms'); 
 
     // State for the existing classrooms
@@ -42,21 +44,25 @@ useEffect(() => {
 }, []);
 
 
+    // State for managing the "Create Classroom" modal visibility and form data
     const [showAddClassroomForm, setShowAddClassroomForm] = useState(false);
     const [newClassroomData, setNewClassroomData] = useState({ name: '', description: '' });
 
-    // ====== Handlers (Simplified) ======
+    // ====== Classroom Creation Handlers ======
 
     const handleAddClassroomClick = () => {
+        // Opens the classroom creation modal
         setShowAddClassroomForm(true);
     };
 
     const closeAddClassroomForm = () => {
+        // Closes the modal and resets the form data
         setShowAddClassroomForm(false);
         setNewClassroomData({ name: '', description: '' });
     };
 
     const handleFormChange = (e) => {
+        // Captures input from the form fields
         setNewClassroomData({ ...newClassroomData, [e.target.name]: e.target.value });
     };
 
@@ -102,17 +108,17 @@ useEffect(() => {
 };
 
 
-    // ====== JSX ======
+    // ====== JSX Render ======
 
     return (
         <main className="dashboard-page">
             {/* Replaced the old button block with the reusable component */}
             <DashboardNav 
                 initialActiveTab={activeTab} 
-                onTabChange={setActiveTab} // Prop to receive tab changes
+                onTabChange={setActiveTab} // Updates the local 'activeTab' state
             />
 
-            {/* PROFILE TAB */}
+            {/* Profile View: Only rendered if 'profile' tab is active */}
             {activeTab === 'profile' && (
                 <section className="dashboard-box">
                     <h2>Profile</h2>
@@ -122,32 +128,30 @@ useEffect(() => {
                 </section>
             )}
 
-            {/* CLASSROOM TAB */}
+            {/* Classrooms List View: Only rendered if 'classrooms' tab is active */}
             {activeTab === 'classrooms' && (
                 <section className="dashboard-box">
                     <div className="dashboard-box-header">
                         <h2>My Classrooms</h2>
                     </div>
 
+                    {/* Check if the list is empty */}
                     {classrooms.length === 0 ? (
                         <p>No recent activity found. Click the + button to add your first classroom.</p> 
                     ) : (
                         <div className="classroom-grid">
+                            {/* Renders the list using the reusable ResourceCard component */}
                             {classrooms.map((room) => (
-                                <Link to={`/classroom/${room.id}`} key={room.id} className="classroom-card classroom-card-link">
-                                    <h3>{room.name}</h3>
-                                    {room.description && (
-                                        <p className="classroom-description-short">{room.description}</p> 
-                                    )}
-                                    <p className="classroom-type">
-                                        Type: {room.type}
-                                    </p>
-                                </Link>
+                                <ResourceCard 
+                                    key={room.id}
+                                    resource={room} 
+                                    isClassroomLevel={true} // MUST be true for the card to act as a link
+                                />
                             ))}
                         </div>
                     )}
 
-                    {/* Floating + button */}
+                    {/* Floating Add Button for creating a new Classroom */}
                     <button
                         type="button"
                         className="floating-add-btn"
@@ -156,50 +160,29 @@ useEffect(() => {
                         +
                     </button>
 
-                    {/* Add Classroom Form Modal */}
+                    {/* Classroom Creation Form Modal */}
                     {showAddClassroomForm && (
                         <div className="add-type-overlay" onClick={closeAddClassroomForm}>
-                            <div
-                                className="add-type-modal"
-                                onClick={(e) => e.stopPropagation()}
-                            >
+                            <div className="add-type-modal" onClick={(e) => e.stopPropagation()}>
                                 <div className="add-type-header">
                                     <h3>Create New Classroom</h3>
-                                    <button
-                                        type="button"
-                                        className="add-type-close"
-                                        onClick={closeAddClassroomForm}
-                                    >
+                                    <button type="button" className="add-type-close" onClick={closeAddClassroomForm}>
                                         ×
                                     </button>
                                 </div>
 
                                 <form onSubmit={handleCreateClassroomSubmit}>
                                     <label>Classroom Name:</label>
-                                    <input 
-                                        type="text" 
-                                        name="name" 
-                                        value={newClassroomData.name}
-                                        onChange={handleFormChange}
-                                        required 
-                                        className="form-input-text"
-                                    />
+                                    <input type="text" name="name" value={newClassroomData.name}
+                                        onChange={handleFormChange} required className="form-input-text" />
                                     
                                     <label>Description:</label>
-                                    <textarea
-                                        name="description" 
-                                        value={newClassroomData.description}
-                                        onChange={handleFormChange}
-                                        rows="3"
-                                        className="form-input-text"
-                                        maxLength="150"
-                                    />
+                                    <textarea name="description" value={newClassroomData.description}
+                                        onChange={handleFormChange} rows="3" className="form-input-text"
+                                        maxLength="150" />
 
-                                    <button 
-                                        type="submit" 
-                                        className="dashboard-btn form-submit-btn"
-                                        disabled={!newClassroomData.name}
-                                    >
+                                    <button type="submit" className="dashboard-btn form-submit-btn"
+                                        disabled={!newClassroomData.name}>
                                         Create Classroom
                                     </button>
                                 </form>

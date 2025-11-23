@@ -1,12 +1,12 @@
 import React from 'react';
 import { useState } from 'react';
 import { useAuth } from '../AuthProvider';
-import { Link } from 'react-router-dom'; // ⬅️ NEW IMPORT
+import { Link } from 'react-router-dom'; // Import Link
 
 /**
  * Reusable navigation component for the Dashboard and Classroom pages.
  * It manages the active tab state (Profile, Classrooms) and handles global actions like Logout.
- * * @param {string} initialActiveTab - Sets the tab that should be active when the component loads (e.g., 'classrooms' or 'content').
+ * @param {string} initialActiveTab - Sets the tab that should be active when the component loads (e.g., 'classrooms' or 'content').
  * @param {function} onTabChange - Callback function run when a tab is clicked.
  */
 const DashboardNav = ({ initialActiveTab, onTabChange }) => {
@@ -36,11 +36,11 @@ const DashboardNav = ({ initialActiveTab, onTabChange }) => {
     
     return (
         <div className="dashboard-row">
-            {/* CHANGED TO LINK TO FORCE NAVIGATION TO /dashboard */}
+            {/* The Classrooms tab uses Link to force navigation back to the main list */}
             <Link 
                 to="/dashboard"
+                // Check for 'classrooms' or 'content' to keep the tab highlighted when inside a classroom
                 className={`dashboard-tab ${activeTab === 'classrooms' || activeTab === 'content' ? 'dashboard-tab-active' : ''}`}
-                // Use onClick to still trigger state change on the Dashboard page if user clicks it again
                 onClick={() => handleTabClick('classrooms')} 
             >
                 Classrooms
