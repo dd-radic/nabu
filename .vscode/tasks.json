@@ -10,7 +10,7 @@
     {
       "label": "Setup Nabu Server",
       "type": "shell",
-      "command": "cd '${workspaceFolder}/nabu/server'; npm install; node --inspect server.js",
+      "command": "cd '${workspaceFolder}/nabu/server/src'; npm install; node --inspect server.js",
       "problemMatcher": [],
       "group": "build"
     },
