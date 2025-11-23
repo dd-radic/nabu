@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthProvider';
 import { Link } from 'react-router-dom';
 import DashboardNav from '../components/DashboardNav'; 
@@ -10,15 +10,37 @@ const Dashboard = () => {
         email: auth.email || 'N/A',
         role: 'Student',
     };
+    const API_URL = "http://localhost:5000/api/classrooms";
 
     // Use 'classrooms' as the default active tab for this page
     const [activeTab, setActiveTab] = useState('classrooms'); 
 
     // State for the existing classrooms
-    const [classrooms, setClassrooms] = useState([
-        { id: '1', name: 'Math 101', description: 'Algebra basics for beginners.', type: 'Classroom' },
-        { id: '2', name: 'Science Club', description: 'Physics and chemistry experiments.', type: 'Classroom' },
-    ]);
+   const [classrooms, setClassrooms] = useState([]); // initially empty
+
+   // Load classrooms from backend on page load
+useEffect(() => {
+    const fetchClassrooms = async () => {
+        try {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+
+            setClassrooms(
+                data.map(c => ({
+                    id: c.ID,
+                    name: c.Title,
+                    description: c.Description,
+                    type: "Classroom",
+                }))
+            );
+        } catch (err) {
+            console.error("Failed to load classrooms:", err);
+        }
+    };
+
+    fetchClassrooms();
+}, []);
+
 
     const [showAddClassroomForm, setShowAddClassroomForm] = useState(false);
     const [newClassroomData, setNewClassroomData] = useState({ name: '', description: '' });
@@ -38,25 +60,54 @@ const Dashboard = () => {
         setNewClassroomData({ ...newClassroomData, [e.target.name]: e.target.value });
     };
 
-    const handleCreateClassroomSubmit = (e) => {
-        e.preventDefault();
-        setClassrooms((prev) => [
+    const handleCreateClassroomSubmit = async (e) => {
+    e.preventDefault();
+
+    // Backend erwartet: title, description, ownerID
+    const payload = {
+        title: newClassroomData.name,
+        description: newClassroomData.description,
+        ownerID: auth.id
+    };
+
+    try {
+        const res = await fetch("http://localhost:5000/api/classrooms", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error("Error:", data);
+            return;
+        }
+
+        // Direkt in UI einfügen
+        setClassrooms(prev => [
             ...prev,
             {
-                id: String(Date.now()),
-                name: newClassroomData.name,
-                description: newClassroomData.description,
-                type: 'Classroom',
-            },
+                id: data.ID,
+                name: data.Title,
+                description: data.Description,
+                type: "Classroom",
+            }
         ]);
+
         closeAddClassroomForm();
-    };
+
+    } catch (err) {
+        console.error("Request failed", err);
+    }
+};
+
 
     // ====== JSX ======
 
     return (
         <main className="dashboard-page">
-            {/* 🎯 Replaced the old button block with the reusable component */}
+            {/* Replaced the old button block with the reusable component */}
             <DashboardNav 
                 initialActiveTab={activeTab} 
                 onTabChange={setActiveTab} // Prop to receive tab changes
