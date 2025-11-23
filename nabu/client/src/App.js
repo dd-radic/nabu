@@ -1,14 +1,14 @@
-import './App.css'; // Imports the single, global stylesheet
+import './App.css'; // ⬅️ THIS LINE IS CRUCIAL FOR STYLING
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
 // Import Page Components
 import Home from './pages/home.jsx';
 import Login from './pages/login.jsx';
 import Signup from './pages/signup.jsx';
-import Dashboard from './pages/dashboard.jsx';
+import Dashboard from './pages/dashboard.jsx'; 
 
-// Import Auth Provider
-import AuthProvider from './AuthProvider.js';
+// Import Auth Provider 
+import AuthProvider from './AuthProvider.js'; 
 
 // Import Layout Component
 import { Layout } from './components/Layout.jsx';
@@ -20,12 +20,8 @@ import { Layout } from './components/Layout.jsx';
 const App = () => {
   return (
     <Router>
-      <AuthProvider>
+      <AuthProvider> 
         <Routes>
-          {/* The Layout component wraps all other pages.
-            This makes the Navbar (which is inside Layout)
-            appear on every page.
-          */}
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
