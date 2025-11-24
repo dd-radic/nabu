@@ -6,12 +6,13 @@ import pool from "./db-connection.js";
 import path from "path";
 import dotenv from "dotenv";
 import generateUniqueId from "./idGenerator.js";
-import classroomRoutes from "./classroom.js";
 import cors from "cors";
 
+import classroomRoute from "./routes/classroom.js";
+import loginRoute from "./routes/login.js";
+import signupRoute from "./routes/signup.js";
+
 dotenv.config({ path: "../.env" });
-
-
 
 const app = express();
 
@@ -21,7 +22,11 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(bodyParser.json());
-app.use("/api/classrooms", classroomRoutes);
+
+//Use the routers for each page's server endpoints
+app.use("/api/classrooms", classroomRoute);
+app.use("/api/login", loginRoute);
+app.use("/api/signup", signupRoute);
 
 // Prevent crashing on thrown async errors
 app.use((req, res, next) => {
@@ -34,115 +39,8 @@ app.get("/api/health", (req, res) => { // Health check endpoint
 });
 
 
-//////////////////////////////////////////
-////              USERS                ////
-//////////////////////////////////////////
-
-// === SIGNUP ===
-// === SIGNUP ===
-app.post("/api/signup", async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
-
-    if (!username || !email || !password) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    const salt = await bcrypt.genSalt();
-    const encPass = await bcrypt.hash(password, salt);
-    //here we use the new Tabel User that i created in the database
-    //generate unique id 8 char string for the users table and check for conflicts
-    //and resolvem them by regenerating
-    const table = "User";
-    const userID = await generateUniqueId(table);
-
-    let result;
-    try{
-      [result] = await pool.query(
-        "INSERT INTO ?? (Id, Name, Email, Password) VALUES (?, ?, ?, ?)",
-        [table, userID, username, email, encPass]
-      );
-    }catch(dbErr){
-      throw dbErr;
-    }
-    console.log("New user added:", username, email);
-
-
-    return res.status(200).json({
-  message: "User signed up!",
-  userId: userID,
-});
-
-
-  } catch (err) {
-    console.error("Signup error:", err);
-    return res.status(101).json({ error: err.message || "Unknown error" });
-  }
-});
-
-
-// === LOGIN ===
-app.post("/api/login", async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({ error: "Missing username or password" });
-    }
-
-    // Get user from the new User table
-    const [rows] = await pool.query(
-      "SELECT * FROM ?? WHERE Name = ?", 
-      ["User", username] 
-    );
-
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const user = rows[0];
-
-    
-    const valid = await bcrypt.compare(password, user.Password);
-    if (!valid) {
-      return res.status(401).json({ error: "Invalid password" });
-    }
-
-    
-    const accesstoken = jwt.sign(
-      { id: user.ID, username: user.Name },
-      process.env.DB_JWT_KEY,
-      { expiresIn: "1h" }
-    );
-
-    console.log("User logged in:", user.Email);
-
-    res.status(200).json({
-<<<<<<< HEAD
-      id: user.ID, 
-      user: user.Name,
-      mail: user.Email,
-      token: accesstoken,
-    });
-=======
-  userId: user.ID,
-  user: user.Name,
-  mail: user.Email,
-  token: accesstoken,
-});
-
-
-
->>>>>>> edit-user-name
-
-  } catch (err) {
-    console.error("Login error:", err);
-    return res.status(500).json({ error: err.message || "Unknown error" });
-  }
-});
-
-<<<<<<< HEAD
-=======
+//TODO: Figure out where to put this on the front-end, then move this method
+//to the correct Route
 /////////////=========== Change Username ===========/////////////
 
 app.put("/api/user/update-username", async (req, res) => {
@@ -175,14 +73,6 @@ app.put("/api/user/update-username", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
->>>>>>> edit-user-name
 //////////////////////////////////////////
 ////          START SERVER             ////
 //////////////////////////////////////////
