@@ -38,6 +38,48 @@ app.get("/api/health", (req, res) => { // Health check endpoint
   res.json({ message: "OK" });
 });
 
+<<<<<<< HEAD
+=======
+/////////////=========== Change Username ===========/////////////
+
+app.put("/api/user/update-username", async (req, res) => {
+  try {//please send in the body the userId and the newName
+    const { userId, newName } = req.body;
+
+    // 1) Check missing values
+    if (!userId || !newName || !newName.trim()) {
+      return res.status(400).json({ error: "Missing userId or newName" });
+    }
+    // 2) Update the username
+    const [result] = await pool.query(
+      "UPDATE User SET Name = ? WHERE ID = ?",
+      [newName, userId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // 4) Success
+    res.json({
+      success: true,
+      newName: newName,
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+
+
+
+
+
+
+>>>>>>> edit-user-name
 //////////////////////////////////////////
 ////          START SERVER             ////
 //////////////////////////////////////////
