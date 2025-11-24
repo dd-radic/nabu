@@ -38,8 +38,9 @@ app.get("/api/health", (req, res) => { // Health check endpoint
   res.json({ message: "OK" });
 });
 
-<<<<<<< HEAD
-=======
+
+//TODO: Figure out where to put this on the front-end, then move this method
+//to the correct Route
 /////////////=========== Change Username ===========/////////////
 
 app.put("/api/user/update-username", async (req, res) => {
@@ -72,14 +73,6 @@ app.put("/api/user/update-username", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
->>>>>>> edit-user-name
 //////////////////////////////////////////
 ////          START SERVER             ////
 //////////////////////////////////////////
