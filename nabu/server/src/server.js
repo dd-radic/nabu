@@ -6,15 +6,13 @@ import pool from "./db-connection.js";
 import path from "path";
 import dotenv from "dotenv";
 import generateUniqueId from "./idGenerator.js";
-import classroomRoutes from "./classroom.js";
 import cors from "cors";
 
+import classroomRoute from "./routes/classroom.js";
+import loginRoute from "./routes/login.js";
+import signupRoute from "./routes/signup.js";
+
 dotenv.config({ path: "../.env" });
-
-//Get API function definitions from other files
-import * as login from './routes/login.js';
-import * as signup from './routes/signup.js';
-
 
 const app = express();
 
@@ -24,7 +22,11 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(bodyParser.json());
-app.use("/api/classrooms", classroomRoutes);
+
+//Use the routers for each page's server endpoints
+app.use("/api/classrooms", classroomRoute);
+app.use("/api/login", loginRoute);
+app.use("/api/signup", signupRoute);
 
 // Prevent crashing on thrown async errors
 app.use((req, res, next) => {
@@ -34,22 +36,6 @@ app.use((req, res, next) => {
 
 app.get("/api/health", (req, res) => { // Health check endpoint
   res.json({ message: "OK" });
-});
-
-
-//////////////////////////////////////////
-////              USERS                ////
-//////////////////////////////////////////
-
-// === SIGNUP ===
-app.post("/api/signup", async (req, res) => {
-  await signup.submit(req, res);
-});
-
-
-// === LOGIN ===
-app.post("/api/login", async(req, res) =>{
-  await login.submit(req, res);
 });
 
 //////////////////////////////////////////

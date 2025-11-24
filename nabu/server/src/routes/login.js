@@ -1,10 +1,12 @@
+import express from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import pool from "../db-connection.js";
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
+const router = express.Router();
 
-export async function submit(req, res) {
+router.post("/", async (req, res) => {
     try {
         const { username, password } = req.body;
 
@@ -49,4 +51,6 @@ export async function submit(req, res) {
         console.error("Login error:", err);
         return res.status(500).json({ error: err.message || "Unknown error" });
     }
-};
+});
+
+export default router;

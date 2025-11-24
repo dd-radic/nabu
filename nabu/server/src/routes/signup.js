@@ -1,10 +1,12 @@
+import express from "express";
 import bcrypt from "bcrypt";
 import pool from "../db-connection.js";
 import dotenv from "dotenv";
 import generateUniqueId from "../idGenerator.js";
 dotenv.config({ path: "../../.env" });
+const router = express.Router();
 
-export async function submit(req, res){
+router.post("/", async (req, res) => {
       try {
     const { username, email, password } = req.body;
 
@@ -41,4 +43,6 @@ export async function submit(req, res){
     console.error("Signup error:", err);
     return res.status(101).json({ error: err.message || "Unknown error" });
   }
-};
+});
+
+export default router;
