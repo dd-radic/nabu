@@ -7,7 +7,7 @@ import SearchBar from "../components/SearchBar";
 
 const Dashboard = () => {
     const auth = useAuth();
-    
+
     // We use the real auth data (user, email) for the profile view
     const userProfile = {
         username: auth.user || 'Loading...',
@@ -17,38 +17,59 @@ const Dashboard = () => {
     const API_URL = "http://localhost:5000/api/classrooms";
 
     // Controls which view is currently shown: Classrooms list or Profile details
-    const [activeTab, setActiveTab] = useState('classrooms'); 
-  // State for the existing classrooms
-   const [classrooms, setClassrooms] = useState([]); // initially empty
+    const [activeTab, setActiveTab] = useState('classrooms');
+    // State for the existing classrooms
+    const [classrooms, setClassrooms] = useState([]); // initially empty
+
+    // Filter Dropdown sichtba
+    const [showFilter, setShowFilter] = useState(false);
+
+    // Optional: Sorting mode state
+    const [sortMode, setSortMode] = useState("none");
+
+
 
     const [search, setSearch] = useState("");
-const filteredClassrooms = classrooms.filter(c =>
-  c.name.toLowerCase().includes(search.toLowerCase())
-);
+    let filteredClassrooms = classrooms.filter(c =>
+        c.name.toLowerCase().includes(search.toLowerCase())
+    );
 
-  
-   // Load classrooms from backend on page load
-useEffect(() => {
-    const fetchClassrooms = async () => {
-        try {
-            const res = await fetch(API_URL);
-            const data = await res.json();
+    if (sortMode === "az") {
+        filteredClassrooms = filteredClassrooms.sort((a, b) =>
+            a.name.localeCompare(b.name)
+        );
+    }
 
-            setClassrooms(
-                data.map(c => ({
-                    id: c.ID,
-                    name: c.Title,
-                    description: c.Description,
-                    type: "Classroom",
-                }))
-            );
-        } catch (err) {
-            console.error("Failed to load classrooms:", err);
-        }
-    };
+    if (sortMode === "za") {
+        filteredClassrooms = filteredClassrooms.sort((a, b) =>
+            b.name.localeCompare(a.name)
+        );
+    }
 
-    fetchClassrooms();
-}, []);
+
+
+    // Load classrooms from backend on page load
+    useEffect(() => {
+        const fetchClassrooms = async () => {
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+
+                setClassrooms(
+                    data.map(c => ({
+                        id: c.ID,
+                        name: c.Title,
+                        description: c.Description,
+                        type: "Classroom",
+                    }))
+                );
+            } catch (err) {
+                console.error("Failed to load classrooms:", err);
+            }
+        };
+
+        fetchClassrooms();
+    }, []);
 
 
     // State for managing the "Create Classroom" modal visibility and form data
@@ -74,45 +95,45 @@ useEffect(() => {
     };
 
     const handleCreateClassroomSubmit = async (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    // Backend waits for: title, description, ownerID
-    const payload = {
-        title: newClassroomData.name,
-        description: newClassroomData.description,
-        ownerID: auth.id
-    };
+        // Backend waits for: title, description, ownerID
+        const payload = {
+            title: newClassroomData.name,
+            description: newClassroomData.description,
+            ownerID: auth.id
+        };
 
-    try {
-        const res = await fetch("http://localhost:5000/api/classrooms", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        });
+        try {
+            const res = await fetch("http://localhost:5000/api/classrooms", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
 
-        const data = await res.json();
+            const data = await res.json();
 
-        if (!res.ok) {
-            console.error("Error:", data);
-            return;
-        }
-
-        setClassrooms(prev => [
-            ...prev,
-            {
-                id: data.ID,
-                name: data.Title,
-                description: data.Description,
-                type: "Classroom",
+            if (!res.ok) {
+                console.error("Error:", data);
+                return;
             }
-        ]);
 
-        closeAddClassroomForm();
+            setClassrooms(prev => [
+                ...prev,
+                {
+                    id: data.ID,
+                    name: data.Title,
+                    description: data.Description,
+                    type: "Classroom",
+                }
+            ]);
 
-    } catch (err) {
-        console.error("Request failed", err);
-    }
-};
+            closeAddClassroomForm();
+
+        } catch (err) {
+            console.error("Request failed", err);
+        }
+    };
 
 
     // ====== JSX Render ======
@@ -120,8 +141,8 @@ useEffect(() => {
     return (
         <main className="dashboard-page">
             {/* Replaced the old button block with the reusable component */}
-            <DashboardNav 
-                initialActiveTab={activeTab} 
+            <DashboardNav
+                initialActiveTab={activeTab}
                 onTabChange={setActiveTab} // Updates the local 'activeTab' state
             />
 
@@ -140,21 +161,45 @@ useEffect(() => {
                 <section className="dashboard-box">
                     <div className="dashboard-box-header">
                         <h2>My Classrooms</h2>
-                        <SearchBar value={search} onChange={setSearch} />
+                        <SearchBar
+                            value={search}
+                            onChange={setSearch}
+                            onFilterClick={() => setShowFilter(prev => !prev)}
+                        />
+                        {showFilter && (
+                            <div className="filter-dropdown">
+                                <button onClick={() => setSortMode("az")}>
+                                    Sort A → Z
+                                    {sortMode === "az" && <span className="checkmark">✔</span>}
+                                </button>
+
+                                <button onClick={() => setSortMode("za")}>
+                                    Sort Z → A
+                                    {sortMode === "za" && <span className="checkmark">✔</span>}
+                                </button>
+
+                                <button onClick={() => setSortMode("none")}>
+                                    Reset
+                                    {sortMode === "none" && <span className="checkmark">✔</span>}
+                                </button>
+                            </div>
+                        )}
+
+
 
                     </div>
 
                     {/* Check if the list is empty */}
                     {classrooms.length === 0 ? (
-                        <p>No recent activity found. Click the + button to add your first classroom.</p> 
+                        <p>No recent activity found. Click the + button to add your first classroom.</p>
                     ) : (
                         <div className="classroom-grid">
                             {/* Renders the list using the reusable ResourceCard component */}
                             {filteredClassrooms.map((room) => (
 
-                                <ResourceCard 
+                                <ResourceCard
                                     key={room.id}
-                                    resource={room} 
+                                    resource={room}
                                     isClassroomLevel={true} // MUST be true for the card to act as a link
                                 />
                             ))}
@@ -185,7 +230,7 @@ useEffect(() => {
                                     <label>Classroom Name:</label>
                                     <input type="text" name="name" value={newClassroomData.name}
                                         onChange={handleFormChange} required className="form-input-text" />
-                                    
+
                                     <label>Description:</label>
                                     <textarea name="description" value={newClassroomData.description}
                                         onChange={handleFormChange} rows="3" className="form-input-text"

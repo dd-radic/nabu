@@ -333,4 +333,36 @@
 #pink-mask {
   display: none !important;
 }
+.filter-dropdown {
+  position: absolute;
+  right: 15px;
+  top: 90px;
+  background: white;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 10px;
+  border-radius: 10px;
+  z-index: 50;
+}
+
+.filter-dropdown button {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  gap: 12px;
+}
+
+.checkmark {
+  font-size: 14px;
+  margin-left: 10px;
+  color: #8a2a2b; 
+  font-weight: bold;
+}
+
 
