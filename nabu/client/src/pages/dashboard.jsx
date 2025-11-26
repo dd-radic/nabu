@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthProvider';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
+import SearchBar from "../components/SearchBar";
+
 
 const Dashboard = () => {
     const auth = useAuth();
@@ -16,10 +18,15 @@ const Dashboard = () => {
 
     // Controls which view is currently shown: Classrooms list or Profile details
     const [activeTab, setActiveTab] = useState('classrooms'); 
-
-    // State for the existing classrooms
+  // State for the existing classrooms
    const [classrooms, setClassrooms] = useState([]); // initially empty
 
+    const [search, setSearch] = useState("");
+const filteredClassrooms = classrooms.filter(c =>
+  c.name.toLowerCase().includes(search.toLowerCase())
+);
+
+  
    // Load classrooms from backend on page load
 useEffect(() => {
     const fetchClassrooms = async () => {
@@ -133,6 +140,8 @@ useEffect(() => {
                 <section className="dashboard-box">
                     <div className="dashboard-box-header">
                         <h2>My Classrooms</h2>
+                        <SearchBar value={search} onChange={setSearch} />
+
                     </div>
 
                     {/* Check if the list is empty */}
@@ -141,7 +150,8 @@ useEffect(() => {
                     ) : (
                         <div className="classroom-grid">
                             {/* Renders the list using the reusable ResourceCard component */}
-                            {classrooms.map((room) => (
+                            {filteredClassrooms.map((room) => (
+
                                 <ResourceCard 
                                     key={room.id}
                                     resource={room} 
