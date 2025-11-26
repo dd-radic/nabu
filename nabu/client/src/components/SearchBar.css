@@ -39,7 +39,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
+#poda:hover {
+  transform: scale(1.02) translateY(-2px);
+}
+
 .input::placeholder {
   color: #c0b9c0;
 }
