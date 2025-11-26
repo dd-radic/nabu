@@ -191,20 +191,21 @@ const Dashboard = () => {
 
                     {/* Check if the list is empty */}
                     {classrooms.length === 0 ? (
-                        <p>No recent activity found. Click the + button to add your first classroom.</p>
+                        <p>No classrooms created yet. Click + to add one.</p>
+                    ) : filteredClassrooms.length === 0 ? (
+                        <p>No classrooms match your search.</p>
                     ) : (
                         <div className="classroom-grid">
-                            {/* Renders the list using the reusable ResourceCard component */}
                             {filteredClassrooms.map((room) => (
-
                                 <ResourceCard
                                     key={room.id}
                                     resource={room}
-                                    isClassroomLevel={true} // MUST be true for the card to act as a link
+                                    isClassroomLevel={true}
                                 />
                             ))}
                         </div>
                     )}
+
 
                     {/* Floating Add Button for creating a new Classroom */}
                     <button
