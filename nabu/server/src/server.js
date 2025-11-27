@@ -14,9 +14,7 @@ import signupRoute from "./routes/signup.js";
 
 dotenv.config({ path: "../.env" });
 
-//Get API function definitions from other files
-import * as login from './routes/login.js';
-import * as signup from './routes/signup.js';
+
 
 const app = express();
 
