@@ -14,6 +14,10 @@ import signupRoute from "./routes/signup.js";
 
 dotenv.config({ path: "../.env" });
 
+//Get API function definitions from other files
+import * as login from './routes/login.js';
+import * as signup from './routes/signup.js';
+
 const app = express();
 
 app.use(cors({
@@ -39,6 +43,20 @@ app.get("/api/health", (req, res) => { // Health check endpoint
 });
 
 
+//////////////////////////////////////////
+////              USERS                ////
+//////////////////////////////////////////
+
+// === SIGNUP ===
+app.post("/api/signup", async (req, res) => {
+  await signup.submit(req, res);
+});
+
+
+// === LOGIN ===
+app.post("/api/login", async(req, res) =>{
+  await login.submit(req, res);
+});
 //TODO: Figure out where to put this on the front-end, then move this method
 //to the correct Route
 /////////////=========== Change Username ===========/////////////
