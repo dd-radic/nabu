@@ -6,6 +6,7 @@
           USE BUILD BUTTON TO LAUNCH NABU 
           (BY DEFAULT THATS THE LITTLE HAMMER ICON IN THE UI
           OR CTRL+SHIFT+B ON THE KEYBOARD)
+          TODO: ADD ADITIONAL SHORTCUTS
     */
     {
       "label": "Setup Nabu Server",
