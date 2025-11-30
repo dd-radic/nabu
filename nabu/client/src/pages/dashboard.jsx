@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthProvider';
+import { Navigate } from 'react-router-dom';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
 import SearchBar from "../components/SearchBar";
@@ -137,6 +138,9 @@ const Dashboard = () => {
 
 
     // ====== JSX Render ======
+
+    const {token} = useAuth();
+    if (!token) return <Navigate to='/'/>
 
     return (
         <main className="dashboard-page">

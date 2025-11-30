@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../AuthProvider';
+import { Navigate } from 'react-router-dom';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
 
@@ -145,6 +146,9 @@ const ClassroomPage = () => {
 
 
     // ====== Main JSX Structure ======
+    const {token} = useAuth();
+    if (!token) return <Navigate to='/'/>
+
     return (
         <main className="dashboard-page">
             {/* Navigation component. 'content' is the active tab for this page's context */}

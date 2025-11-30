@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
+import { useAuth } from '../AuthProvider';
+import { Navigate } from 'react-router-dom';
 
 /**
  * This is the Signup Page component.
  * It renders the registration form.
  */
 const Signup = () => {
+
   // 'data' holds the info from the form
   const [data, setData] = useState({ username: '', email: '', password: '' });
+
+  const {token} = useAuth();
+  if (token) return <Navigate to='/dashboard'/>
 
   // This function updates the 'data' state every time the user types
   const changeHandler = (e) => {

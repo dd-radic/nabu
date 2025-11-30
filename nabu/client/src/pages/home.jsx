@@ -1,10 +1,15 @@
 import React from 'react';
+import { useAuth } from '../AuthProvider';
+import { Navigate } from 'react-router-dom';
 
 /**
  * This is the Home Page component.
  * It renders the main "Welcome" message and the action buttons.
  */
 const Home = () => {
+  const {token} = useAuth();
+  if (token) return <Navigate to='/dashboard'/>
+
   return (
     // This main container fills the remaining screen space
     <main className="home-content-section">

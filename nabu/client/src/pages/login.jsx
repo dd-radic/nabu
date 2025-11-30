@@ -1,12 +1,14 @@
 import React from 'react';
 import { useState } from 'react';
 import { useAuth } from '../AuthProvider';
+import { Navigate } from 'react-router-dom';
 
 /**
  * This is the Login Page component.
  * It renders the login form.
  */
 const Login = () => {
+
   // 'data' holds the info from the form (username, password)
   const [data, setData] = useState({ username: '', password: '' });
 
@@ -26,6 +28,9 @@ const Login = () => {
     alert("pleae provide a valid input");
   };
 
+  const {token} = useAuth();
+  if (token) return <Navigate to='/dashboard'/>
+  
   return (
     // This is the main container (styled in App.css)
     <div className="auth-page-container">
