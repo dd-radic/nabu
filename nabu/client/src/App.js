@@ -6,7 +6,7 @@ import Home from './pages/home.jsx';
 import Login from './pages/login.jsx';
 import Signup from './pages/signup.jsx';
 import Dashboard from './pages/dashboard.jsx'; 
-import ClassroomPage from './pages/ClassroomPage.jsx'; 
+import ClassroomPage from './pages/classroom.jsx'; 
 
 // Import Auth Provider 
 import AuthProvider from './AuthProvider.js'; 
