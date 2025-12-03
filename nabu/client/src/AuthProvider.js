@@ -39,10 +39,11 @@ const AuthProvider = ({ children }) => {
         useEffect(() => {
             const fetchClassrooms = async () => {
                 try {
-                    const res = await fetch("api/classrooms");
+                    const res = await fetch(`api/classrooms?userId=${userdata.id}`);
                     const data = await res.json();
 
                     //For reasons beyond my understanding this is how the database data is parsed for the frontend - David
+                    //TODO tweak this to be more universally usable
                     setClassrooms(
                         data.map(c => ({
                             id: c.ID,
@@ -57,7 +58,13 @@ const AuthProvider = ({ children }) => {
             };
     
             fetchClassrooms();
-        }, []);
+        },);
+        //TODO
+        /**     Flashcards   {@link flashcard}   */
+        
+        /**     Quizzes   {@link quiz}   */
+
+        /**     Questions   {@link question}   */
 
 
 
@@ -74,7 +81,6 @@ const AuthProvider = ({ children }) => {
             body: JSON.stringify(req),
         });
 
-        // Check for server errors
         if (!res.ok) {
             console.error(`Error signing up: ${res.status}`);
             // TODO: Show an error message to the user (e.g., "Username taken")
@@ -106,11 +112,9 @@ const AuthProvider = ({ children }) => {
             if (!res.ok) {
                 alert("Server Error");
                 console.error(`Error logging in: ${res.status}`);
-                // TODO: Show an error message to the user
                 return; 
             }
 
-            // Get the JSON res from the server (e.g., user data, token)
             const data = await res.json();
 
             if (data){
@@ -166,7 +170,12 @@ const AuthProvider = ({ children }) => {
             console.error("Request failed", err);
         }
     }
+    //TODO
+        /**     Add Flashcard to DB   {@link flashcard}   */
+        
+        /**     Create Quizzes   {@link quiz}   */
 
+        /**     Create Questions   {@link question}   */
     
 
     const contextValue = {

@@ -14,7 +14,7 @@ router.put("/update-username", async (req, res) => {
         return res.status(400).json({ error: "Missing username or password" });
         }
 
-        // Get user from the new User table
+        
         const [rows] = await pool.query(
         "SELECT * FROM ?? WHERE Name = ?", 
         ["User", username] 
@@ -53,7 +53,7 @@ router.put("/update-username", async (req, res) => {
     }
 });
 
-// Middleware to verify the JWT token
+
 const verifyToken = (req, res, next) => {
     const token = req.headers["authorization"]?.split(" ")[1];
 
@@ -73,8 +73,8 @@ const verifyToken = (req, res, next) => {
 // Route to get user data by JWT token
 router.get("/", verifyToken, async (req, res) => {
     try {
-        const { id } = req.user; // Extract user ID from the token
-        // Query to get user data from the database
+        const { id } = req.user; // Get user ID from the token
+        
         const [rows] = await pool.query(
             "SELECT Name, Email, ID FROM ?? WHERE ID = ?", 
             ["User", id]
@@ -86,7 +86,7 @@ router.get("/", verifyToken, async (req, res) => {
 
         const user = rows[0];
 
-        // Send user data in response
+        
         res.status(200).json({
             name: user.Name,
             mail: user.Email,

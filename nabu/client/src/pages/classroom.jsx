@@ -5,27 +5,18 @@ import { Navigate } from 'react-router-dom';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
 
-// TEMPORARY MOCK DATA: Used to get the friendly name (e.g., "Math 101") from the ID in the URL.
-// BACKEND TASK: Replace this with an actual API call (e.g., GET /api/classrooms/ID)
-const MOCK_ALL_CLASSROOMS = [
-    { id: '1', name: 'Math 101', description: 'Algebra basics for beginners.', type: 'Classroom' },
-    { id: '2', name: 'Science Club', description: 'Physics and chemistry experiments.', type: 'Classroom' },
-];
 
 const ClassroomPage = () => {
     const auth = useAuth();
     const { classroomId } = useParams();
+    const {classrooms} = useAuth();
 
     // Look up the classroom name based on the URL parameter
-    const currentClassroom = MOCK_ALL_CLASSROOMS.find(
+    const currentClassroom = classrooms.find(
         (room) => String(room.id) === classroomId
     );
     
     // Sets the display name
-    const classroomName = currentClassroom 
-        ? currentClassroom.name 
-        : `Classroom ${classroomId}`; 
-
     // Controls the main view: 'content' (default) or 'profile'
     const [activeTab, setActiveTab] = useState('content'); 
 
@@ -161,7 +152,7 @@ const ClassroomPage = () => {
             {(activeTab === 'content' || activeTab === 'classrooms') && (
                 <section className="dashboard-box">
                     <div className="dashboard-box-header">
-                        <h2>{classroomName} Content</h2> 
+                        <h2>{currentClassroom.name} Content</h2> 
                     </div>
 
                     {/* Check if content list is empty */}

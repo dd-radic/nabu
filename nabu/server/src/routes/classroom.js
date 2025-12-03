@@ -6,8 +6,9 @@ const router = express.Router();
 
 // GET all classrooms
 router.get("/", async (req, res) => {
+  const userId = req.query.userId;  // Get userId from query params
   try {
-    const [rows] = await pool.query("SELECT * FROM ClassRoom");
+    const [rows] = await pool.query("SELECT * FROM ClassRoom WHERE OwnerID=?", [userId]);
     res.json(rows);
   } catch (err) {
     console.error(err);

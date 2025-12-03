@@ -59,8 +59,7 @@ app.post("/api/signup", async (req, res) => {
 app.post("/api/login", async(req, res) =>{
   await login.submit(req, res);
 });
-//TODO: Figure out where to put this on the front-end, then move this method
-//to the correct Route
+
 /////////////=========== Change Username ===========/////////////
 
 app.put("/api/user/update-username", async (req, res) => {

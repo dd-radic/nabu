@@ -7,6 +7,7 @@ import { useAuth } from '../AuthProvider';
  * It renders the login form.
  */
 const Login = () => {
+  const auth = useAuth();
 
   // 'data' holds the info from the form (username, password)
   const [data, setData] = useState({ username: '', password: '' });
@@ -17,7 +18,6 @@ const Login = () => {
   }
 
   // This function runs when the user clicks the "Login" button
-   const auth = useAuth();
   const submitHandler = (e) => {
     e.preventDefault();
     if (data.username !== "" && data.password !== "") {
