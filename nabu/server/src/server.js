@@ -10,10 +10,14 @@ import cors from "cors";
 
 
 //  ----  ROUTES  -----
+// ideally we could have incorporated signup and login into user but at this point why bother
 import classroomRoute from "./routes/classroom.js";
 import loginRoute from "./routes/login.js";
 import signupRoute from "./routes/signup.js";
 import userRoute from "./routes/user.js";
+import quizRoute from "./routes/quiz.js";
+import questionRoute from "./routes/question.js";
+import flashcardRoute from "./routes/flashcard.js";
 
 dotenv.config({ path: "../.env" });
 
@@ -33,6 +37,9 @@ app.use("/api/classrooms", classroomRoute);
 app.use("/api/login", loginRoute);
 app.use("/api/signup", signupRoute);
 app.use("/api/user", userRoute);
+app.use("/api/quiz", quizRoute);
+app.use("/api/question", questionRoute);
+app.use("/api/flashcard", flashcardRoute);
 
 // Prevent crashing on thrown async errors
 app.use((req, res, next) => {

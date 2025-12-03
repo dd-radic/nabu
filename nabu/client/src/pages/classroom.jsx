@@ -11,7 +11,7 @@ const ClassroomPage = () => {
     const { classroomId } = useParams();
     const {classrooms} = useAuth();
 
-    // Look up the classroom name based on the URL parameter
+    // Look up the classroom based on the URL parameter
     const currentClassroom = classrooms.find(
         (room) => String(room.id) === classroomId
     );
