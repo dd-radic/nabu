@@ -14,7 +14,6 @@ router.get("/", async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Database error" });
   }
-  console.log(res.json)
 });
 
 // CREATE classroom
