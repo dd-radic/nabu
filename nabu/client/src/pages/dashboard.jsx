@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthProvider';
-import { Navigate } from 'react-router-dom';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
 import SearchBar from "../components/SearchBar";
@@ -27,8 +26,7 @@ const Dashboard = () => {
 
     // Optional: Sorting mode state
     const [sortMode, setSortMode] = useState("none");
-
-    const [userdata, setUserdata] = useState([]);
+    const {userdata} = useState();
 
 
 
@@ -74,27 +72,7 @@ const Dashboard = () => {
         fetchClassrooms();
     }, []);
 
-    const {token} = useAuth();
-    // Load classrooms from backend on page load
-    useEffect(() => {
-        const fetchUserdata = async () => {
-            try {
-                console.log(token);
-                const res = await fetch("http://localhost:5000/api/user", {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,  // Include the token in the request header
-                },
-            });
-            const data = await res.json();
-            setUserdata(data);
-            } catch (err) {
-                console.error("AAAAA to load AAASSADA:", err);
-            }
-        };
-
-        fetchUserdata();
-    }, [token]);
+    
 
 
     // State for managing the "Create Classroom" modal visibility and form data
@@ -120,7 +98,7 @@ const Dashboard = () => {
     };
 
 
-    if (!token) return <Navigate to='/'/>
+   // if (!token) return <Navigate to='/'/>
 
 
     const handleCreateClassroomSubmit = async (e) => {
@@ -133,8 +111,6 @@ const Dashboard = () => {
             description: newClassroomData.description,
             ownerID: userdata.id
         };
-
-        console.log(payload);
 
         try {
             const res = await fetch("http://localhost:5000/api/classrooms", {
