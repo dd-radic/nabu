@@ -67,6 +67,10 @@ app.put("/api/user/update-username", async (req, res) => {
   await users.submit(req, res);
 });
 
+app.put("/api/user", async (req, res) => {
+  await users.submit(req, res);
+});
+
 //////////////////////////////////////////
 ////          START SERVER             ////
 //////////////////////////////////////////

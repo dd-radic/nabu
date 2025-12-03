@@ -14,6 +14,7 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem("site") || "");
     const [email, setEmail] = useState(null);
+    
 
     const loginAction = async (data) => {
         

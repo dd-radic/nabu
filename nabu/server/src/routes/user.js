@@ -53,4 +53,51 @@ router.put("/update-username", async (req, res) => {
     }
 });
 
+// Middleware to verify the JWT token
+const verifyToken = (req, res, next) => {
+    const token = req.headers["authorization"]?.split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({ error: "No token provided" });
+    }
+
+    jwt.verify(token, process.env.DB_JWT_KEY, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ error: "Failed to authenticate token" });
+        }
+        req.user = decoded; // Add decoded token data to request object
+        next();
+    });
+};
+
+// Route to get user data by JWT token
+router.get("/", verifyToken, async (req, res) => {
+    try {
+        const { id } = req.user; // Extract user ID from the token
+        // Query to get user data from the database
+        const [rows] = await pool.query(
+            "SELECT Name, Email, ID FROM ?? WHERE ID = ?", 
+            ["User", id]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const user = rows[0];
+
+        // Send user data in response
+        res.status(200).json({
+            name: user.Name,
+            mail: user.Email,
+            id: user.ID,
+        });
+
+    } catch (err) {
+        console.error("Error fetching user data:", err);
+        return res.status(500).json({ error: err.message || "Unknown error" });
+    }
+});
+
+
 export default router;

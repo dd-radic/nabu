@@ -28,6 +28,8 @@ const Dashboard = () => {
     // Optional: Sorting mode state
     const [sortMode, setSortMode] = useState("none");
 
+    const [userdata, setUserdata] = useState([]);
+
 
 
     const [search, setSearch] = useState("");
@@ -72,6 +74,28 @@ const Dashboard = () => {
         fetchClassrooms();
     }, []);
 
+    const {token} = useAuth();
+    // Load classrooms from backend on page load
+    useEffect(() => {
+        const fetchUserdata = async () => {
+            try {
+                console.log(token);
+                const res = await fetch("http://localhost:5000/api/user", {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Include the token in the request header
+                },
+            });
+            const data = await res.json();
+            setUserdata(data);
+            } catch (err) {
+                console.error("AAAAA to load AAASSADA:", err);
+            }
+        };
+
+        fetchUserdata();
+    }, [token]);
+
 
     // State for managing the "Create Classroom" modal visibility and form data
     const [showAddClassroomForm, setShowAddClassroomForm] = useState(false);
@@ -95,15 +119,22 @@ const Dashboard = () => {
         setNewClassroomData({ ...newClassroomData, [e.target.name]: e.target.value });
     };
 
+
+    if (!token) return <Navigate to='/'/>
+
+
     const handleCreateClassroomSubmit = async (e) => {
         e.preventDefault();
+
 
         // Backend waits for: title, description, ownerID
         const payload = {
             title: newClassroomData.name,
             description: newClassroomData.description,
-            ownerID: auth.id
+            ownerID: userdata.id
         };
+
+        console.log(payload);
 
         try {
             const res = await fetch("http://localhost:5000/api/classrooms", {
@@ -139,8 +170,6 @@ const Dashboard = () => {
 
     // ====== JSX Render ======
 
-    const {token} = useAuth();
-    if (!token) return <Navigate to='/'/>
 
     return (
         <main className="dashboard-page">
