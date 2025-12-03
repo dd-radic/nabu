@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useAuth } from '../AuthProvider';
 
 /**
  * This is the Signup Page component.
  * It renders the registration form.
  */
 const Signup = () => {
+  const auth = useAuth();
 
   // 'data' holds the info from the form
   const [data, setData] = useState({ username: '', email: '', password: '' });
@@ -18,33 +20,7 @@ const Signup = () => {
   // This function runs when the user clicks the "Submit" button
   const submitHandler = async (e) => {
     e.preventDefault();
-
-    try {
-      // Send the new user data to the /api/signup endpoint
-      const response = await fetch('/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      // Check for server errors
-      if (!response.ok) {
-        console.error(`Error signing up: ${response.status}`);
-        // TODO: Show an error message to the user (e.g., "Username taken")
-        return;
-      }
-
-      const result = await response.json();
-      console.log('Signup successful:', result);
-
-      // TODO: Show a success message to the user
-      // Redirect them to the login page
-      window.location.href = '#/login';
-
-    } catch (err) {
-      console.error('Signup failed:', err);
-      // TODO: Show a network error to the user
-    }
+    auth.signupAction(data);
   };
 
   return (

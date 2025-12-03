@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../AuthProvider';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
@@ -14,19 +14,18 @@ const Dashboard = () => {
         email: auth.email || 'N/A',
         role: 'Student', // Still hardcoded for now
     };
-    const API_URL = "http://localhost:5000/api/classrooms";
 
     // Controls which view is currently shown: Classrooms list or Profile details
     const [activeTab, setActiveTab] = useState('classrooms');
     // State for the existing classrooms
-    const [classrooms, setClassrooms] = useState([]); // initially empty
 
     // Filter Dropdown sichtba
     const [showFilter, setShowFilter] = useState(false);
 
     // Optional: Sorting mode state
     const [sortMode, setSortMode] = useState("none");
-    const {userdata} = useState();
+    const {userdata} = useAuth();
+    const {classrooms} = useAuth();
 
 
 
@@ -46,34 +45,6 @@ const Dashboard = () => {
             b.name.localeCompare(a.name)
         );
     }
-
-
-
-    // Load classrooms from backend on page load
-    useEffect(() => {
-        const fetchClassrooms = async () => {
-            try {
-                const res = await fetch(API_URL);
-                const data = await res.json();
-
-                setClassrooms(
-                    data.map(c => ({
-                        id: c.ID,
-                        name: c.Title,
-                        description: c.Description,
-                        type: "Classroom",
-                    }))
-                );
-            } catch (err) {
-                console.error("Failed to load classrooms:", err);
-            }
-        };
-
-        fetchClassrooms();
-    }, []);
-
-    
-
 
     // State for managing the "Create Classroom" modal visibility and form data
     const [showAddClassroomForm, setShowAddClassroomForm] = useState(false);
@@ -112,35 +83,9 @@ const Dashboard = () => {
             ownerID: userdata.id
         };
 
-        try {
-            const res = await fetch("http://localhost:5000/api/classrooms", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
+        auth.addClassroom(payload)
+        closeAddClassroomForm();
 
-            const data = await res.json();
-
-            if (!res.ok) {
-                console.error("Error:", data);
-                return;
-            }
-
-            setClassrooms(prev => [
-                ...prev,
-                {
-                    id: data.ID,
-                    name: data.Title,
-                    description: data.Description,
-                    type: "Classroom",
-                }
-            ]);
-
-            closeAddClassroomForm();
-
-        } catch (err) {
-            console.error("Request failed", err);
-        }
     };
 
 
