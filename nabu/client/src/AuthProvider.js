@@ -1,7 +1,7 @@
 // radida01 2025-11-20
 // credit to https://dev.to/miracool/how-to-manage-user-authentication-with-react-js-3ic5
 
-import { useContext, createContext, useState} from "react";
+import { useContext, createContext, useState, useEffect} from "react";
 //import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
@@ -10,46 +10,58 @@ const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
     //const navigate = useNavigate();
-    const [id, setId] = useState(null);
-    const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem("site") || "");
-    const [email, setEmail] = useState(null);
-    
+    const [userdata, setUserdata] = useState([]);
 
-    const loginAction = async (data) => {
+    useEffect(() => {
+            const fetchUserdata = async () => {
+                try {
+                    const res = await fetch("/api/user", {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,  // Include the token in the request header
+                    },
+                });
+                const data = await res.json();
+                setUserdata(data);
+                } catch (err) {
+                    console.error("Failed to fetch userdata:", err);
+                }
+            };
+    
+            fetchUserdata();
+        }, [token]);
+
+    const loginAction = async (req) => {
         
         try {
             // Send the data to the /api/login endpoint on the server
-            const response = await fetch('/api/login', {
+            const res = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify(req)
             });
 
             // Check if the server responded with an error
-            if (!response.ok) {
+            if (!res.ok) {
                 alert("Server Error");
-                console.error(`Error logging in: ${response.status}`);
+                console.error(`Error logging in: ${res.status}`);
                 // TODO: Show an error message to the user
                 return; 
             }
 
-            // Get the JSON response from the server (e.g., user data, token)
-            const res = await response.json();
+            // Get the JSON res from the server (e.g., user data, token)
+            const data = await res.json();
 
-            if (res){
-                 setId(res.id);          
-                setUser(res.user);
-                setToken(res.token);
-                setEmail(res.mail);
-
-                localStorage.setItem("site", res.token);
-                localStorage.setItem("userid", res.id);  // optional
+            if (data){
+                setUserdata(data)
+                setToken(data.token)
+                localStorage.setItem("site", data.token);
 
                 window.location.href = "/#/dashboard"
                 return;
             }
-            throw new Error(res.message);
+            throw new Error(data.message);
         } 
         catch (err) {
             console.error(err);
@@ -61,16 +73,20 @@ const AuthProvider = ({ children }) => {
     }
 
     const logOut = () => {
-    setUser(null);
-    setEmail(null);
-    setToken("");
+    setUserdata([])
     localStorage.removeItem("site");
     window.location.href = "/#/"
     //navigate("/login");
     }
 
+    const contextValue = {
+    token,
+    loginAction,
+    logOut,
+    userdata
+  };
 
-    return <AuthContext.Provider value={{ id, user, token, email, loginAction, logOut}}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;
