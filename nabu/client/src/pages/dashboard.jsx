@@ -6,12 +6,14 @@ import SearchBar from "../components/SearchBar";
 
 
 const Dashboard = () => {
-    const auth = useAuth();
+
+    //NOTE: DO NOT USE AUTH, use userdata instead
+    const {classrooms, userdata, addClassroom} = useAuth();
 
     // We use the real auth data (user, email) for the profile view
     const userProfile = {
-        username: auth.user || 'Loading...',
-        email: auth.email || 'N/A',
+        username: userdata?.name || 'Loading...',
+        email: userdata?.email || 'N/A',
         role: 'Student', // Still hardcoded for now
     };
 
@@ -24,9 +26,6 @@ const Dashboard = () => {
 
     // Optional: Sorting mode state
     const [sortMode, setSortMode] = useState("none");
-    const {userdata} = useAuth();
-    const {classrooms} = useAuth();
-
 
 
     const [search, setSearch] = useState("");
@@ -35,13 +34,14 @@ const Dashboard = () => {
     );
 
     if (sortMode === "az") {
-        filteredClassrooms = filteredClassrooms.sort((a, b) =>
+        filteredClassrooms = [...filteredClassrooms].sort((a, b) =>
             a.name.localeCompare(b.name)
         );
     }
 
+    //ALWAYS SORT A COPY OF THE ARRAY OTHERWISE IT MESSES UP THE RENDERING IDs
     if (sortMode === "za") {
-        filteredClassrooms = filteredClassrooms.sort((a, b) =>
+        filteredClassrooms = [...filteredClassrooms].sort((a, b) =>
             b.name.localeCompare(a.name)
         );
     }
@@ -83,10 +83,11 @@ const Dashboard = () => {
             ownerID: userdata.id
         };
 
-        auth.addClassroom(payload)
+        await addClassroom(payload);
         closeAddClassroomForm();
-
     };
+
+    console.log("Classrooms: ", classrooms);
 
 
     // ====== JSX Render ======

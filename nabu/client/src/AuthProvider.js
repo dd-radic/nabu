@@ -2,6 +2,10 @@
 // credit to https://dev.to/miracool/how-to-manage-user-authentication-with-react-js-3ic5 for the idea
 
 import { useContext, createContext, useState, useEffect} from "react";
+import classroomController from "./controllers/classroomController.js";
+import signupController from "./controllers/signupController.js";
+import loginController from "./controllers/loginController.js";
+
 
 const AuthContext = createContext();
 
@@ -12,7 +16,7 @@ const AuthProvider = ({ children }) => {
     const [userdata, setUserdata] = useState([]);
     const [classrooms, setClassrooms] = useState([]); 
 
-    //  ---     DATA FETCHERS     ---
+    // ======================Data fetching ============================================//
 
     /**     User Data   {@link user}   */
     useEffect(() => {
@@ -36,140 +40,36 @@ const AuthProvider = ({ children }) => {
         }, [token]);
 
     /**     Classroom Data   {@link classroom}   */
-        useEffect(() => {
-            const fetchClassrooms = async () => {
-                try {
-                    const res = await fetch(`api/classrooms?userId=${userdata.id}`);
-                    const data = await res.json();
+        useEffect(() => {classroomController.fetchClassrooms(userdata, setClassrooms)}, [userdata]);
 
-                    //For reasons beyond my understanding this is how the database data is parsed for the frontend - David
-                    //TODO tweak this to be more universally usable
-                    setClassrooms(
-                        data.map(c => ({
-                            id: c.ID,
-                            name: c.Title,
-                            description: c.Description,
-                            type: "Classroom",  //  ???? - David
-                        }))
-                    );
-                } catch (err) {
-                    console.error("Failed to load classrooms:", err);
-                }
-            };
-    
-            fetchClassrooms();
-        },);
+    //TODO: Do the same thing for flaschards, quizzes, and questions
+
         //TODO
-        /**     Flashcards   {@link flashcard}   */
-        
-        /**     Quizzes   {@link quiz}   */
+/**     Flashcards   {@link flashcard}   */
 
-        /**     Questions   {@link question}   */
+/**     Quizzes   {@link quiz}   */
 
-
+/**     Questions   {@link question}   */
 
 
-    //  ---     API FUNCTION CALLS     ---
+
+    //============User Verification (signup/login) Routes ===============================================//
 
 
     /**     Signup   {@link signup}   */
-    const signupAction = async (req) => {
-        try {
-          const res = await fetch('/api/signup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(req),
-        });
-
-        if (!res.ok) {
-            console.error(`Error signing up: ${res.status}`);
-            // TODO: Show an error message to the user (e.g., "Username taken")
-            return;
-        }
-
-        const result = await res.json();
-        console.log('Signup successful:', result);
-
-        // TODO: Show a success message to the user
-        // Redirect them to the login page
-        window.location.href = '#/login';
-
-        } catch (err) {
-            console.error('Signup failed:', err);
-            // TODO: Show a network error to the user
-        }
-  };
+    const signupAction = async (req) => {signupController.signupAction(req)};
 
     /**     Login   {@link login}   */
-    const loginAction = async (req) => {
-        try {
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(req)
-            });
-
-            if (!res.ok) {
-                alert("Server Error");
-                console.error(`Error logging in: ${res.status}`);
-                return; 
-            }
-
-            const data = await res.json();
-
-            if (data){
-                setUserdata(data)
-                setToken(data.token)
-                localStorage.setItem("site", data.token);
-
-                window.location.href = "/#/dashboard"
-                return;
-            }
-            throw new Error(data.message);
-        } 
-        catch (err) {
-            console.error(err);
-        }
-}
+    const loginAction = async (req) => {loginController.loginAction(req, setUserdata, setToken)};
     /**     Log Out   */ 
-    const logOut = () => {
-    setUserdata([])
-    localStorage.removeItem("site");
-    window.location.href = "/#/"
-    }
+    const logOut = async(req) => {loginController.logOut(setUserdata)};
 
 
-    /**     Add Classroom to Database   {@link classroom}   */
-    const addClassroom = async (payload) => { 
-        try {
-            const res = await fetch("/api/classrooms", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-            
-            const data = await res.json();
+    //==========Adding/Creation =====================================================//
 
-            if (!res.ok) {
-                console.error("Error:", data);
-                return;
-            }
-
-            setClassrooms(prev => [
-                ...prev,
-                {
-                    id: data.ID,
-                    name: data.Title,
-                    description: data.Description,
-                    type: "Classroom",
-                }
-            ]);
-
-        }
-        catch (err) {
-            console.error("Request failed", err);
-        }
-    }
+    //TODO: A more elegant way to do this would be nice, but might require some hardcore refactoring
+    const addClassroom = (payload) => (classroomController.addClassroom(payload, setClassrooms));
+    
     //TODO
         /**     Add Flashcard to DB   {@link flashcard}   */
         
@@ -178,6 +78,8 @@ const AuthProvider = ({ children }) => {
         /**     Create Questions   {@link question}   */
     
 
+
+    //=====================Return data ================================================//
     const contextValue = {
     token,
     userdata,
@@ -192,6 +94,8 @@ const AuthProvider = ({ children }) => {
     return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 
+
+//====================Exports =========================================================//
 export default AuthProvider;
 
 export const useAuth = () => {

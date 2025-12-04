@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../AuthProvider';
@@ -7,14 +8,27 @@ import ResourceCard from '../components/ResourceCard'; // Imports the new reusab
 
 
 const ClassroomPage = () => {
-    const auth = useAuth();
+    const {userdata, classrooms} = useAuth();
     const { classroomId } = useParams();
-    const {classrooms} = useAuth();
 
     // Look up the classroom based on the URL parameter
     const currentClassroom = classrooms.find(
         (room) => String(room.id) === classroomId
     );
+    // Early handling if classroom isn’t found or still loading (NEED THIS)
+    if (!currentClassroom) {
+        return (
+            <main className="dashboard-page">
+            <DashboardNav initialActiveTab="content" onTabChange={() => {}} />
+            <section className="dashboard-box">
+                <h2>Classroom not found</h2>
+                <p>
+                We couldn’t find a classroom with ID <code>{classroomId}</code>.
+                </p>
+            </section>
+            </main>
+        );
+    };
     
     // Sets the display name
     // Controls the main view: 'content' (default) or 'profile'
@@ -206,8 +220,8 @@ const ClassroomPage = () => {
             {activeTab === 'profile' && (
                 <section className="dashboard-box">
                     <h2>Profile</h2>
-                    <p><strong>Username:</strong> {auth.user || 'Loading...'}</p>
-                    <p><strong>Email:</strong> {auth.email || 'N/A'}</p>
+                    <p><strong>Username:</strong> {userdata?.name || 'Loading...'}</p>
+                    <p><strong>Email:</strong> {userdata?.email || 'N/A'}</p>
                     <p><strong>Role:</strong> Student</p>
                 </section>
             )}
