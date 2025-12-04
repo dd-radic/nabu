@@ -7,7 +7,7 @@ const fetchClassrooms = async (userdata, setClassrooms) => {
             //TODO tweak this to be more universally usable
             setClassrooms(
                 data.map(c => ({
-                    id: c.ID,
+                    id: c.Id,
                     name: c.Title,
                     description: c.Description,
                     type: "Classroom",  //  ???? - David
@@ -36,7 +36,7 @@ const fetchClassrooms = async (userdata, setClassrooms) => {
             setClassrooms(prev => [
                 ...prev,
                 {
-                    id: data.ID,
+                    id: data.Id,
                     name: data.Title,
                     description: data.Description,
                     type: "Classroom",

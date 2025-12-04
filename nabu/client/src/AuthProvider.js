@@ -67,7 +67,7 @@ const AuthProvider = ({ children }) => {
 
     //==========Adding/Creation =====================================================//
 
-    //TODO: Find a more elegant way to do this
+    //TODO: A more elegant way to do this would be nice, but might require some hardcore refactoring
     const addClassroom = (payload) => (classroomController.addClassroom(payload, setClassrooms));
     
     //TODO
