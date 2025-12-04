@@ -235,12 +235,10 @@ const ClassroomPage = () => {
 
 
             
-            <div addClassroom>
-                <h1>Create Classroom Stuff</h1>
+            <div id="addquiz">
+                <h1>Create Quiz Stuff</h1>
                 <button type="button" className="add-type-quiz" onClick={openCQ}>Add Quiz</button>
-                <CreateQuiz isOpen={isCQOpen} onClose={closeCQ}>
-                    <h1>Create Quiz modal</h1>
-                </CreateQuiz>
+                <CreateQuiz isOpen={isCQOpen} onClose={closeCQ}/>
             </div>
         </main>
     );
