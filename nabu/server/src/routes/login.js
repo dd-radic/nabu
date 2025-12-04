@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
 
         
         const accesstoken = jwt.sign(
-        { id: user.ID, username: user.Name },
+        { id: user.Id, username: user.Name },
         process.env.DB_JWT_KEY,
         { expiresIn: "1h" }
         );
