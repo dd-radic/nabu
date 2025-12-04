@@ -4,6 +4,7 @@ import { useAuth } from '../AuthProvider';
 import { Navigate } from 'react-router-dom';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
+import CreateQuiz from "../components/CreateQuiz";
 
 
 const ClassroomPage = () => {
@@ -135,6 +136,15 @@ const ClassroomPage = () => {
         }
     };
 
+    //Opens modal for createQuiz
+    const [isCQOpen, setIsCQOpen] = useState(false);
+    const openCQ = () => {
+        setIsCQOpen(true);
+    }
+    const closeCQ = () => {
+        setIsCQOpen(false);
+    }
+
 
     // ====== Main JSX Structure ======
     const {token} = useAuth();
@@ -211,6 +221,27 @@ const ClassroomPage = () => {
                     <p><strong>Role:</strong> Student</p>
                 </section>
             )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+            <div addClassroom>
+                <h1>Create Classroom Stuff</h1>
+                <button type="button" className="add-type-quiz" onClick={openCQ}>Add Quiz</button>
+                <CreateQuiz isOpen={isCQOpen} onClose={closeCQ}>
+                    <h1>Create Quiz modal</h1>
+                </CreateQuiz>
+            </div>
         </main>
     );
 };
