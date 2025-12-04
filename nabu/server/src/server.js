@@ -37,7 +37,7 @@ app.use("/api/classrooms", classroomRoute);
 app.use("/api/login", loginRoute);
 app.use("/api/signup", signupRoute);
 app.use("/api/user", userRoute);
-app.use("/api/quiz", quizRoute);
+app.use("/api/quizzes", quizRoute);
 app.use("/api/question", questionRoute);
 app.use("/api/flashcard", flashcardRoute);
 
