@@ -70,11 +70,53 @@ const addClassroom = async (payload, setClassrooms) => {
 
 //TODO: Write middle layer functions
 const addUser = async(userdata, classroomId) => {
+    try{
+        const payload = {
+            userId : userdata.id,
+            classroomId : classroomId
+        }
 
+        const res = await fetch("/api/classrooms/join", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            console.error("Error:", data);
+            return;
+        }
+    }
+
+    catch (err) {
+        console.error("Request to join failed: ", err);
+    }
 }
 
 const removeUser = async(userdata, classroomId) => {
+        try{
+        const payload = {
+            userId : userdata.id,
+            classroomId : classroomId
+        }
 
+        const res = await fetch("/api/classrooms/leave", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            console.error("Error:", data);
+            return;
+        }
+    }
+
+    catch (err) {
+        console.error("Request to leave failed: ", err);
+    }
 }
 
 const classroomController = {fetchClassrooms, fetchAllClassrooms, addClassroom, addUser, removeUser};

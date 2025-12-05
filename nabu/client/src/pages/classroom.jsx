@@ -98,7 +98,7 @@ const ClassroomPage = () => {
 
         closeCreationModal();
     };
-    
+
 
     //======= Handlers for user join/leave =======================//
     const handleJoinUser = () => {

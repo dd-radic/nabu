@@ -67,6 +67,8 @@ router.post("/join", async(req, res) => {
     const {userId, classroomId} = req.body;
     const currTime = new Date();
 
+    //TODO: Check if the user is already in the classroom
+
     await pool.query(
       "INSERT INTO UserClassroom (UserId, ClassRoomId, JoinedAt) VALUES (?, ?, ?)",
       [
@@ -91,6 +93,8 @@ router.post("/join", async(req, res) => {
 router.post("/leave", async(req, res) => {
   try{
     const {userId, classroomId} = req.body;
+
+    //TODO: Check that the user is in the classroom
 
     await pool.query(
       "DELETE FROM UserClassroom WHERE (UserId=? AND ClassRoomId=?)",

@@ -73,7 +73,9 @@ const AuthProvider = ({ children }) => {
     //TODO: A more elegant way to do this would be nice, but might require some hardcore refactoring
     const addClassroom = async(payload) => (await classroomController.addClassroom(payload, setClassrooms));
 
-    const addUser = async(classroomId) => (await classroomController.addUser(userdata, classroomId));
+    const addUser = async(classroomId) => {
+        await classroomController.addUser(userdata, classroomId)
+    };
     const removeUser = async(classroomId) => (await classroomController.removeUser(userdata, classroomId));
     
     //TODO

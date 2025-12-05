@@ -87,9 +87,6 @@ const Dashboard = () => {
         closeAddClassroomForm();
     };
 
-    console.log("Classrooms: ", classrooms);
-
-
     // ====== JSX Render ======
 
 
