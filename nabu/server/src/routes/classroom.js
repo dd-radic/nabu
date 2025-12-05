@@ -67,8 +67,6 @@ router.post("/join", async(req, res) => {
     const {userId, classroomId} = req.body;
     const currTime = new Date();
 
-    //TODO: Check if the user is already in the classroom
-
     await pool.query(
       "INSERT INTO UserClassroom (UserId, ClassRoomId, JoinedAt) VALUES (?, ?, ?)",
       [
@@ -94,8 +92,6 @@ router.post("/leave", async(req, res) => {
   try{
     const {userId, classroomId} = req.body;
 
-    //TODO: Check that the user is in the classroom
-
     await pool.query(
       "DELETE FROM UserClassroom WHERE (UserId=? AND ClassRoomId=?)",
       [userId, classroomId]
@@ -109,6 +105,32 @@ router.post("/leave", async(req, res) => {
   catch(err) {
     console.error(err);
     res.status(500).json({error: "Database error when removing user."});
+  }
+});
+
+//GET if a user is in a classroom
+router.get("/isMember",  async(req,res) => {
+  try{
+    const{userId, classroomId} = req.query;
+
+    const [rows] = await pool.query(
+      "SELECT * FROM UserClassroom WHERE (UserId=? AND ClassRoomId=?)",
+      [userId, classroomId]
+    );
+
+    console.log("Rows: ", rows);
+
+    if(rows.length === 0){
+      console.log("Server: False");
+      res.json(false);
+    }
+    console.log("Server: true");
+    res.json(true);
+  }
+
+  catch (err) {
+    console.error(err);
+    res.status(500).json({error: "Database error in checking isMember"});
   }
 });
 

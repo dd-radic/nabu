@@ -43,7 +43,20 @@ const AuthProvider = ({ children }) => {
         const fetchClassrooms = () => {classroomController.fetchClassrooms(userdata, setClassrooms)};
         const fetchAllClassrooms = () => {classroomController.fetchAllClassrooms(setClassrooms)};
         //By default, state classrooms is set to ALL (change later if needed)
-        useEffect(() => {classroomController.fetchAllClassrooms(setClassrooms)}, []);
+        useEffect(() => {
+            if(!userdata){
+                //If the classrooms have not loaded yet, leave before the system freaks out
+                setClassrooms([]);
+                return;
+            }
+            classroomController.fetchAllClassrooms(setClassrooms)
+        }, [userdata]);
+
+        const isMember = async (classroomId) => {
+            const res = await classroomController.isMember(userdata, classroomId);
+            console.log("AuthProvider: ", res);
+            return res;
+        }
 
     //TODO: Do the same thing for flaschards, quizzes, and questions
 
@@ -100,7 +113,8 @@ const AuthProvider = ({ children }) => {
     fetchClassrooms,
     fetchAllClassrooms,
     addUser,
-    removeUser
+    removeUser,
+    isMember,
   };
 
     return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

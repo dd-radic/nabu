@@ -3,6 +3,12 @@ const fetchClassrooms = async (userdata, setClassrooms) => {
         const res = await fetch(`api/classrooms?userId=${userdata.id}`);
         const data = await res.json();
 
+            // If response is not OK, log and bail out
+        if (!res.ok) {
+        console.error("Failed to load all classrooms (status):", res.status, data);
+        return;
+        }
+
         //For reasons beyond my understanding this is how the database data is parsed for the frontend - David
         //TODO tweak this to be more universally usable
         setClassrooms(
@@ -22,6 +28,13 @@ const fetchAllClassrooms = async (setClassrooms) => {
     try {
         const res = await fetch(`api/classrooms/all`);
         const data = await res.json();
+
+        // If the response is not OK, log and stop
+        if (!res.ok) {
+            console.error('Failed to load all classrooms (status):', res.status, data);
+            setClassrooms([]);  // or just return;
+            return;
+        }
 
         setClassrooms(
             data.map(c => ({
@@ -95,7 +108,7 @@ const addUser = async(userdata, classroomId) => {
 }
 
 const removeUser = async(userdata, classroomId) => {
-        try{
+    try{
         const payload = {
             userId : userdata.id,
             classroomId : classroomId
@@ -117,7 +130,25 @@ const removeUser = async(userdata, classroomId) => {
     catch (err) {
         console.error("Request to leave failed: ", err);
     }
-}
+};
 
-const classroomController = {fetchClassrooms, fetchAllClassrooms, addClassroom, addUser, removeUser};
+const isMember = async (userdata, classroomId) => {
+    try {
+
+        const res = await fetch(`/api/classrooms/isMember?userId=${userdata.id}&classroomId=${classroomId}`, {
+            method: "GET",
+            headers: {"Content-Type" : "application/json"},
+        });
+
+        const data = await res.json();
+        console.log("Controller: ", data);
+        return data;
+    }
+
+    catch (err) {
+        console.error("Request to retrieve isMember failed: ", err);
+    }
+};
+
+const classroomController = {fetchClassrooms, fetchAllClassrooms, addClassroom, addUser, removeUser, isMember};
 export default classroomController;

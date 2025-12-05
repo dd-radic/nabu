@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../AuthProvider';
 import { Navigate } from 'react-router-dom';
@@ -8,27 +7,8 @@ import ResourceCard from '../components/ResourceCard'; // Imports the new reusab
 
 
 const ClassroomPage = () => {
-    const {userdata, classrooms, addUser, removeUser} = useAuth();
+    const {userdata, classrooms, addUser, removeUser, isMember} = useAuth();
     const { classroomId } = useParams();
-
-    // Look up the classroom based on the URL parameter
-    const currentClassroom = classrooms.find(
-        (room) => String(room.id) === classroomId
-    );
-    // Early handling if classroom isn’t found or still loading (NEED THIS)
-    if (!currentClassroom) {
-        return (
-            <main className="dashboard-page">
-            <DashboardNav initialActiveTab="content" onTabChange={() => {}} />
-            <section className="dashboard-box">
-                <h2>Classroom not found</h2>
-                <p>
-                We couldn’t find a classroom with ID <code>{classroomId}</code>.
-                </p>
-            </section>
-            </main>
-        );
-    };
     
     // Sets the display name
     // Controls the main view: 'content' (default) or 'profile'
@@ -50,8 +30,46 @@ const ClassroomPage = () => {
         summary: '',
     });
 
-    //isUserJoined can be used to check if the user is in a classroom
-    const [isUserJoined,  setIsUserJoined] = useState();
+    const [isUserJoined,  setIsUserJoined] = useState(false);
+
+    // Look up the classroom based on the URL parameter
+    const currentClassroom = classrooms.find(
+        (room) => String(room.id) === classroomId
+    );
+    // Early handling if classroom isn’t found or still loading (NEED THIS)
+    if (!currentClassroom) {
+        return (
+            <main className="dashboard-page">
+            <DashboardNav initialActiveTab="content" onTabChange={() => {}} />
+            <section className="dashboard-box">
+                <h2>Classroom not found</h2>
+                <p>
+                We couldn’t find a classroom with ID <code>{classroomId}</code>.
+                </p>
+            </section>
+            </main>
+        );
+    };
+
+    // Initialize whether the user has joined this classroom
+    //NOTE: You should basically never disable React hook rules like this, but in our case, we have to because
+    //moving the check for if a classroom is found breaks everything
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+        const initJoin = async () => {
+            try {
+                const member = await isMember(currentClassroom.id);
+                setIsUserJoined(member);
+            } catch (err) {
+                console.error('Error checking membership:', err);
+            }
+        };
+
+        initJoin();
+    }, [currentClassroom.id, isMember]);
+
+    console.log(`User is currently a member of this classroom: ${isUserJoined}`);
+
 
     // ====== Content Creation Handlers ======
 
@@ -102,12 +120,24 @@ const ClassroomPage = () => {
 
     //======= Handlers for user join/leave =======================//
     const handleJoinUser = () => {
+        //Check if the user is already a member of the classroom
+        if(isUserJoined){
+            alert("You are already a member of this classroom.");
+            return;
+        }
+
         //Send API call to join the user in the backend
         addUser(currentClassroom.id);
         setIsUserJoined(true);
     }
 
     const handleLeaveUser = () => {
+        //Check if the user is not a member of this classroom
+        if(!isUserJoined){
+            alert("You are not a member of this classroom.");
+            return;
+        }
+
         //Send API call to leave the user in the backend
         removeUser(currentClassroom.id);
         setIsUserJoined(false);
@@ -168,8 +198,7 @@ const ClassroomPage = () => {
 
 
     // ====== Main JSX Structure ======
-    const {token} = useAuth();
-    if (!token) return <Navigate to='/'/>
+    if (!userdata) return <Navigate to='/'/>
 
     return (
         <main className="dashboard-page">
