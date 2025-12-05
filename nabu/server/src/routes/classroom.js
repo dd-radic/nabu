@@ -4,7 +4,7 @@ import generateUniqueId from "../idGenerator.js";
 
 const router = express.Router();
 
-// GET all classrooms
+// GET all classrooms for a specific user
 router.get("/", async (req, res) => {
   const userId = req.query.userId;  // Get userId from query params
   try {
@@ -13,12 +13,25 @@ router.get("/", async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: `Database error when retrieving classrooms for user ${userId}` });
+  }
+});
+
+//GET ALL classrooms regardless of user
+router.get("/all", async(req, res) => {
+  try{
+    const [rows] = await pool.query("SELECT * FROM ClassRoom");
+    res.json(rows);
+  }
+
+  catch(err){
+    console.error(err);
+    res.status(500).json({error: "Database error when retrieving all classrooms"});
   }
 });
 
 // CREATE classroom
-router.post("/", async (req, res) => {
+router.post("/add", async (req, res) => {
   try {
     const { title, description, ownerID } = req.body;
 

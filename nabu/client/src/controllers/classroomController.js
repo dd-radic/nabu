@@ -18,9 +18,27 @@ const fetchClassrooms = async (userdata, setClassrooms) => {
     }
 };
 
+const fetchAllClassrooms = async (setClassrooms) => {
+    try {
+        const res = await fetch(`api/classrooms/all`);
+        const data = await res.json();
+
+        setClassrooms(
+            data.map(c => ({
+                id: c.Id,
+                name: c.Title,
+                description: c.Description,
+                type: "Classroom",
+            }))
+        );
+    } catch (err) {
+        console.error("Failed to load all classrooms:", err);
+    }
+};
+
 const addClassroom = async (payload, setClassrooms) => { 
     try {
-        const res = await fetch("/api/classrooms", {
+        const res = await fetch("/api/classrooms/add", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -52,12 +70,12 @@ const addClassroom = async (payload, setClassrooms) => {
 
 //TODO: Write middle layer functions
 const addUser = async(userdata, classroomId) => {
-    
+
 }
 
 const removeUser = async(userdata, classroomId) => {
 
 }
 
-const classroomController = {fetchClassrooms, addClassroom, addUser, removeUser};
+const classroomController = {fetchClassrooms, fetchAllClassrooms, addClassroom, addUser, removeUser};
 export default classroomController;

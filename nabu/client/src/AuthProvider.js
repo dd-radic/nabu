@@ -40,7 +40,10 @@ const AuthProvider = ({ children }) => {
         }, [token]);
 
     /**     Classroom Data   {@link classroom}   */
-        useEffect(() => {classroomController.fetchClassrooms(userdata, setClassrooms)}, [userdata]);
+        const fetchClassrooms = () => {classroomController.fetchClassrooms(userdata, setClassrooms)};
+        const fetchAllClassrooms = () => {classroomController.fetchAllClassrooms(setClassrooms)};
+        //By default, state classrooms is set to ALL (change later if needed)
+        useEffect(() => {classroomController.fetchAllClassrooms(setClassrooms)}, []);
 
     //TODO: Do the same thing for flaschards, quizzes, and questions
 
@@ -92,6 +95,8 @@ const AuthProvider = ({ children }) => {
     loginAction,
     logOut,
     addClassroom,
+    fetchClassrooms,
+    fetchAllClassrooms,
     addUser,
     removeUser
   };
