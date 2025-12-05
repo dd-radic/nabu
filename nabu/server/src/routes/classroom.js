@@ -68,7 +68,7 @@ router.post("/join", async(req, res) => {
     const currTime = new Date();
 
     await pool.query(
-      "INSERT INTO UserClassRoom (UserId, ClassRoomId, JoinedAt) VALUES (?, ?, ?)",
+      "INSERT INTO UserClassroom (UserId, ClassRoomId, JoinedAt) VALUES (?, ?, ?)",
       [
         userId,
         classroomId,
@@ -92,8 +92,8 @@ router.post("/leave", async(req, res) => {
   try{
     const {userId, classroomId} = req.body;
 
-    await poolquery(
-      "DELETE FROM UserClassRoom WHERE (UserId=? AND ClassRoomId=?)",
+    await pool.query(
+      "DELETE FROM UserClassroom WHERE (UserId=? AND ClassRoomId=?)",
       [userId, classroomId]
     );
 
