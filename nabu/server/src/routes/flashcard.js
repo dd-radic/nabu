@@ -52,6 +52,7 @@ router.post("/create", async (req, res) =>{
 })
 
 //Endpoint to delte a FlashCard
+//This end point expects a FlashCard id and a creatorId or userId
 router.delete("/delete", async (req, res) => {
     const flashCardId = req.query.flashCardId; // Id of the flashcard to delete
     const creatorId = req.query.userId;        // check ownership
