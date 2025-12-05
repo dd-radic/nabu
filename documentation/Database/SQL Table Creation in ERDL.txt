@@ -6,45 +6,65 @@ Many-to-many relationship between users and classrooms
 Tracks when users joined each classroom
 
 
+
+Database diagram 
+Search tables...
+ExportImportAccountDocs
+ 
+DBML ERDL
+
 User
 -
-ID int PK
+Id int PK
 Name varchar
 Email varchar
 Password varchar
+CreatedAt datetime
 
 FlashCard
 -
-ID int PK
-CreaterId int FK > User.ID
-ClassroomId int FK > ClassRoom.ID
+Id int PK
+CreatorId int FK > User.Id
+ClassRoomId int FK > ClassRoom.Id
 Title varchar
 Information varchar
 Tags varchar
+CreatedAt datetime
 
 ClassRoom
 -
-ID int PK
-OwnerID int FK > User.ID
+Id int PK
+OwnerId int FK > User.Id
 Title varchar
 Description varchar
-
+CreatedAt datetime
 
 UserClassroom
 -
-UserID int FK > User.ID
-ClassroomID int FK > ClassRoom.ID
+ClassroomID int FK > ClassRoom.Id
+UserId int FK > User.Id
 JoinedAt datetime
-PK (UserID, ClassroomID)
 
 Quiz
 -
-ID int PK
-ClassroomId int FK > ClassRoom.ID 
-CreaterId int FK > User.ID
+Id int PK
+ClassroomId int FK > ClassRoom.Id
+CreatorId int FK > User.Id
 Title varchar
+CreatedAt datetime
 
 Question
 -
 ID int PK
-QuizId int FK > Quiz.ID  
+QuizId int FK > Quiz.Id
+Tags varchar
+Type varchar
+Answer varchar
+Query varchar
+CreatedAt datetime
+
+UserQuiz
+-
+QuizId int FK > Quiz.Id
+UserId int FK > User.Id
+JoinedAt datetime
