@@ -118,8 +118,6 @@ router.get("/isMember",  async(req,res) => {
       [userId, classroomId]
     );
 
-    console.log("Rows: ", rows);
-
     if(rows.length === 0){
       console.log("Server: False");
       res.json(false);
@@ -131,6 +129,36 @@ router.get("/isMember",  async(req,res) => {
   catch (err) {
     console.error(err);
     res.status(500).json({error: "Database error in checking isMember"});
+  }
+});
+
+//DELETE a classroom
+router.delete("/delete", async(req, res) => {
+  try {
+    console.log(req.query);
+    const {classroomId} = req.query;
+    console.log(`Deleting classroom ${classroomId}`);
+
+    //Delete all of the member entries for this classroom in UserClassroom
+    await pool.query(
+      "DELETE FROM UserClassroom WHERE (ClassRoomId=?)",
+      [classroomId]
+    );
+
+    //Delete the classroom
+    await pool.query(
+      "DELETE FROM ClassRoom WHERE (Id=?)",
+      [classroomId]
+    );
+
+    res.status(200).json({
+      message: `Classroom with ID ${classroomId} successfully deleted`
+    });
+  }
+
+  catch (err) {
+    console.error(err);
+    res.status(500).json({error: "Database error when deleting classroom"});
   }
 });
 
