@@ -11,9 +11,6 @@ router.get("/", async (req, res) => {
     const [rows] = await pool.query("SELECT * FROM ClassRoom WHERE OwnerID=?", [userId]);
     res.json(rows);
 
-    //TODO: REMOVE
-    console.log(rows);
-    //
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Database error" });
@@ -37,7 +34,7 @@ router.post("/", async (req, res) => {
       [id, ownerID, title, description, createdAt]
     );
 
-    res.status(201).json({
+    res.status(200).json({
       ID: id,
       OwnerID: ownerID,
       Title: title,
@@ -48,6 +45,53 @@ router.post("/", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Database error" });
+  }
+});
+
+//User JOINS Classroom
+router.post("/join", async(req, res) => {
+  try{
+    const {userId, classroomId} = req.body;
+    const currTime = new Date();
+
+    await pool.query(
+      "INSERT INTO UserClassRoom (UserId, ClassRoomId, JoinedAt) VALUES (?, ?, ?)",
+      [
+        userId,
+        classroomId,
+        currTime
+      ]
+    );
+
+    res.status(200).json({
+      message: `User ${userId} successfully joined classroom ${classroomId}`
+    });
+  }
+
+  catch(err){
+    console.error(err);
+    res.status(500).json({error: "Database error when adding user."})
+  }
+});
+
+//User LEAVES Classroom
+router.post("/leave", async(req, res) => {
+  try{
+    const {userId, classroomId} = req.body;
+
+    await poolquery(
+      "DELETE FROM UserClassRoom WHERE (UserId=? AND ClassRoomId=?)",
+      [userId, classroomId]
+    );
+
+    res.status(200).json({
+      message: `User ${userId} successfully left classroom ${classroomId}`
+    });
+  }
+
+  catch(err) {
+    console.error(err);
+    res.status(500).json({error: "Database error when removing user."});
   }
 });
 
