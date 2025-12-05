@@ -8,7 +8,7 @@ import ResourceCard from '../components/ResourceCard'; // Imports the new reusab
 
 
 const ClassroomPage = () => {
-    const {userdata, classrooms} = useAuth();
+    const {userdata, classrooms, addUser, removeUser} = useAuth();
     const { classroomId } = useParams();
 
     // Look up the classroom based on the URL parameter
@@ -49,6 +49,9 @@ const ClassroomPage = () => {
         name: '', 
         summary: '',
     });
+
+    //isUserJoined can be used to check if the user is in a classroom
+    const [isUserJoined,  setIsUserJoined] = useState();
 
     // ====== Content Creation Handlers ======
 
@@ -95,6 +98,19 @@ const ClassroomPage = () => {
 
         closeCreationModal();
     };
+
+    //======= Handlers for user join/leave =======================//
+    const handleJoinUser = () => {
+        //Send API call to join the user in the backend
+        addUser(currentClassroom.id);
+        setIsUserJoined(true);
+    }
+
+    const handleLeaveUser = () => {
+        //Send API call to leave the user in the backend
+        removeUser(currentClassroom.id);
+        setIsUserJoined(false);
+    }
 
 
     // ====== Modal Rendering Helper: Handles the two-step form flow ======
@@ -161,6 +177,14 @@ const ClassroomPage = () => {
                 initialActiveTab={'content'} 
                 onTabChange={setActiveTab}
             />
+
+            {/*Buttons for adding/removing a user to a classroom*/}
+            {<section className="classroom-button-box">
+                <div className="classroom-button-group"> {/*Not sure if this needs a wrapper div, so this can be removed if not*/}
+                    <button id="join-classroom" onClick={handleJoinUser}>Join Classroom</button>
+                    <button id="leave-classroom" onClick={handleLeaveUser}>Leave Classroom</button>
+                </div>
+             </section>}
 
             {/* CLASSROOM CONTENT VIEW: Renders the list of content items */}
             {(activeTab === 'content' || activeTab === 'classrooms') && (

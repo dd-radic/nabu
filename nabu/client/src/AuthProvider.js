@@ -68,7 +68,10 @@ const AuthProvider = ({ children }) => {
     //==========Adding/Creation =====================================================//
 
     //TODO: A more elegant way to do this would be nice, but might require some hardcore refactoring
-    const addClassroom = (payload) => (classroomController.addClassroom(payload, setClassrooms));
+    const addClassroom = async(payload) => (await classroomController.addClassroom(payload, setClassrooms));
+
+    const addUser = async(classroomId) => (await classroomController.addUser(userdata, classroomId));
+    const removeUser = async(classroomId) => (await classroomController.removeUser(userdata, classroomId));
     
     //TODO
         /**     Add Flashcard to DB   {@link flashcard}   */
@@ -88,7 +91,9 @@ const AuthProvider = ({ children }) => {
     signupAction,
     loginAction,
     logOut,
-    addClassroom
+    addClassroom,
+    addUser,
+    removeUser
   };
 
     return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
