@@ -5,6 +5,7 @@ import { useContext, createContext, useState, useEffect} from "react";
 import classroomController from "./controllers/classroomController.js";
 import signupController from "./controllers/signupController.js";
 import loginController from "./controllers/loginController.js";
+import dashboardController from "./controllers/dashboardController.js";
 
 
 const AuthContext = createContext();
@@ -98,6 +99,8 @@ const AuthProvider = ({ children }) => {
 
         /**     Create Questions   {@link question}   */
 
+    //============Update/Change========================================================//
+    const updateUsername = async(userdata, newUsername) => (await dashboardController.updateUsername(userdata.id, newUsername));
 
     //============Deletion=============================================================//
     const deleteClassroom = async(classroomId) => (await classroomController.deleteClassroom(classroomId));
@@ -113,6 +116,7 @@ const AuthProvider = ({ children }) => {
     signupAction,
     loginAction,
     logOut,
+
     addClassroom,
     deleteClassroom,
     fetchClassrooms,
@@ -120,6 +124,8 @@ const AuthProvider = ({ children }) => {
     addUser,
     removeUser,
     isMember,
+
+    updateUsername,
   };
 
     return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
