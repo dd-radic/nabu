@@ -135,9 +135,7 @@ router.get("/isMember",  async(req,res) => {
 //DELETE a classroom
 router.delete("/delete", async(req, res) => {
   try {
-    console.log(req.query);
     const {classroomId} = req.query;
-    console.log(`Deleting classroom ${classroomId}`);
 
     //Delete all of the member entries for this classroom in UserClassroom
     await pool.query(
@@ -152,7 +150,7 @@ router.delete("/delete", async(req, res) => {
     );
 
     res.status(200).json({
-      message: `Classroom with ID ${classroomId} successfully deleted`
+      message: `Classroom successfully deleted`
     });
   }
 
