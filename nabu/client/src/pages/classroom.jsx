@@ -68,9 +68,6 @@ const ClassroomPage = () => {
         initJoin();
     }, [currentClassroom.id, isMember]);
 
-    console.log(`User is currently a member of this classroom: ${isUserJoined}`);
-
-
     // ====== Content Creation Handlers ======
 
     // Step 1: Triggered by the Floating '+' button

@@ -163,7 +163,6 @@ const isMember = async (userdata, classroomId) => {
         });
 
         const data = await res.json();
-        console.log("Controller: ", data);
         return data;
     }
 

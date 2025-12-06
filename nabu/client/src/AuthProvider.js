@@ -55,7 +55,6 @@ const AuthProvider = ({ children }) => {
 
         const isMember = async (classroomId) => {
             const res = await classroomController.isMember(userdata, classroomId);
-            console.log("AuthProvider: ", res);
             return res;
         }
 
