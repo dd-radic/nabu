@@ -80,8 +80,27 @@ const addClassroom = async (payload, setClassrooms) => {
     }
 }
 
+const deleteClassroom = async(classroomId) => {
+    try {
+        const res = await fetch(`/api/classrooms/delete?classroomId=${classroomId}`, {
+            method: "DELETE",
+            headers: {"Content-Type" : "application/json"},
+        });
 
-//TODO: Write middle layer functions
+        if(!res.ok){
+            console.error("Error: ", res.text);
+            return;
+        }
+
+        console.log("Classroom successfully deleted.");
+    }
+
+    catch (err) {
+        console.error("Request to delete classroom failed. ", err);
+    }
+}
+
+
 const addUser = async(userdata, classroomId) => {
     try{
         const payload = {
@@ -150,5 +169,13 @@ const isMember = async (userdata, classroomId) => {
     }
 };
 
-const classroomController = {fetchClassrooms, fetchAllClassrooms, addClassroom, addUser, removeUser, isMember};
+const classroomController = {
+    fetchClassrooms, 
+    fetchAllClassrooms, 
+    addClassroom, 
+    addUser, 
+    removeUser, 
+    isMember, 
+    deleteClassroom
+};
 export default classroomController;

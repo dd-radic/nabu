@@ -97,6 +97,10 @@ const AuthProvider = ({ children }) => {
         /**     Create Quizzes   {@link quiz}   */
 
         /**     Create Questions   {@link question}   */
+
+
+    //============Deletion=============================================================//
+    const deleteClassroom = async(classroomId) => (await classroomController.deleteClassroom(classroomId));
     
 
 
@@ -110,6 +114,7 @@ const AuthProvider = ({ children }) => {
     loginAction,
     logOut,
     addClassroom,
+    deleteClassroom,
     fetchClassrooms,
     fetchAllClassrooms,
     addUser,
