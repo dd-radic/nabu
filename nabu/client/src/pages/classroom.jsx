@@ -7,7 +7,7 @@ import ResourceCard from '../components/ResourceCard'; // Imports the new reusab
 
 
 const ClassroomPage = () => {
-    const {userdata, classrooms, addUser, removeUser, isMember} = useAuth();
+    const {userdata, classrooms, addUser, removeUser, isMember, deleteClassroom} = useAuth();
     const { classroomId } = useParams();
     
     // Sets the display name
@@ -143,6 +143,18 @@ const ClassroomPage = () => {
         setIsUserJoined(false);
     }
 
+    //======= Handler for delete classroom ===============================//
+    const handleDeleteClassroom = () => {
+        //Check that the user owns the classroom
+        if(userdata.id !== currentClassroom.ownerId) {
+            alert("You cannot delete a classroom that you do not own.");
+            return;
+        }
+
+        //Send API call to delete classroom in the backend
+        deleteClassroom(currentClassroom.id);
+    }
+
 
     // ====== Modal Rendering Helper: Handles the two-step form flow ======
     
@@ -214,7 +226,12 @@ const ClassroomPage = () => {
                     <button id="join-classroom" onClick={handleJoinUser}>Join Classroom</button>
                     <button id="leave-classroom" onClick={handleLeaveUser}>Leave Classroom</button>
                 </div>
-             </section>}
+            </section>}
+
+            {/*Button for deleting a classroom*/}
+            {<section className="delete-button-box">
+                <button id="delete-classroom" onClick={handleDeleteClassroom}>Delete Classroom</button>
+            </section>}
 
             {/* CLASSROOM CONTENT VIEW: Renders the list of content items */}
             {(activeTab === 'content' || activeTab === 'classrooms') && (
