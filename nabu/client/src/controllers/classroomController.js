@@ -95,7 +95,9 @@ const deleteClassroom = async(classroomId) => {
             return;
         }
 
+        //Log a successful delete and reroute to the Dashboard page
         console.log("Classroom successfully deleted.");
+        window.location.href = "/#/dashboard";
     }
 
     catch (err) {
