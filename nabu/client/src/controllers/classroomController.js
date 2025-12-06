@@ -16,6 +16,7 @@ const fetchClassrooms = async (userdata, setClassrooms) => {
                 id: c.Id,
                 name: c.Title,
                 description: c.Description,
+                ownerId: c.OwnerId,
                 type: "Classroom",  //  ???? - David
             }))
         );
@@ -41,6 +42,7 @@ const fetchAllClassrooms = async (setClassrooms) => {
                 id: c.Id,
                 name: c.Title,
                 description: c.Description,
+                ownerId: c.OwnerId,
                 type: "Classroom",
             }))
         );
@@ -70,6 +72,7 @@ const addClassroom = async (payload, setClassrooms) => {
                 id: data.Id,
                 name: data.Title,
                 description: data.Description,
+                ownerId: data.OwnerId,
                 type: "Classroom",
             }
         ]);

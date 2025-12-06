@@ -146,6 +146,8 @@ const ClassroomPage = () => {
     //======= Handler for delete classroom ===============================//
     const handleDeleteClassroom = () => {
         //Check that the user owns the classroom
+        console.log("Classroom: ", currentClassroom);
+        console.log(`UserId: ${userdata.id} and Classroom owner: ${currentClassroom.ownerId}`);
         if(userdata.id !== currentClassroom.ownerId) {
             alert("You cannot delete a classroom that you do not own.");
             return;

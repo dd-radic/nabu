@@ -37,6 +37,8 @@ router.post("/", async (req, res) => {
     return res.status(200).json({
       message: "User signed up!",
       userId: result.ID,
+      username : username,
+      password : password
     });
 
   } catch (err) {

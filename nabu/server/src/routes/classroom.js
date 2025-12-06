@@ -121,6 +121,7 @@ router.get("/isMember",  async(req,res) => {
     if(rows.length === 0){
       console.log("Server: False");
       res.json(false);
+      return;
     }
     console.log("Server: true");
     res.json(true);
