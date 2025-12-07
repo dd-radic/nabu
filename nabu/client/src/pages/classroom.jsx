@@ -19,7 +19,7 @@ const ClassroomPage = () => {
 
     // Mock data for the content (Quizzes, Flashcards) inside this specific classroom.
     // BACKEND TASK: This data should be fetched using the classroomId (e.g., GET /api/classrooms/ID/content)
-const [content, setContent] = useState([]);
+    const [content, setContent] = useState([]);
 
 
     // State for the data being entered into the creation forms
@@ -35,7 +35,7 @@ const [content, setContent] = useState([]);
     const currentClassroom = classrooms.find(
         (room) => String(room.id) === classroomId
     );
-    
+
     useEffect(() => {
         if (!currentClassroom) return;
 
@@ -51,7 +51,21 @@ const [content, setContent] = useState([]);
                     summary: q.Description || "No description"
                 }));
 
-                setContent(quizItems);
+                // FLASHCARDS LADEN
+                const fcRes = await fetch(`http://localhost:5000/api/flashcard/allCards?userId=${userdata.id}`);
+                const flashcards = await fcRes.json();
+
+                const flashItems = flashcards
+                    .filter(fc => fc.ClassRoomId === classroomId) // Nur Flashcards für dieses Classroom
+                    .map(fc => ({
+                        id: fc.Id,
+                        name: fc.Title,
+                        type: "Flashcard",
+                        summary: fc.Information || "Flashcard set"
+                    }));
+
+                setContent([...quizItems, ...flashItems]);
+
 
             } catch (err) {
                 console.error("Error loading quizzes:", err);
@@ -59,9 +73,9 @@ const [content, setContent] = useState([]);
         };
 
         loadContent();
-    }, [currentClassroom, classroomId]);  
+    }, [currentClassroom, classroomId]);
     // Early handling if classroom isn’t found or still loading (NEED THIS)
-    
+
 
     // Initialize whether the user has joined this classroom
     //NOTE: You should basically never disable React hook rules like this, but in our case, we have to because
@@ -69,7 +83,7 @@ const [content, setContent] = useState([]);
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         if (!currentClassroom) return;
-        
+
         const initJoin = async () => {
             try {
                 const member = await isMember(currentClassroom.id);
@@ -84,34 +98,57 @@ const [content, setContent] = useState([]);
 
     console.log(`User is currently a member of this classroom: ${isUserJoined}`);
 
-    
+
 
     // ====== Content Creation Handlers ======
-//  Create quiz in backend
-const createQuiz = async () => {
-    try {
-        const res = await fetch("http://localhost:5000/api/quizzes", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                title: newContentData.name,
-                description: newContentData.description,
-                classRoomId: classroomId,
-                creatorId: userdata.id
-            })
-        });
+    //  Create quiz in backend
+    const createQuiz = async () => {
+        try {
+            const res = await fetch("http://localhost:5000/api/quizzes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    title: newContentData.name,
+                    description: newContentData.description,
+                    classRoomId: classroomId,
+                    creatorId: userdata.id
+                })
+            });
 
-        const data = await res.json();
-        if (!res.ok) return null;
-        return data;
+            const data = await res.json();
+            if (!res.ok) return null;
+            return data;
 
-    } catch (err) {
-        console.error("POST quiz error:", err);
-        return null;
-    }
-};
+        } catch (err) {
+            console.error("POST quiz error:", err);
+            return null;
+        }
+    };
+    const createFlashcard = async () => {
+        try {
+            const res = await fetch(`http://localhost:5000/api/flashcard/create?userId=${userdata.id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    classRoomId: classroomId,
+                    title: newContentData.name,
+                    information: newContentData.description,
+                    tags: "default"
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) return null;
+            return data;
+
+        } catch (err) {
+            console.error("POST flashcard error:", err);
+            return null;
+        }
+    };
+
 
     // Step 1: Triggered by the Floating '+' button
     const handleAddTypeClick = () => {
@@ -137,27 +174,43 @@ const createQuiz = async () => {
 
     // Final Step: Submits the data and creates the new item
     const handleCreateContentSubmit = async (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    // Nur Quiz speichern (Flashcards später)
-    if (creationStep === "quiz") {
-        const savedQuiz = await createQuiz();
+        // Nur Quiz speichern (Flashcards später)
+        if (creationStep === "quiz") {
+            const savedQuiz = await createQuiz();
 
-        if (savedQuiz) {
-            setContent(prev => [
-                ...prev,
-                {
-                    id: savedQuiz.Id,
-                    name: savedQuiz.Title,
-                    type: "Quiz",
-                    summary: savedQuiz.Description || "No description"
-                }
-            ]);
+            if (savedQuiz) {
+                setContent(prev => [
+                    ...prev,
+                    {
+                        id: savedQuiz.Id,
+                        name: savedQuiz.Title,
+                        type: "Quiz",
+                        summary: savedQuiz.Description || "No description"
+                    }
+                ]);
+            }
         }
-    }
+        if (creationStep === "flashcard") {
+            const savedFC = await createFlashcard();
 
-    closeCreationModal();
-};
+            if (savedFC) {
+                setContent(prev => [
+                    ...prev,
+                    {
+                        id: savedFC.id,
+                        name: newContentData.name,
+                        type: "Flashcard",
+                        summary: newContentData.description || "Flashcard"
+                    }
+                ]);
+            }
+        }
+
+
+        closeCreationModal();
+    };
 
 
 
