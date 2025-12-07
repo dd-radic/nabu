@@ -40,7 +40,7 @@ const ClassroomPage = () => {
         // Early handling if classroom isn’t found or still loading (NEED THIS)
         if (!currentClassroom) return;
 
-        loadContent(classroomId, setContent);
+        loadContent(userdata, classroomId, setContent);
     }, [loadContent, currentClassroom, classroomId, userdata]);
 
     // Initialize whether the user has joined this classroom
@@ -109,11 +109,11 @@ const ClassroomPage = () => {
         }
         if (creationStep === "flashcard") {
             const flashcardPayload = {
-                    classRoomId: classroomId,
-                    title: newContentData.name,
-                    information: newContentData.description,
-                    tags: "default"
-                }
+                classRoomId: classroomId,
+                title: newContentData.name,
+                information: newContentData.description,
+                tags: "default"
+            }
             const savedFC = await createFlashcard(flashcardPayload);
 
             if (savedFC) {
@@ -163,7 +163,7 @@ const ClassroomPage = () => {
         //Check that the user owns the classroom
         console.log("Classroom: ", currentClassroom);
         console.log(`UserId: ${userdata.id} and Classroom owner: ${currentClassroom.ownerId}`);
-        if(userdata.id !== currentClassroom.ownerId) {
+        if (userdata.id !== currentClassroom.ownerId) {
             alert("You cannot delete a classroom that you do not own.");
             return;
         }
