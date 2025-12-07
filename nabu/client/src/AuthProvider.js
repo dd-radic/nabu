@@ -40,7 +40,23 @@ const AuthProvider = ({ children }) => {
         }, [token]);
 
     /**     Classroom Data   {@link classroom}   */
-        useEffect(() => {classroomController.fetchClassrooms(userdata, setClassrooms)}, [userdata]);
+        const fetchClassrooms = () => {classroomController.fetchClassrooms(userdata, setClassrooms)};
+        const fetchAllClassrooms = () => {classroomController.fetchAllClassrooms(setClassrooms)};
+        //By default, state classrooms is set to ALL (change later if needed)
+        useEffect(() => {
+            if(!userdata){
+                //If the classrooms have not loaded yet, leave before the system freaks out
+                setClassrooms([]);
+                return;
+            }
+            classroomController.fetchAllClassrooms(setClassrooms)
+        }, [userdata]);
+
+        const isMember = async (classroomId) => {
+            const res = await classroomController.isMember(userdata, classroomId);
+            console.log("AuthProvider: ", res);
+            return res;
+        }
 
     //TODO: Do the same thing for flaschards, quizzes, and questions
 
@@ -68,7 +84,12 @@ const AuthProvider = ({ children }) => {
     //==========Adding/Creation =====================================================//
 
     //TODO: A more elegant way to do this would be nice, but might require some hardcore refactoring
-    const addClassroom = (payload) => (classroomController.addClassroom(payload, setClassrooms));
+    const addClassroom = async(payload) => (await classroomController.addClassroom(payload, setClassrooms));
+
+    const addUser = async(classroomId) => {
+        await classroomController.addUser(userdata, classroomId)
+    };
+    const removeUser = async(classroomId) => (await classroomController.removeUser(userdata, classroomId));
     
     //TODO
         /**     Add Flashcard to DB   {@link flashcard}   */
@@ -88,7 +109,12 @@ const AuthProvider = ({ children }) => {
     signupAction,
     loginAction,
     logOut,
-    addClassroom
+    addClassroom,
+    fetchClassrooms,
+    fetchAllClassrooms,
+    addUser,
+    removeUser,
+    isMember,
   };
 
     return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

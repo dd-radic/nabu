@@ -1,53 +1,154 @@
 const fetchClassrooms = async (userdata, setClassrooms) => {
-        try {
-            const res = await fetch(`api/classrooms?userId=${userdata.id}`);
-            const data = await res.json();
+    try {
+        const res = await fetch(`api/classrooms?userId=${userdata.id}`);
+        const data = await res.json();
 
-            //For reasons beyond my understanding this is how the database data is parsed for the frontend - David
-            //TODO tweak this to be more universally usable
-            setClassrooms(
-                data.map(c => ({
-                    id: c.Id,
-                    name: c.Title,
-                    description: c.Description,
-                    type: "Classroom",  //  ???? - David
-                }))
-            );
-        } catch (err) {
-            console.error("Failed to load classrooms:", err);
+            // If response is not OK, log and bail out
+        if (!res.ok) {
+        console.error("Failed to load all classrooms (status):", res.status, data);
+        return;
         }
-    };
 
-    const addClassroom = async (payload, setClassrooms) => { 
-        try {
-            const res = await fetch("/api/classrooms", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-            
-            const data = await res.json();
+        //For reasons beyond my understanding this is how the database data is parsed for the frontend - David
+        //TODO tweak this to be more universally usable
+        setClassrooms(
+            data.map(c => ({
+                id: c.Id,
+                name: c.Title,
+                description: c.Description,
+                type: "Classroom",  //  ???? - David
+            }))
+        );
+    } catch (err) {
+        console.error("Failed to load classrooms:", err);
+    }
+};
 
-            if (!res.ok) {
-                console.error("Error:", data);
-                return;
+const fetchAllClassrooms = async (setClassrooms) => {
+    try {
+        const res = await fetch(`api/classrooms/all`);
+        const data = await res.json();
+
+        // If the response is not OK, log and stop
+        if (!res.ok) {
+            console.error('Failed to load all classrooms (status):', res.status, data);
+            setClassrooms([]);  // or just return;
+            return;
+        }
+
+        setClassrooms(
+            data.map(c => ({
+                id: c.Id,
+                name: c.Title,
+                description: c.Description,
+                type: "Classroom",
+            }))
+        );
+    } catch (err) {
+        console.error("Failed to load all classrooms:", err);
+    }
+};
+
+const addClassroom = async (payload, setClassrooms) => { 
+    try {
+        const res = await fetch("/api/classrooms/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+        
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error("Error:", data);
+            return;
+        }
+
+        setClassrooms(prev => [
+            ...prev,
+            {
+                id: data.Id,
+                name: data.Title,
+                description: data.Description,
+                type: "Classroom",
             }
+        ]);
 
-            setClassrooms(prev => [
-                ...prev,
-                {
-                    id: data.Id,
-                    name: data.Title,
-                    description: data.Description,
-                    type: "Classroom",
-                }
-            ]);
+    }
+    catch (err) {
+        console.error("Request failed", err);
+    }
+}
 
+
+//TODO: Write middle layer functions
+const addUser = async(userdata, classroomId) => {
+    try{
+        const payload = {
+            userId : userdata.id,
+            classroomId : classroomId
         }
-        catch (err) {
-            console.error("Request failed", err);
+
+        const res = await fetch("/api/classrooms/join", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            console.error("Error:", data);
+            return;
         }
     }
 
-const classroomController = {fetchClassrooms, addClassroom};
+    catch (err) {
+        console.error("Request to join failed: ", err);
+    }
+}
+
+const removeUser = async(userdata, classroomId) => {
+    try{
+        const payload = {
+            userId : userdata.id,
+            classroomId : classroomId
+        }
+
+        const res = await fetch("/api/classrooms/leave", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            console.error("Error:", data);
+            return;
+        }
+    }
+
+    catch (err) {
+        console.error("Request to leave failed: ", err);
+    }
+};
+
+const isMember = async (userdata, classroomId) => {
+    try {
+
+        const res = await fetch(`/api/classrooms/isMember?userId=${userdata.id}&classroomId=${classroomId}`, {
+            method: "GET",
+            headers: {"Content-Type" : "application/json"},
+        });
+
+        const data = await res.json();
+        console.log("Controller: ", data);
+        return data;
+    }
+
+    catch (err) {
+        console.error("Request to retrieve isMember failed: ", err);
+    }
+};
+
+const classroomController = {fetchClassrooms, fetchAllClassrooms, addClassroom, addUser, removeUser, isMember};
 export default classroomController;

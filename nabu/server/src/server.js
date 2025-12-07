@@ -30,7 +30,7 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
-app.use(bodyParser.json());
+app.use(express.json());
 
 //Use the routers for each page's server endpoints
 app.use("/api/classrooms", classroomRoute);
