@@ -1,0 +1,70 @@
+UserClassroom Table (Junction Table)
+Represents the membership - which users are in which classrooms
+
+Many-to-many relationship between users and classrooms
+
+Tracks when users joined each classroom
+
+
+
+Database diagram 
+Search tables...
+ExportImportAccountDocs
+ 
+DBML ERDL
+
+User
+-
+Id int PK
+Name varchar
+Email varchar
+Password varchar
+CreatedAt datetime
+
+FlashCard
+-
+Id int PK
+CreatorId int FK > User.Id
+ClassRoomId int FK > ClassRoom.Id
+Title varchar
+Information varchar
+Tags varchar
+CreatedAt datetime
+
+ClassRoom
+-
+Id int PK
+OwnerId int FK > User.Id
+Title varchar
+Description varchar
+CreatedAt datetime
+
+UserClassroom
+-
+ClassroomID int FK > ClassRoom.Id
+UserId int FK > User.Id
+JoinedAt datetime
+
+Quiz
+-
+Id int PK
+ClassroomId int FK > ClassRoom.Id
+CreatorId int FK > User.Id
+Title varchar
+CreatedAt datetime
+
+Question
+-
+ID int PK
+QuizId int FK > Quiz.Id
+Tags varchar
+Type varchar
+Answer varchar
+Query varchar
+CreatedAt datetime
+
+UserQuiz
+-
+QuizId int FK > Quiz.Id
+UserId int FK > User.Id
+JoinedAt datetime

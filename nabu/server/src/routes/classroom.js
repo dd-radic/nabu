@@ -61,6 +61,12 @@ router.post("/add", async (req, res) => {
   }
 });
 
+
+
+//EndPoint to DELETE (leave a classRoom)
+
+
+
 //User JOINS Classroom
 router.post("/join", async(req, res) => {
   try{
