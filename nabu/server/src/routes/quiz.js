@@ -4,7 +4,6 @@ import generateUniqueId from "../idGenerator.js";
 
 const router = express.Router();
 
-
 // ============================
 // GET all quizzes for a classroom
 // ============================
@@ -22,18 +21,19 @@ router.get("/", async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database error" });
+    console.error("QUIZ GET ERROR:", err);
+    return res.status(500).json({ error: err.message, code: err.code });
   }
 });
-
 
 // ============================
 // CREATE quiz
 // ============================
 router.post("/", async (req, res) => {
   try {
-    const { title, classRoomId, creatorId } = req.body;
+    const { title, description, classRoomId, creatorId } = req.body;
+    console.log("REQ BODY KOMMT AN:", req.body);
+console.log("Description, die ankommt:", description);
 
     if (!title || !classRoomId || !creatorId) {
       return res.status(400).json({
@@ -44,9 +44,9 @@ router.post("/", async (req, res) => {
     const id = await generateUniqueId("Quiz");
 
     await pool.query(
-      `INSERT INTO Quiz (Id, ClassRoomId, CreatorId, Title)
-       VALUES (?, ?, ?, ?)`,
-      [id, classRoomId, creatorId, title]
+      `INSERT INTO Quiz (Id, ClassRoomId, CreatorId, Title, Description)
+       VALUES (?, ?, ?, ?, ?)`,
+      [id, classRoomId, creatorId, title, description || null]
     );
 
     res.status(201).json({
@@ -54,12 +54,13 @@ router.post("/", async (req, res) => {
       ClassRoomId: classRoomId,
       CreatorId: creatorId,
       Title: title,
+      Description: description || null,
       CreatedAt: new Date()
     });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Database error" });
+  res.status(500).json({ error: err.message, code: err.code });
   }
 });
 
