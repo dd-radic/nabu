@@ -24,13 +24,15 @@ dotenv.config({ path: "../.env" });
 
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+
 
 app.use(cors({
     origin: "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
-app.use(bodyParser.json());
+app.use(express.json());
 
 //Use the routers for each page's server endpoints
 app.use("/api/classrooms", classroomRoute);

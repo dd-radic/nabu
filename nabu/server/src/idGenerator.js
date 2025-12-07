@@ -17,7 +17,7 @@ function idGenerator() {
 //returns true if id is taken in the table
 async function isIdTaken(table, id) {
     //send an sql query to check if id exists in the table
-  const [rows] = await pool.query(`SELECT * FROM ?? WHERE id = ?`, [table, id]);
+  const [rows] = await pool.query(`SELECT * FROM ?? WHERE Id = ?`, [table, id]);
   return rows.length > 0; // true if conflict exists
 }
 
@@ -43,7 +43,7 @@ async function generateUniqueId(table) {
    //keep generating ids until we find one that is not taken
   //isTaken turns false if theres no conflict
   while (isTaken) {
-    uniqueId += idGenerator(); // assumes idGenerator uses the prefix already
+    uniqueId = uniqueId.charAt(0) + idGenerator(); // assumes idGenerator uses the prefix already
     isTaken = await isIdTaken(table, uniqueId);
   }
 

@@ -9,53 +9,81 @@ import ResourceCard from '../components/ResourceCard'; // Imports the new reusab
 const ClassroomPage = () => {
     const {userdata, classrooms, addUser, removeUser, isMember, deleteClassroom} = useAuth();
     const { classroomId } = useParams();
-    
+
     // Sets the display name
     // Controls the main view: 'content' (default) or 'profile'
-    const [activeTab, setActiveTab] = useState('content'); 
+    const [activeTab, setActiveTab] = useState('content');
 
     // Controls the modal's internal state (what form to show: null, 'selectType', 'flashcard', 'quiz')
     const [creationStep, setCreationStep] = useState(null);
 
     // Mock data for the content (Quizzes, Flashcards) inside this specific classroom.
     // BACKEND TASK: This data should be fetched using the classroomId (e.g., GET /api/classrooms/ID/content)
-    const [content, setContent] = useState([
-        { id: 101, name: 'Week 1 Quiz', type: 'Quiz', summary: 'Covers linear equations.' },
-        { id: 102, name: 'Key Terms Flashcards', type: 'Flash Card', summary: '15 terms for chapter 3.' },
-    ]);
+    const [content, setContent] = useState([]);
+
 
     // State for the data being entered into the creation forms
-    const [newContentData, setNewContentData] = useState({ 
-        name: '', 
-        summary: '',
+    const [newContentData, setNewContentData] = useState({
+        name: '',
+        description: '',
     });
 
-    const [isUserJoined,  setIsUserJoined] = useState(false);
+
+    const [isUserJoined, setIsUserJoined] = useState(false);
 
     // Look up the classroom based on the URL parameter
     const currentClassroom = classrooms.find(
         (room) => String(room.id) === classroomId
     );
+
+    useEffect(() => {
+        if (!currentClassroom) return;
+
+        const loadContent = async () => {
+            try {
+                const quizRes = await fetch(`http://localhost:5000/api/quizzes?classRoomId=${classroomId}`);
+                const quizzes = await quizRes.json();
+
+                const quizItems = quizzes.map(q => ({
+                    id: q.Id,
+                    name: q.Title,
+                    type: "Quiz",
+                    summary: q.Description || "No description"
+                }));
+
+                // FLASHCARDS LADEN
+                const fcRes = await fetch(`http://localhost:5000/api/flashcard/allCards?userId=${userdata.id}`);
+                const flashcards = await fcRes.json();
+
+                const flashItems = flashcards
+                    .filter(fc => fc.ClassRoomId === classroomId) // Nur Flashcards für dieses Classroom
+                    .map(fc => ({
+                        id: fc.Id,
+                        name: fc.Title,
+                        type: "Flashcard",
+                        summary: fc.Information || "Flashcard set"
+                    }));
+
+                setContent([...quizItems, ...flashItems]);
+
+
+            } catch (err) {
+                console.error("Error loading quizzes:", err);
+            }
+        };
+
+        loadContent();
+    }, [currentClassroom, classroomId, userdata.id]);
     // Early handling if classroom isn’t found or still loading (NEED THIS)
-    if (!currentClassroom) {
-        return (
-            <main className="dashboard-page">
-            <DashboardNav initialActiveTab="content" onTabChange={() => {}} />
-            <section className="dashboard-box">
-                <h2>Classroom not found</h2>
-                <p>
-                We couldn’t find a classroom with ID <code>{classroomId}</code>.
-                </p>
-            </section>
-            </main>
-        );
-    };
+
 
     // Initialize whether the user has joined this classroom
     //NOTE: You should basically never disable React hook rules like this, but in our case, we have to because
     //moving the check for if a classroom is found breaks everything
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
+        if (!currentClassroom) return;
+
         const initJoin = async () => {
             try {
                 const member = await isMember(currentClassroom.id);
@@ -66,9 +94,57 @@ const ClassroomPage = () => {
         };
 
         initJoin();
-    }, [currentClassroom.id, isMember]);
+    }, [currentClassroom, isMember]);
 
     // ====== Content Creation Handlers ======
+    //  Create quiz in backend
+    const createQuiz = async () => {
+        try {
+            const res = await fetch("http://localhost:5000/api/quizzes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    title: newContentData.name,
+                    description: newContentData.description,
+                    classRoomId: classroomId,
+                    creatorId: userdata.id
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) return null;
+            return data;
+
+        } catch (err) {
+            console.error("POST quiz error:", err);
+            return null;
+        }
+    };
+    const createFlashcard = async () => {
+        try {
+            const res = await fetch(`http://localhost:5000/api/flashcard/create?userId=${userdata.id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    classRoomId: classroomId,
+                    title: newContentData.name,
+                    information: newContentData.description,
+                    tags: "default"
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) return null;
+            return data;
+
+        } catch (err) {
+            console.error("POST flashcard error:", err);
+            return null;
+        }
+    };
+
 
     // Step 1: Triggered by the Floating '+' button
     const handleAddTypeClick = () => {
@@ -78,7 +154,7 @@ const ClassroomPage = () => {
     // Resets the modal and closes it
     const closeCreationModal = () => {
         setCreationStep(null);
-        setNewContentData({ name: '', summary: '' }); 
+        setNewContentData({ name: '', description: '' });
     };
 
     // Step 2: Moves from type selection to showing the specific form
@@ -93,32 +169,51 @@ const ClassroomPage = () => {
     };
 
     // Final Step: Submits the data and creates the new item
-    const handleCreateContentSubmit = (e) => {
+    const handleCreateContentSubmit = async (e) => {
         e.preventDefault();
-        
-        const typeLabel = creationStep === 'flashcard' ? 'Flash Card' : 'Quiz';
-        
-        // TEMPORARY: Adds new item to frontend state.
-        // NEXT STEP FOR BACKEND: Send POST request to /api/classrooms/classroomId/content 
-        // using the newContentData here.
-        setContent((prev) => [
-            ...prev,
-            {
-                id: Date.now(),
-                name: newContentData.name,
-                type: typeLabel,
-                summary: newContentData.summary || 'No summary provided.',
-            },
-        ]);
+
+        // Nur Quiz speichern (Flashcards später)
+        if (creationStep === "quiz") {
+            const savedQuiz = await createQuiz();
+
+            if (savedQuiz) {
+                setContent(prev => [
+                    ...prev,
+                    {
+                        id: savedQuiz.Id,
+                        name: savedQuiz.Title,
+                        type: "Quiz",
+                        summary: savedQuiz.Description || "No description"
+                    }
+                ]);
+            }
+        }
+        if (creationStep === "flashcard") {
+            const savedFC = await createFlashcard();
+
+            if (savedFC) {
+                setContent(prev => [
+                    ...prev,
+                    {
+                        id: savedFC.id,
+                        name: newContentData.name,
+                        type: "Flashcard",
+                        summary: newContentData.description || "Flashcard"
+                    }
+                ]);
+            }
+        }
+
 
         closeCreationModal();
     };
 
 
+
     //======= Handlers for user join/leave =======================//
     const handleJoinUser = () => {
         //Check if the user is already a member of the classroom
-        if(isUserJoined){
+        if (isUserJoined) {
             alert("You are already a member of this classroom.");
             return;
         }
@@ -130,7 +225,7 @@ const ClassroomPage = () => {
 
     const handleLeaveUser = () => {
         //Check if the user is not a member of this classroom
-        if(!isUserJoined){
+        if (!isUserJoined) {
             alert("You are not a member of this classroom.");
             return;
         }
@@ -156,7 +251,7 @@ const ClassroomPage = () => {
 
 
     // ====== Modal Rendering Helper: Handles the two-step form flow ======
-    
+
     const renderCreationModalContent = () => {
         switch (creationStep) {
             case 'selectType':
@@ -182,15 +277,15 @@ const ClassroomPage = () => {
                 // Renders the specific form based on selection ('flashcard' or 'quiz')
                 const isFlashcard = creationStep === 'flashcard';
                 const typeName = isFlashcard ? 'Flash Card Set' : 'Quiz';
-                
+
                 return (
                     <form onSubmit={handleCreateContentSubmit}>
                         <label>{typeName} Name:</label>
                         <input type="text" name="name" value={newContentData.name}
                             onChange={handleFormChange} required className="form-input-text" />
-                        
+
                         <label>Summary / Description:</label>
-                        <textarea name="summary" value={newContentData.summary}
+                        <textarea name="description" value={newContentData.description}
                             onChange={handleFormChange} rows="2" className="form-input-text"
                             maxLength="150"
                             placeholder={isFlashcard ? "e.g., Key definitions for Chapter 1" : "e.g., Multiple choice questions on history"}
@@ -209,13 +304,13 @@ const ClassroomPage = () => {
 
 
     // ====== Main JSX Structure ======
-    if (!userdata) return <Navigate to='/'/>
+    if (!userdata) return <Navigate to='/' />
 
     return (
         <main className="dashboard-page">
             {/* Navigation component. 'content' is the active tab for this page's context */}
-            <DashboardNav 
-                initialActiveTab={'content'} 
+            <DashboardNav
+                initialActiveTab={'content'}
                 onTabChange={setActiveTab}
             />
 
@@ -236,7 +331,7 @@ const ClassroomPage = () => {
             {(activeTab === 'content' || activeTab === 'classrooms') && (
                 <section className="dashboard-box">
                     <div className="dashboard-box-header">
-                        <h2>{currentClassroom.name} Content</h2> 
+                        <h2>{currentClassroom.name} Content</h2>
                     </div>
 
                     {/* Check if content list is empty */}
@@ -246,15 +341,15 @@ const ClassroomPage = () => {
                         <div className="classroom-grid">
                             {/* Map through the content and display using ResourceCard */}
                             {content.map((item) => (
-                                <ResourceCard 
+                                <ResourceCard
                                     key={item.id}
-                                    resource={item} 
+                                    resource={item}
                                     isClassroomLevel={false} // Tells the card to render as static content
                                 />
                             ))}
                         </div>
                     )}
-                    
+
                     {/* Floating Add Button */}
                     <button
                         type="button"
