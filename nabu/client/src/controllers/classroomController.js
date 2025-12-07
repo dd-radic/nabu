@@ -173,13 +173,38 @@ const isMember = async (userdata, classroomId) => {
     }
 };
 
-const classroomController = {
-    fetchClassrooms, 
-    fetchAllClassrooms, 
-    addClassroom, 
-    addUser, 
-    removeUser, 
-    isMember, 
-    deleteClassroom
-};
+const loadContent = async (userdata, classroomId, setContent) => {
+            try {
+                const quizRes = await fetch(`http://localhost:5000/api/quizzes?classRoomId=${classroomId}`);
+                const quizzes = await quizRes.json();
+
+                const quizItems = quizzes.map(q => ({
+                    id: q.Id,
+                    name: q.Title,
+                    type: "Quiz",
+                    summary: q.Description || "No description"
+                }));
+
+                // FLASHCARDS LADEN
+                const fcRes = await fetch(`http://localhost:5000/api/flashcard/allCards?userId=${userdata.id}`);
+                const flashcards = await fcRes.json();
+
+                const flashItems = flashcards
+                    .filter(fc => fc.ClassRoomId === classroomId) // Nur Flashcards für dieses Classroom
+                    .map(fc => ({
+                        id: fc.Id,
+                        name: fc.Title,
+                        type: "Flashcard",
+                        summary: fc.Information || "Flashcard set"
+                    }));
+
+                setContent([...quizItems, ...flashItems]);
+
+
+            } catch (err) {
+                console.error("Error loading quizzes:", err);
+            }
+        };
+
+const classroomController = {fetchClassrooms, fetchAllClassrooms, addClassroom, deleteClassroom, addUser, removeUser, isMember, loadContent};
 export default classroomController;
