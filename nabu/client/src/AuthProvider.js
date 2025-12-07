@@ -65,9 +65,10 @@ const AuthProvider = ({ children }) => {
         //TODO
     /**     Flashcards   {@link flashcard}   */
     /**     Quizzes   {@link quiz}   */
-const loadContent = (classroomId, setContent) => {
+const loadContent = (userdata, classroomId, setContent) => {
     classroomController.loadContent(userdata, classroomId, setContent);
 };
+
 
 /**     Questions   {@link question}   */
 

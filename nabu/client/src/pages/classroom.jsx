@@ -37,11 +37,12 @@ const ClassroomPage = () => {
     );
 
     useEffect(() => {
-        // Early handling if classroom isn’t found or still loading (NEED THIS)
-        if (!currentClassroom) return;
+    if (!userdata?.id) return;
+    if (!currentClassroom) return;
 
-        loadContent(userdata, classroomId, setContent);
-    }, [loadContent, currentClassroom, classroomId, userdata]);
+    loadContent(userdata, classroomId, setContent);
+}, [userdata?.id, currentClassroom, classroomId]);
+
 
     // Initialize whether the user has joined this classroom
     useEffect(() => {
