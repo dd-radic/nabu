@@ -51,7 +51,21 @@ const [content, setContent] = useState([]);
                     summary: q.Description || "No description"
                 }));
 
-                setContent(quizItems);
+                // FLASHCARDS LADEN
+const fcRes = await fetch(`http://localhost:5000/api/flashcard/allCards?userId=${userdata.id}`);
+const flashcards = await fcRes.json();
+
+const flashItems = flashcards
+    .filter(fc => fc.ClassRoomId === classroomId) // Nur Flashcards für dieses Classroom
+    .map(fc => ({
+        id: fc.Id,
+        name: fc.Title,
+        type: "Flashcard",
+        summary: fc.Information || "Flashcard set"
+    }));
+
+                setContent([...quizItems, ...flashItems]);
+
 
             } catch (err) {
                 console.error("Error loading quizzes:", err);
@@ -112,6 +126,29 @@ const createQuiz = async () => {
         return null;
     }
 };
+const createFlashcard = async () => {
+    try {
+        const res = await fetch(`http://localhost:5000/api/flashcard/create?userId=${userdata.id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                classRoomId: classroomId,
+                title: newContentData.name,
+                information: newContentData.description,
+                tags: "default"
+            })
+        });
+
+        const data = await res.json();
+        if (!res.ok) return null;
+        return data;
+
+    } catch (err) {
+        console.error("POST flashcard error:", err);
+        return null;
+    }
+};
+
 
     // Step 1: Triggered by the Floating '+' button
     const handleAddTypeClick = () => {
@@ -155,6 +192,22 @@ const createQuiz = async () => {
             ]);
         }
     }
+    if (creationStep === "flashcard") {
+    const savedFC = await createFlashcard();
+
+    if (savedFC) {
+        setContent(prev => [
+            ...prev,
+            {
+                id: savedFC.id,
+                name: newContentData.name,
+                type: "Flashcard",
+                summary: newContentData.description || "Flashcard"
+            }
+        ]);
+    }
+}
+
 
     closeCreationModal();
 };
