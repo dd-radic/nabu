@@ -7,7 +7,7 @@ import ResourceCard from '../components/ResourceCard'; // Imports the new reusab
 
 
 const ClassroomPage = () => {
-    const { userdata, classrooms, addUser, removeUser, isMember } = useAuth();
+    const { userdata, classrooms, addUser, removeUser, isMember, loadContent, createQuiz, createFlashcard } = useAuth();
     const { classroomId } = useParams();
 
     // Sets the display name
@@ -37,50 +37,13 @@ const ClassroomPage = () => {
     );
 
     useEffect(() => {
+        // Early handling if classroom isn’t found or still loading (NEED THIS)
         if (!currentClassroom) return;
 
-        const loadContent = async () => {
-            try {
-                const quizRes = await fetch(`http://localhost:5000/api/quizzes?classRoomId=${classroomId}`);
-                const quizzes = await quizRes.json();
-
-                const quizItems = quizzes.map(q => ({
-                    id: q.Id,
-                    name: q.Title,
-                    type: "Quiz",
-                    summary: q.Description || "No description"
-                }));
-
-                // FLASHCARDS LADEN
-                const fcRes = await fetch(`http://localhost:5000/api/flashcard/allCards?userId=${userdata.id}`);
-                const flashcards = await fcRes.json();
-
-                const flashItems = flashcards
-                    .filter(fc => fc.ClassRoomId === classroomId) // Nur Flashcards für dieses Classroom
-                    .map(fc => ({
-                        id: fc.Id,
-                        name: fc.Title,
-                        type: "Flashcard",
-                        summary: fc.Information || "Flashcard set"
-                    }));
-
-                setContent([...quizItems, ...flashItems]);
-
-
-            } catch (err) {
-                console.error("Error loading quizzes:", err);
-            }
-        };
-
-        loadContent();
-    }, [currentClassroom, classroomId]);
-    // Early handling if classroom isn’t found or still loading (NEED THIS)
-
+        loadContent(classroomId, setContent);
+    }, [loadContent, currentClassroom, classroomId, userdata]);
 
     // Initialize whether the user has joined this classroom
-    //NOTE: You should basically never disable React hook rules like this, but in our case, we have to because
-    //moving the check for if a classroom is found breaks everything
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         if (!currentClassroom) return;
 
@@ -95,60 +58,6 @@ const ClassroomPage = () => {
 
         initJoin();
     }, [currentClassroom, isMember]);
-
-    console.log(`User is currently a member of this classroom: ${isUserJoined}`);
-
-
-
-    // ====== Content Creation Handlers ======
-    //  Create quiz in backend
-    const createQuiz = async () => {
-        try {
-            const res = await fetch("http://localhost:5000/api/quizzes", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    title: newContentData.name,
-                    description: newContentData.description,
-                    classRoomId: classroomId,
-                    creatorId: userdata.id
-                })
-            });
-
-            const data = await res.json();
-            if (!res.ok) return null;
-            return data;
-
-        } catch (err) {
-            console.error("POST quiz error:", err);
-            return null;
-        }
-    };
-    const createFlashcard = async () => {
-        try {
-            const res = await fetch(`http://localhost:5000/api/flashcard/create?userId=${userdata.id}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    classRoomId: classroomId,
-                    title: newContentData.name,
-                    information: newContentData.description,
-                    tags: "default"
-                })
-            });
-
-            const data = await res.json();
-            if (!res.ok) return null;
-            return data;
-
-        } catch (err) {
-            console.error("POST flashcard error:", err);
-            return null;
-        }
-    };
-
 
     // Step 1: Triggered by the Floating '+' button
     const handleAddTypeClick = () => {
@@ -178,7 +87,13 @@ const ClassroomPage = () => {
 
         // Nur Quiz speichern (Flashcards später)
         if (creationStep === "quiz") {
-            const savedQuiz = await createQuiz();
+            const quizPayload = {
+                title: newContentData.name,
+                description: newContentData.description,
+                classRoomId: classroomId,
+                creatorId: userdata.id
+            };
+            const savedQuiz = await createQuiz(quizPayload);
 
             if (savedQuiz) {
                 setContent(prev => [
@@ -193,7 +108,13 @@ const ClassroomPage = () => {
             }
         }
         if (creationStep === "flashcard") {
-            const savedFC = await createFlashcard();
+            const flashcardPayload = {
+                    classRoomId: classroomId,
+                    title: newContentData.name,
+                    information: newContentData.description,
+                    tags: "default"
+                }
+            const savedFC = await createFlashcard(flashcardPayload);
 
             if (savedFC) {
                 setContent(prev => [
@@ -211,8 +132,6 @@ const ClassroomPage = () => {
 
         closeCreationModal();
     };
-
-
 
     //======= Handlers for user join/leave =======================//
     const handleJoinUser = () => {

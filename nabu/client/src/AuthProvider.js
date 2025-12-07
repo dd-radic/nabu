@@ -5,6 +5,8 @@ import { useContext, createContext, useState, useEffect} from "react";
 import classroomController from "./controllers/classroomController.js";
 import signupController from "./controllers/signupController.js";
 import loginController from "./controllers/loginController.js";
+import quizController from "./controllers/quizController.js";
+import flashcardController from "./controllers/flashcardController.js";
 
 
 const AuthContext = createContext();
@@ -61,9 +63,9 @@ const AuthProvider = ({ children }) => {
     //TODO: Do the same thing for flaschards, quizzes, and questions
 
         //TODO
-/**     Flashcards   {@link flashcard}   */
-
-/**     Quizzes   {@link quiz}   */
+    /**     Flashcards   {@link flashcard}   */
+    /**     Quizzes   {@link quiz}   */
+    const loadContent = (classroomId, setContent) => {classroomController.setContent(userdata, classroomId, setContent)};
 
 /**     Questions   {@link question}   */
 
@@ -93,8 +95,10 @@ const AuthProvider = ({ children }) => {
     
     //TODO
         /**     Add Flashcard to DB   {@link flashcard}   */
+        const createFlashcard = async(payload) => (await flashcardController.createFlashcard(payload, userdata));
         
         /**     Create Quizzes   {@link quiz}   */
+        const createQuiz = async(payload) => (await quizController.createQuiz(payload));
 
         /**     Create Questions   {@link question}   */
     
@@ -115,6 +119,12 @@ const AuthProvider = ({ children }) => {
     addUser,
     removeUser,
     isMember,
+    loadContent,
+
+    createQuiz,
+
+    createFlashcard,
+
   };
 
     return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
