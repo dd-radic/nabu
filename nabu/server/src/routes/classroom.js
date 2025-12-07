@@ -4,9 +4,12 @@ import generateUniqueId from "../idGenerator.js";
 
 const router = express.Router();
 
+// =======================================
 // GET all classrooms for a specific user
+// =======================================
 router.get("/", async (req, res) => {
-  const userId = req.query.userId;  // Get userId from query params
+  const userId = req.query.userId;
+
   try {
     const [rows] = await pool.query("SELECT * FROM ClassRoom WHERE OwnerID=?", [userId]);
     res.json(rows);
@@ -17,20 +20,23 @@ router.get("/", async (req, res) => {
   }
 });
 
-//GET ALL classrooms regardless of user
-router.get("/all", async(req, res) => {
-  try{
+// =======================================
+// GET ALL classrooms (admin)
+// =======================================
+router.get("/all", async (req, res) => {
+  try {
     const [rows] = await pool.query("SELECT * FROM ClassRoom");
     res.json(rows);
-  }
 
-  catch(err){
+  } catch (err) {
     console.error(err);
-    res.status(500).json({error: "Database error when retrieving all classrooms"});
+    res.status(500).json({ error: "Database error when retrieving all classrooms" });
   }
 });
 
+// =======================================
 // CREATE classroom
+// =======================================
 router.post("/add", async (req, res) => {
   try {
     const { title, description, ownerID } = req.body;
@@ -61,82 +67,125 @@ router.post("/add", async (req, res) => {
   }
 });
 
+// ========================================================
+// USER JOINS CLASSROOM 
+// ========================================================
+router.post("/join", async (req, res) => {
+  const classRoomId = req.query.classRoomId;
+  const userId = req.query.userId;
 
-
-//EndPoint to DELETE (leave a classRoom)
-
-
-
-//User JOINS Classroom
-router.post("/join", async(req, res) => {
-  try{
-    const {userId, classroomId} = req.body;
-    const currTime = new Date();
-
-    await pool.query(
-      "INSERT INTO UserClassroom (UserId, ClassRoomId, JoinedAt) VALUES (?, ?, ?)",
-      [
-        userId,
-        classroomId,
-        currTime
-      ]
+  try {
+    // 1) classroom exists?
+    const [cRows] = await pool.query(
+      "SELECT OwnerId FROM ClassRoom WHERE Id = ?",
+      [classRoomId]
     );
 
-    res.status(200).json({
-      message: `User ${userId} successfully joined classroom ${classroomId}`
-    });
-  }
-
-  catch(err){
-    console.error(err);
-    res.status(500).json({error: "Database error when adding user."})
-  }
-});
-
-//User LEAVES Classroom
-router.post("/leave", async(req, res) => {
-  try{
-    const {userId, classroomId} = req.body;
-
-    await pool.query(
-      "DELETE FROM UserClassroom WHERE (UserId=? AND ClassRoomId=?)",
-      [userId, classroomId]
-    );
-
-    res.status(200).json({
-      message: `User ${userId} successfully left classroom ${classroomId}`
-    });
-  }
-
-  catch(err) {
-    console.error(err);
-    res.status(500).json({error: "Database error when removing user."});
-  }
-});
-
-//GET if a user is in a classroom
-router.get("/isMember",  async(req,res) => {
-  try{
-    const{userId, classroomId} = req.query;
-
-    const [rows] = await pool.query(
-      "SELECT * FROM UserClassroom WHERE (UserId=? AND ClassRoomId=?)",
-      [userId, classroomId]
-    );
-
-    console.log("Rows: ", rows);
-
-    if(rows.length === 0){
-      console.log("Server: False");
-      res.json(false);
+    if (cRows.length === 0) {
+      return res.status(404).json({ error: "Classroom not found" });
     }
-    console.log("Server: true");
-    res.json(true);
-  }
 
-  catch (err) {
+    const ownerId = cRows[0].OwnerId;
+
+    // Owner cannot join their own room
+    if (ownerId === userId) {
+      return res.status(400).json({ error: "Owner cannot join their own ClassRoom" });
+    }
+
+    // 2) check if user already joined
+    const [mRows] = await pool.query(
+      "SELECT * FROM UserClassroom WHERE ClassRoomId = ? AND UserId = ?",
+      [classRoomId, userId]
+    );
+
+    if (mRows.length > 0) {
+      return res.status(409).json({ error: "Already a member" });
+    }
+
+    // 3) insert membership
+    await pool.query(
+      "INSERT INTO UserClassroom (UserId, ClassRoomId, JoinedAt) VALUES (?, ?, NOW())",
+      [userId, classRoomId]
+    );
+
+    return res.status(201).json({ message: "Joined classroom" });
+
+  } catch (err) {
     console.error(err);
-    res.status(500).json({error: "Database error in checking isMember"});
+    return res.status(500).json({ error: "Server/Database error" });
+  }
+});
+
+// ========================================================
+// USER LEAVES CLASSROOM 
+// ========================================================
+router.delete("/leave", async (req, res) => {
+  const classRoomId = req.query.classRoomId;
+  const userId = req.query.userId;
+
+  try {
+    // 1) classroom exists?
+    const [cRows] = await pool.query(
+      "SELECT OwnerId FROM ClassRoom WHERE Id = ?",
+      [classRoomId]
+    );
+
+    if (cRows.length === 0) {
+      return res.status(404).json({ error: "Classroom not found" });
+    }
+
+    const ownerId = cRows[0].OwnerId;
+
+    // Owner can't leave
+    if (ownerId === userId) {
+      return res.status(400).json({ error: "Creator cannot leave their own classroom" });
+    }
+
+    // 2) check membership
+    const [mRows] = await pool.query(
+      "SELECT * FROM UserClassroom WHERE UserId = ? AND ClassRoomId = ?",
+      [userId, classRoomId]
+    );
+
+    if (mRows.length === 0) {
+      return res.status(404).json({ error: "You are not a member of this classroom" });
+    }
+
+    // 3) remove membership
+    await pool.query(
+      "DELETE FROM UserClassroom WHERE UserId = ? AND ClassRoomId = ?",
+      [userId, classRoomId]
+    );
+
+    return res.status(200).json({ message: "Left classroom successfully" });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Server/Database error" });
+  }
+});
+
+// ========================================================
+// CHECK IF USER IS MEMBER
+// ========================================================
+router.get("/isMember", async (req, res) => {
+  const { userId, classroomId } = req.query;
+
+  try {
+    const [rows] = await pool.query(
+      "SELECT * FROM UserClassroom WHERE UserId = ? AND ClassRoomId = ?",
+      [userId, classroomId]
+    );
+
+    if (rows.length === 0) {
+      return res.json(false);
+    }
+
+    return res.json(true);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Database error in checking isMember" });
   }
 });
 

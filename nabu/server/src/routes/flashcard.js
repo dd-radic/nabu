@@ -4,80 +4,81 @@ import generateUniqueId from "../idGenerator.js";
 
 const router = express.Router();
 
-//Get all Flashcards that a user has created
-//userId should be sent in the query parameters!!!
-router.get("/allCards", async (req, res) =>{
+// DEBUG TEST
+console.log("FLASHCARD ROUTER LOADED");
+
+// GET all flashcards for a user
+router.get("/allCards", async (req, res) => {
     const userId = req.query.userId;
+
     if (!userId) {
-    return res.status(400).json({ error: "Missing userId query parameter" });
+        return res.status(400).json({ error: "Missing userId query parameter" });
     }
 
-    try{
-        
-        const [rows] = await pool.query("SELECT * FROM FlashCard WHERE CreatorId=?", [userId]);
+    try {
+        const [rows] = await pool.query(
+            "SELECT * FROM FlashCard WHERE CreatorId = ?",
+            [userId]
+        );
         res.json(rows);
-        
-    }catch (err){
-        console.error(err);
-        res.status(500).json({error : "Database error"})
+    } catch (err) {
+        console.error("FLASHCARD GET ERROR:", err);
+        res.status(500).json({ error: "Database error" });
     }
-})
+});
 
-//Endpoint to create a new Flashcard in a given ClassRoom, userId and ClassRoom id is required
-//userId should be in the query parameters and ClassRoom id and the rest in the json body
-router.post("/create", async (req, res) =>{
-    const table = "FlashCard";
-    const id = await generateUniqueId(table);
+// Create a flashcard
+router.post("/create", async (req, res) => {
+    const id = await generateUniqueId("FlashCard");
     const creatorId = req.query.userId;
-    const classRoomId = req.body.classRoomId;
-    const title = req.body.title;
-    const information = req.body.information;
-    const tags = req.body.tags;
+
+    const { classRoomId, title, information, tags } = req.body;
+
     if (!creatorId || !classRoomId) {
-        return res.status(400).json({error : "UserId/ClassRoomId parameter is missing"});
+        return res.status(400).json({ error: "Missing creatorId or classRoomId" });
     }
-    try{
-        const sql = `
-        INSERT INTO FlashCard
-        (Id, CreatorId, ClassRoomId, Title, Information, Tags, CreatedAt)
-        VALUES (?, ?, ?, ?, ?, ?, DEFAULT)
-        `;
-        const [rows] = await pool.query(sql, [id, creatorId, classRoomId, title, information, tags]);
-         res.json({ message: "FlashCard Created successfully" });
 
-    }catch (err){
-        console.error(err);
-        res.status(500).json({error: "Database error"})
+    try {
+        await pool.query(
+            `INSERT INTO FlashCard 
+            (Id, CreatorId, ClassRoomId, Title, Information, Tags, CreatedAt)
+            VALUES (?, ?, ?, ?, ?, ?, NOW())`,
+            [id, creatorId, classRoomId, title, information, tags]
+        );
+
+        res.json({ message: "Flashcard created successfully", id });
+    } catch (err) {
+        console.error("FLASHCARD CREATE ERROR:", err);
+        res.status(500).json({ error: "Database error" });
     }
-})
+});
 
-//Endpoint to delte a FlashCard
-//This end point expects a FlashCard id and a creatorId or userId
+// Delete flashcard
 router.delete("/delete", async (req, res) => {
-    const flashCardId = req.query.flashCardId; // Id of the flashcard to delete
-    const creatorId = req.query.userId;        // check ownership
+    const flashCardId = req.query.flashCardId;
+    const creatorId = req.query.userId;
 
     if (!flashCardId || !creatorId) {
         return res.status(400).json({ error: "Missing flashCardId or userId" });
     }
 
     try {
-        const sql = `
-            DELETE FROM FlashCard
-            WHERE Id = ? AND CreatorId = ?
-        `;
-        const [result] = await pool.query(sql, [flashCardId, creatorId]);
+        const [result] = await pool.query(
+            `DELETE FROM FlashCard WHERE Id = ? AND CreatorId = ?`,
+            [flashCardId, creatorId]
+        );
 
         if (result.affectedRows === 0) {
-            return res.status(404).json({ error: "FlashCard not found or you do not have permission" });
+            return res.status(404).json({
+                error: "FlashCard not found or unauthorized"
+            });
         }
 
-        res.json({ message: "FlashCard deleted successfully" });
+        res.json({ message: "Flashcard deleted successfully" });
     } catch (err) {
-        console.error(err);
+        console.error("FLASHCARD DELETE ERROR:", err);
         res.status(500).json({ error: "Database error" });
     }
 });
-
 
 export default router;
