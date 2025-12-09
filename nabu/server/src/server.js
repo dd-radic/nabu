@@ -79,6 +79,13 @@ app.put("/api/user", async (req, res) => {
   await users.submit(req, res);
 });
 
+/////////////=========== Delete User ===========/////////////
+
+app.delete("/api/user/delete", async (req, res) => {
+  await users.delete(req, res);
+});
+
+
 //////////////////////////////////////////
 ////          START SERVER             ////
 //////////////////////////////////////////
