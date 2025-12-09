@@ -11,40 +11,40 @@ router.put("/update-username", async (req, res) => {
         const { username, password } = req.body;
 
         if (!username || !password) {
-        return res.status(400).json({ error: "Missing username or password" });
+            return res.status(400).json({ error: "Missing username or password" });
         }
 
-        
+
         const [rows] = await pool.query(
-        "SELECT * FROM ?? WHERE Name = ?", 
-        ["User", username] 
+            "SELECT * FROM ?? WHERE Name = ?",
+            ["User", username]
         );
 
         if (rows.length === 0) {
-        return res.status(404).json({ error: "User not found" });
+            return res.status(404).json({ error: "User not found" });
         }
 
         const user = rows[0];
 
-        
+
         const valid = await bcrypt.compare(password, user.Password);
         if (!valid) {
-        return res.status(401).json({ error: "Invalid password" });
+            return res.status(401).json({ error: "Invalid password" });
         }
 
-        
+
         const accesstoken = jwt.sign(
-        { id: user.ID, username: user.Name },
-        process.env.DB_JWT_KEY,
-        { expiresIn: "1h" }
+            { id: user.ID, username: user.Name },
+            process.env.DB_JWT_KEY,
+            { expiresIn: "1h" }
         );
 
         console.log("User logged in:", user.Email);
 
         res.status(200).json({
-        user: user.Name,
-        mail: user.Email,
-        token: accesstoken,
+            user: user.Name,
+            mail: user.Email,
+            token: accesstoken,
         });
 
     } catch (err) {
@@ -74,9 +74,9 @@ const verifyToken = (req, res, next) => {
 router.get("/", verifyToken, async (req, res) => {
     try {
         const { id } = req.user; // Get user ID from the token
-        
+
         const [rows] = await pool.query(
-            "SELECT Name, Email, ID FROM ?? WHERE ID = ?", 
+            "SELECT Name, Email, ID FROM ?? WHERE ID = ?",
             ["User", id]
         );
 
@@ -86,7 +86,7 @@ router.get("/", verifyToken, async (req, res) => {
 
         const user = rows[0];
 
-        
+
         res.status(200).json({
             name: user.Name,
             mail: user.Email,
@@ -95,6 +95,27 @@ router.get("/", verifyToken, async (req, res) => {
 
     } catch (err) {
         console.error("Error fetching user data:", err);
+        return res.status(500).json({ error: err.message || "Unknown error" });
+    }
+});
+
+router.delete("/delete", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const [result] = await pool.query(
+            "DELETE FROM ?? WHERE ID = ?",
+            ["User", userId]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.status(200).json({ message: "Account deleted successfully" });
+
+    } catch (err) {
+        console.error("Error deleting user:", err);
         return res.status(500).json({ error: err.message || "Unknown error" });
     }
 });
