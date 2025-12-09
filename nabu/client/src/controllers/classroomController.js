@@ -77,6 +77,7 @@ const addClassroom = async (payload, setClassrooms) => {
             }
         ]);
 
+        window.location.href = `/#/classroom/${data.Id}`;
     }
     catch (err) {
         console.error("Request failed", err);

@@ -54,8 +54,8 @@ router.post("/add", async (req, res) => {
     );
 
     res.status(200).json({
-      ID: id,
-      OwnerID: ownerID,
+      Id: id,
+      OwnerId: ownerID,
       Title: title,
       Description: description,
       CreatedAt: createdAt
