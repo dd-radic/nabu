@@ -88,7 +88,11 @@ const AuthProvider = ({ children }) => {
 
 
     /**     Signup   {@link signup}   */
-    const signupAction = async (req) => {signupController.signupAction(req)};
+    const signupAction = async (req) => {
+        const creds = await signupController.signupAction(req);
+        if (!creds) return;
+        await loginController.loginAction(creds, setUserdata, setToken);
+    };
 
     /**     Login   {@link login}   */
     const loginAction = async (req) => {loginController.loginAction(req, setUserdata, setToken)};

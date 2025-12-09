@@ -15,23 +15,16 @@ const signupAction = async (req) => {
         const result = await res.json();
         console.log('Signup successful:', result);
 
-        //Call login to log in the newly created user
+        //Return the credentials to the caller so they can be used for login
         const payload = {
             username : result.username,
             password : result.password
         }
-
-        const newres = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-
-        //loginAction(payload, setUserdata, setToken);
+        return payload;
 
     } catch (err) {
         console.error('Signup failed:', err);
-        // TODO: Show a network error to the user
+        return null;
     }
 };
 
