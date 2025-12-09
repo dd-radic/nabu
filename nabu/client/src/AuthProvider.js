@@ -32,7 +32,6 @@ const AuthProvider = ({ children }) => {
 
             //Protect from invalid userdata
             if(!res.ok){
-                console.error("Failed to fetch userdata, status: ", res.status);
                 setUserdata(null);
 
                 //Nuke the token if the user is not authorized so that the reroutes work correctly
@@ -51,7 +50,6 @@ const AuthProvider = ({ children }) => {
                 setUserdata(null);
             }
         };
-    
             fetchUserdata();
     }, [token]);
 
