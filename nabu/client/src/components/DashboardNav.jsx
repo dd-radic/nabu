@@ -17,7 +17,7 @@ const DashboardNav = ({ initialActiveTab, onTabChange }) => {
     // ====== Handlers ======
 
     const handleGoHome = () => {
-        window.location.href = '#/';
+        window.location.href = '/#/dashboard';
     };
 
     const handleLogout = () => {
