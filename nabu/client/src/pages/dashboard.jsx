@@ -3,12 +3,13 @@ import { useAuth } from '../AuthProvider';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
 import SearchBar from "../components/SearchBar";
+import {Navigate} from 'react-router-dom';
 
 
 const Dashboard = () => {
 
     //NOTE: DO NOT USE AUTH, use userdata instead
-    const {classrooms, userdata, addClassroom} = useAuth();
+    const {classrooms, userdata, token, addClassroom} = useAuth();
 
     // We use the real auth data (user, email) for the profile view
     const userProfile = {
@@ -49,6 +50,11 @@ const Dashboard = () => {
     // State for managing the "Create Classroom" modal visibility and form data
     const [showAddClassroomForm, setShowAddClassroomForm] = useState(false);
     const [newClassroomData, setNewClassroomData] = useState({ name: '', description: '' });
+
+    //Redirect out to welcome page if there is no user
+    if (!token && !userdata?.id) {
+    return <Navigate to="/" replace />;
+    }
 
     // ====== Classroom Creation Handlers ======
 

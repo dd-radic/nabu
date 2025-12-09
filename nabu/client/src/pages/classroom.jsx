@@ -7,7 +7,10 @@ import ResourceCard from '../components/ResourceCard'; // Imports the new reusab
 
 
 const ClassroomPage = () => {
-    const { userdata, classrooms, addUser, removeUser, isMember, deleteClassroom, loadContent, createQuiz, createFlashcard } = useAuth();
+    const { userdata, token, 
+            classrooms, addUser, removeUser, isMember, deleteClassroom, 
+            loadContent, createQuiz, createFlashcard 
+        } = useAuth();
     const { classroomId } = useParams();
 
     // Sets the display name
@@ -37,11 +40,11 @@ const ClassroomPage = () => {
     );
 
     useEffect(() => {
-    if (!userdata?.id) return;
+    if (!userdata?.id && !token) return;
     if (!currentClassroom) return;
 
     loadContent(userdata, classroomId, setContent);
-}, [userdata, loadContent, currentClassroom, classroomId]);
+}, [userdata, token, loadContent, currentClassroom, classroomId]);
 
 
     // Initialize whether the user has joined this classroom
@@ -61,7 +64,7 @@ const ClassroomPage = () => {
     }, [currentClassroom, isMember]);
 
     //Guards to safely reroute out of classroom page if classroom or userdata not found
-    if (!userdata) return <Navigate to="/" />;
+    if (!userdata?.id && !token) return <Navigate to="/" />;
 
     if (!currentClassroom) {
         console.warn("Classroom not found (probably deleted). Redirecting to dashboard.");
@@ -236,8 +239,6 @@ const ClassroomPage = () => {
 
 
     // ====== Main JSX Structure ======
-    if (!userdata) return <Navigate to='/' />
-
     return (
         <main className="dashboard-page">
             {/* Navigation component. 'content' is the active tab for this page's context */}

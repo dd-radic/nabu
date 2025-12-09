@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { useAuth } from '../AuthProvider';
+import {Navigate} from 'react-router-dom';
 
 /**
  * This is the Login Page component.
@@ -11,6 +12,11 @@ const Login = () => {
 
   // 'data' holds the info from the form (username, password)
   const [data, setData] = useState({ username: '', password: '' });
+
+  //Check if there is already a user. If so, redirect to dashboard
+  if(auth.userdata?.id) {
+    return <Navigate to="/dashboard" replace />
+  }
 
   // This function updates the 'data' state every time the user types
   const changeHandler = (e) => {

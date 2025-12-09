@@ -9,68 +9,78 @@ import dashboardController from "./controllers/dashboardController.js";
 import quizController from "./controllers/quizController.js";
 import flashcardController from "./controllers/flashcardController.js";
 
-
 const AuthContext = createContext();
-
-
 
 const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem("site") || "");
-    const [userdata, setUserdata] = useState([]);
+    const [userdata, setUserdata] = useState(null);
     const [classrooms, setClassrooms] = useState([]); 
 
     // ======================Data fetching ============================================//
 
     /**     User Data   {@link user}   */
     useEffect(() => {
-            const fetchUserdata = async () => {
-                try {
-                    const res = await fetch("/api/user", {
-                    method: 'GET',
-                    // Include Token for Auth
-                    headers: {
-                        'Authorization': `Bearer ${token}`, 
-                    },
-                });
-                const data = await res.json();
-                setUserdata(data);
-                } catch (err) {
-                    console.error("Failed to fetch userdata:", err);
-                }
-            };
-    
-            fetchUserdata();
-        }, [token]);
+        const fetchUserdata = async () => {
+            try {
+                const res = await fetch("/api/user", {
+                method: 'GET',
+                // Include Token for Auth
+                headers: {
+                    'Authorization': `Bearer ${token}`, 
+                },
+            });
 
-    /**     Classroom Data   {@link classroom}   */
-        const fetchClassrooms = () => {classroomController.fetchClassrooms(userdata, setClassrooms)};
-        const fetchAllClassrooms = () => {classroomController.fetchAllClassrooms(setClassrooms)};
-        //By default, state classrooms is set to ALL (change later if needed)
-        useEffect(() => {
-            if(!userdata){
-                //If the classrooms have not loaded yet, leave before the system freaks out
-                setClassrooms([]);
+            //Protect from invalid userdata
+            if(!res.ok){
+                console.error("Failed to fetch userdata, status: ", res.status);
+                setUserdata(null);
+
+                //Nuke the token if the user is not authorized so that the reroutes work correctly
+                if(res.status === 401 || res.status === 403){
+                    setToken("");
+                    localStorage.removeItem("site");
+                }
                 return;
             }
-            classroomController.fetchAllClassrooms(setClassrooms)
-        }, [userdata]);
 
-        const isMember = async (classroomId) => {
-            const res = await classroomController.isMember(userdata, classroomId);
-            return res;
+            const data = await res.json();
+            setUserdata(data);
+
+            } catch (err) {
+                console.error("Failed to fetch userdata:", err);
+                setUserdata(null);
+            }
+        };
+    
+            fetchUserdata();
+    }, [token]);
+
+    /**Classroom Data   {@link classroom}   */
+    const fetchClassrooms = () => {classroomController.fetchClassrooms(userdata, setClassrooms)};
+    const fetchAllClassrooms = () => {classroomController.fetchAllClassrooms(setClassrooms)};
+    //By default, state classrooms is set to ALL (change later if needed)
+    useEffect(() => {
+        if(!userdata){
+            //If the classrooms have not loaded yet, leave before the system freaks out
+            setClassrooms([]);
+            return;
         }
+        classroomController.fetchAllClassrooms(setClassrooms)
+    }, [userdata]);
+
+    const isMember = async (classroomId) => {
+        const res = await classroomController.isMember(userdata, classroomId);
+        return res;
+    }
 
     //TODO: Do the same thing for flaschards, quizzes, and questions
-
-        //TODO
     /**     Flashcards   {@link flashcard}   */
     /**     Quizzes   {@link quiz}   */
-const loadContent = (userdata, classroomId, setContent) => {
-    classroomController.loadContent(userdata, classroomId, setContent);
-};
+    const loadContent = (userdata, classroomId, setContent) => {
+        classroomController.loadContent(userdata, classroomId, setContent);
+    };
 
-
-/**     Questions   {@link question}   */
+    /**     Questions   {@link question}   */
 
 
 
@@ -83,27 +93,25 @@ const loadContent = (userdata, classroomId, setContent) => {
     /**     Login   {@link login}   */
     const loginAction = async (req) => {loginController.loginAction(req, setUserdata, setToken)};
     /**     Log Out   */ 
-    const logOut = async(req) => {loginController.logOut(setUserdata)};
+    const logOut = async(req) => {loginController.logOut(setUserdata, setToken)};
 
 
     //==========Adding/Creation =====================================================//
 
-    //TODO: A more elegant way to do this would be nice, but might require some hardcore refactoring
+    //For Classroom page
     const addClassroom = async(payload) => (await classroomController.addClassroom(payload, setClassrooms));
-
     const addUser = async(classroomId) => {
         await classroomController.addUser(userdata, classroomId)
     };
     const removeUser = async(classroomId) => (await classroomController.removeUser(userdata, classroomId));
     
-    //TODO
-        /**     Add Flashcard to DB   {@link flashcard}   */
-        const createFlashcard = async(payload) => (await flashcardController.createFlashcard(payload, userdata));
-        
-        /**     Create Quizzes   {@link quiz}   */
-        const createQuiz = async(payload) => (await quizController.createQuiz(payload));
+    /**     Add Flashcard to DB   {@link flashcard}   */
+    const createFlashcard = async(payload) => (await flashcardController.createFlashcard(payload, userdata));
+    
+    /**     Create Quizzes   {@link quiz}   */
+    const createQuiz = async(payload) => (await quizController.createQuiz(payload));
 
-        /**     Create Questions   {@link question}   */
+    /**     Create Questions   {@link question}   */
 
     //============Update/Change========================================================//
     const updateUsername = async(userdata, newUsername) => (await dashboardController.updateUsername(userdata.id, newUsername));
@@ -111,7 +119,6 @@ const loadContent = (userdata, classroomId, setContent) => {
     //============Deletion=============================================================//
     const deleteClassroom = async(classroomId) => (await classroomController.deleteClassroom(classroomId, setClassrooms));
     
-
 
     //=====================Return data ================================================//
     const contextValue = {

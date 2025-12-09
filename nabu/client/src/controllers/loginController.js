@@ -29,9 +29,15 @@ const loginAction = async (req, setUserdata, setToken) => {
     }
 };
 
-const logOut = (setUserdata) => {
-    setUserdata([])
+const logOut = (setUserdata, setToken) => {
+    //Clear out React state
+    setUserdata(null);
+    setToken("");
+
+    //Clear out local storage
     localStorage.removeItem("site");
+
+    //Navigate back to welcome page
     window.location.href = "/#/"
 };
 

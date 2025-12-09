@@ -4,6 +4,14 @@ import {useAuth} from '../AuthProvider';
 const ProfileBlurb = () => {
   const {userdata} = useAuth();
 
+  if (!userdata) {
+    return (
+      <div className="profile-blurb">
+        <span>Welcome!</span>
+      </div>
+    );
+  }
+
   return (
     <div className="container header-content">
         {userdata.name} - {userdata.mail}
