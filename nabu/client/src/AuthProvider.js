@@ -109,7 +109,7 @@ const loadContent = (userdata, classroomId, setContent) => {
     const updateUsername = async(userdata, newUsername) => (await dashboardController.updateUsername(userdata.id, newUsername));
 
     //============Deletion=============================================================//
-    const deleteClassroom = async(classroomId) => (await classroomController.deleteClassroom(classroomId));
+    const deleteClassroom = async(classroomId) => (await classroomController.deleteClassroom(classroomId, setClassrooms));
     
 
 

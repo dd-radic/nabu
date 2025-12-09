@@ -84,7 +84,7 @@ const addClassroom = async (payload, setClassrooms) => {
     }
 }
 
-const deleteClassroom = async(classroomId) => {
+const deleteClassroom = async(classroomId, setClassrooms) => {
     try {
         const res = await fetch(`/api/classrooms/delete?classroomId=${classroomId}`, {
             method: "DELETE",
@@ -96,9 +96,14 @@ const deleteClassroom = async(classroomId) => {
             return;
         }
 
-        //Log a successful delete and reroute to the Dashboard page
+        //Log a successful delete and remove classroom from React state
         console.log("Classroom successfully deleted.");
-        window.location.href = "/#/dashboard";
+        setClassrooms(prev =>
+            prev.filter(c => c.id !== classroomId)
+        );
+
+        //Reroute to the dashboard page
+        //window.location.href = "/#/dashboard";
     }
 
     catch (err) {

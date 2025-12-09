@@ -41,7 +41,7 @@ const ClassroomPage = () => {
     if (!currentClassroom) return;
 
     loadContent(userdata, classroomId, setContent);
-}, [userdata?.id, currentClassroom, classroomId]);
+}, [userdata, loadContent, currentClassroom, classroomId]);
 
 
     // Initialize whether the user has joined this classroom
@@ -59,6 +59,14 @@ const ClassroomPage = () => {
 
         initJoin();
     }, [currentClassroom, isMember]);
+
+    //Guards to safely reroute out of classroom page if classroom or userdata not found
+    if (!userdata) return <Navigate to="/" />;
+
+    if (!currentClassroom) {
+        console.warn("Classroom not found (probably deleted). Redirecting to dashboard.");
+        return <Navigate to="/dashboard" replace />;
+    }
 
     // Step 1: Triggered by the Floating '+' button
     const handleAddTypeClick = () => {
@@ -160,7 +168,7 @@ const ClassroomPage = () => {
     }
 
     //======= Handler for delete classroom ===============================//
-    const handleDeleteClassroom = () => {
+    const handleDeleteClassroom = async() => {
         //Check that the user owns the classroom
         console.log("Classroom: ", currentClassroom);
         console.log(`UserId: ${userdata.id} and Classroom owner: ${currentClassroom.ownerId}`);
@@ -170,7 +178,7 @@ const ClassroomPage = () => {
         }
 
         //Send API call to delete classroom in the backend
-        deleteClassroom(currentClassroom.id);
+        await deleteClassroom(currentClassroom.id);
     }
 
 
