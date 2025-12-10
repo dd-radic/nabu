@@ -7,7 +7,7 @@ import {Navigate} from 'react-router-dom';
 
 
 const Dashboard = () => {
-
+    //==================== Imports ============================================//
     //NOTE: DO NOT USE AUTH, use userdata instead
     const {classrooms, userdata, token, addClassroom} = useAuth();
 
@@ -18,6 +18,7 @@ const Dashboard = () => {
         role: 'Student', // Still hardcoded for now
     };
 
+    //================== React states ========================================//
     // Controls which view is currently shown: Classrooms list or Profile details
     const [activeTab, setActiveTab] = useState('classrooms');
     // State for the existing classrooms
@@ -27,7 +28,6 @@ const Dashboard = () => {
 
     // Optional: Sorting mode state
     const [sortMode, setSortMode] = useState("none");
-
 
     const [search, setSearch] = useState("");
     let filteredClassrooms = classrooms.filter(c =>
@@ -51,6 +51,7 @@ const Dashboard = () => {
     const [showAddClassroomForm, setShowAddClassroomForm] = useState(false);
     const [newClassroomData, setNewClassroomData] = useState({ name: '', description: '' });
 
+    //=========== Page protection ==========================//
     //Redirect out to welcome page if there is no user
     if (!token && !userdata?.id) {
     return <Navigate to="/" replace />;
@@ -74,10 +75,6 @@ const Dashboard = () => {
         setNewClassroomData({ ...newClassroomData, [e.target.name]: e.target.value });
     };
 
-
-   // if (!token) return <Navigate to='/'/>
-
-
     const handleCreateClassroomSubmit = async (e) => {
         e.preventDefault();
 
@@ -94,8 +91,6 @@ const Dashboard = () => {
     };
 
     // ====== JSX Render ======
-
-
     return (
         <main className="dashboard-page">
             {/* Replaced the old button block with the reusable component */}

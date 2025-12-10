@@ -7,12 +7,14 @@ import ResourceCard from '../components/ResourceCard'; // Imports the new reusab
 
 
 const ClassroomPage = () => {
+    //=============== Imports =============================================//
     const { userdata, token, 
             classrooms, addUser, removeUser, isMember, deleteClassroom, 
             loadContent, createQuiz, createFlashcard 
         } = useAuth();
     const { classroomId } = useParams();
 
+    //=============== React States =======================================//
     // Sets the display name
     // Controls the main view: 'content' (default) or 'profile'
     const [activeTab, setActiveTab] = useState('content');
@@ -24,13 +26,11 @@ const ClassroomPage = () => {
     // BACKEND TASK: This data should be fetched using the classroomId (e.g., GET /api/classrooms/ID/content)
     const [content, setContent] = useState([]);
 
-
     // State for the data being entered into the creation forms
     const [newContentData, setNewContentData] = useState({
         name: '',
         description: '',
     });
-
 
     const [isUserJoined, setIsUserJoined] = useState(false);
 
@@ -39,13 +39,14 @@ const ClassroomPage = () => {
         (room) => String(room.id) === classroomId
     );
 
+    //=============== Initialization Steps ===============================//
+    //Guard that returns empty content if the userdata or classroom data is not loaded in yet
     useEffect(() => {
-    if (!userdata?.id && !token) return;
-    if (!currentClassroom) return;
+        if (!userdata?.id && !token) return;
+        if (!currentClassroom) return;
 
-    loadContent(userdata, classroomId, setContent);
-}, [userdata, token, loadContent, currentClassroom, classroomId]);
-
+        loadContent(userdata, classroomId, setContent);
+    }, [userdata, token, loadContent, currentClassroom, classroomId]);
 
     // Initialize whether the user has joined this classroom
     useEffect(() => {
@@ -65,12 +66,12 @@ const ClassroomPage = () => {
 
     //Guards to safely reroute out of classroom page if classroom or userdata not found
     if (!userdata?.id && !token) return <Navigate to="/" />;
-
     if (!currentClassroom) {
         console.warn("Classroom not found (probably deleted). Redirecting to dashboard.");
         return <Navigate to="/dashboard" replace />;
     }
 
+    //=============== Modal Control ============================================//
     // Step 1: Triggered by the Floating '+' button
     const handleAddTypeClick = () => {
         setCreationStep('selectType');
@@ -82,6 +83,7 @@ const ClassroomPage = () => {
         setNewContentData({ name: '', description: '' });
     };
 
+    //=============== Handler functions =======================================//
     // Step 2: Moves from type selection to showing the specific form
     const handleSelectType = (type) => {
         setCreationStep(type);
@@ -141,7 +143,6 @@ const ClassroomPage = () => {
             }
         }
 
-
         closeCreationModal();
     };
 
@@ -185,7 +186,7 @@ const ClassroomPage = () => {
     }
 
 
-    // ====== Modal Rendering Helper: Handles the two-step form flow ======
+    // ====== Modal Rendering Helper: Handles the two-step form flow ======//
 
     const renderCreationModalContent = () => {
         switch (creationStep) {
