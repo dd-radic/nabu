@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { useAuth } from '../AuthProvider';
-import { Link } from 'react-router-dom'; // Import Link
+import { useNavigate } from 'react-router-dom'; // Import Link
 
 /**
  * Reusable navigation component for the Dashboard and Classroom pages.
@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom'; // Import Link
  */
 const DashboardNav = ({ initialActiveTab, onTabChange }) => {
     const auth = useAuth();
+    const navigate = useNavigate();
     // Manage the active tab state internally
     const [activeTab, setActiveTab] = useState(initialActiveTab);
 
@@ -33,10 +34,10 @@ const DashboardNav = ({ initialActiveTab, onTabChange }) => {
     };
 
     // ====== JSX (The reusable button row) ======
-    
+
     return (
         <div className="dashboard-row">
-            {/* The Classrooms tab uses Link to force navigation back to the main list */}
+            {/* The Classrooms tab uses Link to force navigation back to the main list 
             <Link 
                 to="/dashboard"
                 // Check for 'classrooms' or 'content' to keep the tab highlighted when inside a classroom
@@ -44,7 +45,17 @@ const DashboardNav = ({ initialActiveTab, onTabChange }) => {
                 onClick={() => handleTabClick('classrooms')} 
             >
                 Classrooms
-            </Link>
+            </Link>*/}
+            <button
+                className={`dashboard-tab ${activeTab === 'classrooms' || activeTab === 'content' ? 'dashboard-tab-active' : ''}`}
+                onClick={() => {
+                    handleTabClick('classrooms');
+                    navigate('/dashboard');
+                }}
+            >
+                Dashboard
+            </button>
+
 
             <button
                 className="dashboard-tab"

@@ -1,7 +1,7 @@
 import React from "react";
-import "./SearchBar.css"; // CSS kommt gleich
 
-const SearchBar = ({ value, onChange,  onFilterClick  }) => {
+
+const SearchBar = ({ value, onChange, onFilterClick }) => {
     return (
         <div id="poda">
             <div className="glow"></div>
@@ -24,7 +24,7 @@ const SearchBar = ({ value, onChange,  onFilterClick  }) => {
                 <div id="pink-mask"></div>
                 <div className="filterBorder"></div>
 
-                <div id="filter-icon" onClick={onFilterClick} style={{cursor:"pointer"}}>
+                <div id="filter-icon" onClick={onFilterClick} style={{ cursor: "pointer" }}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="20"
