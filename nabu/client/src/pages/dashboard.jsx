@@ -3,13 +3,13 @@ import { useAuth } from '../AuthProvider';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
 import SearchBar from "../components/SearchBar";
-import {Navigate} from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 
 const Dashboard = () => {
     //==================== Imports ============================================//
     //NOTE: DO NOT USE AUTH, use userdata instead
-    const {classrooms, userdata, token, addClassroom} = useAuth();
+    const { classrooms, userdata, token, addClassroom } = useAuth();
 
     // We use the real auth data (user, email) for the profile view
     const userProfile = {
@@ -21,6 +21,12 @@ const Dashboard = () => {
     //================== React states ========================================//
     // Controls which view is currently shown: Classrooms list or Profile details
     const [activeTab, setActiveTab] = useState('classrooms');
+    // for the update-username popup 
+    const [showUpdateBox, setShowUpdateBox] = useState(false);
+    const [newUsername, setNewUsername] = useState("");
+    const [updateError, setUpdateError] = useState("");
+    const [updateSuccess, setUpdateSuccess] = useState("");
+
     // State for the existing classrooms
 
     // Filter Dropdown sichtba
@@ -54,7 +60,7 @@ const Dashboard = () => {
     //=========== Page protection ==========================//
     //Redirect out to welcome page if there is no user
     if (!token && !userdata?.id) {
-    return <Navigate to="/" replace />;
+        return <Navigate to="/" replace />;
     }
 
     // ====== Classroom Creation Handlers ======
@@ -89,6 +95,34 @@ const Dashboard = () => {
         await addClassroom(payload);
         closeAddClassroomForm();
     };
+    // open the update username box <-------------------------
+    const openUpdateBox = () => {
+        setNewUsername("");
+        setUpdateError("");
+        setUpdateSuccess("");
+        setShowUpdateBox(true);
+    };
+
+    // close the update username box <-------------------------
+    const closeUpdateBox = () => {
+        setShowUpdateBox(false);
+    };
+
+    // handle submit  <-------------------------
+    const handleUpdateSubmit = (e) => {
+        e.preventDefault();
+        setUpdateError("");
+        setUpdateSuccess("");
+
+        if (!newUsername.trim()) {
+            setUpdateError("Error");
+            return;
+        }
+
+        // pretend it worked <-------------------------
+        setUpdateSuccess("success");
+    };
+
 
     // ====== JSX Render ======
     return (
@@ -106,6 +140,28 @@ const Dashboard = () => {
                     <p><strong>Username:</strong> {userProfile.username}</p>
                     <p><strong>Email:</strong> {userProfile.email}</p>
                     <p><strong>Role:</strong> {userProfile.role}</p>
+                    {/* Action buttons <---------------------*/}
+                    <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}>
+                        <button
+                            type="button"
+                            className="dashboard-btn"
+                            onClick={openUpdateBox}
+                        >
+                            Update details
+                        </button>
+
+                        <button
+                            type="button"
+                            className="dashboard-btn"
+                            style={{ backgroundColor: "#b91c1c" }} // simple red-ish color
+                            onClick={() => {
+                                // delete functionality will be added later
+                            }}
+                        >
+                            Delete account
+                        </button>
+                    </div>
+
                 </section>
             )}
 
@@ -200,6 +256,66 @@ const Dashboard = () => {
                     )}
                 </section>
             )}
+            {/* Update Username Popup  <------------------------------ */}
+            {showUpdateBox && (
+                <div className="add-type-overlay" onClick={closeUpdateBox}>
+                    <div
+                        className="add-type-modal"
+                        onClick={(e) => e.stopPropagation()} // so clicking inside doesn't close
+                    >
+                        <div className="add-type-header">
+                            <h3>Update Username</h3>
+                            <button
+                                type="button"
+                                className="add-type-close"
+                                onClick={closeUpdateBox}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleUpdateSubmit}>
+                            <label>Current username:</label>
+                            <input
+                                type="text"
+                                value={userProfile.username || ""}
+                                readOnly
+                                className="form-input-text"
+                            />
+
+                            <label>New username:</label>
+                            <input
+                                type="text"
+                                value={newUsername}
+                                onChange={(e) => setNewUsername(e.target.value)}
+                                placeholder="Enter a new username"
+                                className="form-input-text"
+                            />
+
+                            {/* messages, frontend-only */}
+                            {updateError && (
+                                <p style={{ color: "red", marginTop: "0.5rem" }}>
+                                    {updateError}
+                                </p>
+                            )}
+                            {updateSuccess && (
+                                <p style={{ color: "green", marginTop: "0.5rem" }}>
+                                    {updateSuccess}
+                                </p>
+                            )}
+
+                            <button
+                                type="submit"
+                                className="dashboard-btn form-submit-btn"
+                                style={{ marginTop: "1rem" }}
+                            >
+                                Submit
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
         </main>
     );
 };
