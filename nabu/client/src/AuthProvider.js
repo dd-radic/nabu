@@ -81,7 +81,7 @@ const AuthProvider = ({ children }) => {
 
     useEffect((  ) => {
         const fetchQuiz = async () => {
-            try {
+            try {           //TODO: i am so so sorry -David
                     const data = await quizController.fetchQuiz(window.location.hash.substring(7));
                     setQuizdata(data);
                 } catch (error) {
