@@ -3,15 +3,23 @@ import bcrypt from "bcrypt";
 import pool from "../db-connection.js";
 import dotenv from "dotenv";
 import generateUniqueId from "../idGenerator.js";
-dotenv.config({ path: "../../.env" });
+dotenv.config({
+  path: "../../.env"
+});
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-      try {
-    const { username, email, password } = req.body;
+  try {
+    const {
+      username,
+      email,
+      password
+    } = req.body;
 
     if (!username || !email || !password) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res.status(400).json({
+        error: "Missing required fields"
+      });
     }
 
     const salt = await bcrypt.genSalt();
@@ -23,12 +31,12 @@ router.post("/", async (req, res) => {
     const userID = await generateUniqueId(table);
 
     let result;
-    try{
+    try {
       [result] = await pool.query(
         "INSERT INTO ?? (Id, Name, Email, Password) VALUES (?, ?, ?, ?)",
         [table, userID, username, email, encPass]
       );
-    }catch(dbErr){
+    } catch (dbErr) {
       throw dbErr;
     }
     console.log("New user added:", username, email);
@@ -37,13 +45,15 @@ router.post("/", async (req, res) => {
     return res.status(200).json({
       message: "User signed up!",
       userId: result.ID,
-      username : username,
-      password : password
+      username: username,
+      password: password
     });
 
   } catch (err) {
     console.error("Signup error:", err);
-    return res.status(101).json({ error: err.message || "Unknown error" });
+    return res.status(101).json({
+      error: err.message || "Unknown error"
+    });
   }
 });
 
