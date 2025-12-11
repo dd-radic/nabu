@@ -1,0 +1,12 @@
+.scalable-div {
+  display: inline-block;  /* Make it inline but still block-level for width/height control */
+  aspect-ratio: 4/3;
+  width: 50%;            /* Full width */
+  padding: 10px;
+  border-radius: 30px;    /* Optional: Rounded corners for a screen-like look */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  background-color: #fb3; /* White background for the "screen" */
+  overflow: hidden;       /* Hide overflow if content exceeds the container */
+  position: relative;
+  margin: 0;              /* Remove any margins */
+}

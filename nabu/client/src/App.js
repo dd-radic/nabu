@@ -6,7 +6,8 @@ import Home from './pages/home.jsx';
 import Login from './pages/login.jsx';
 import Signup from './pages/signup.jsx';
 import Dashboard from './pages/dashboard.jsx'; 
-import ClassroomPage from './pages/classroom.jsx'; 
+import ClassroomPage from './pages/classroom.jsx';
+import GameTest from './pages/gametest.jsx'; 
 
 // Import Auth Provider 
 import AuthProvider from './AuthProvider.js'; 
@@ -23,7 +24,7 @@ const App = () => {
       <AuthProvider> 
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<GameTest />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
 
