@@ -53,7 +53,7 @@ const Quiz = () => {
     const classroompageroute = "/#/classroom/" + quiz.ClassRoomId;
 
 
-
+  //================== JSX Render ======================================//
   return (
     // This main container fills the remaining screen space
     <main className="home-content-section">
