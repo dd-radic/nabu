@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuth } from '../AuthProvider';
 
 /**
  * =========    COPIED FROM HOME.JSX    ===========
@@ -9,6 +10,9 @@ import React from 'react';
  * It renders the main "Welcome" message and the action buttons.
  */
 const Quiz = () => {
+    const {quizdata} = useAuth();
+
+    console.log(quizdata)
 
   return (
     // This main container fills the remaining screen space
@@ -18,7 +22,7 @@ const Quiz = () => {
         <h1>
           WELCOME
           <br />
-          TO NABU
+          TO {quizdata.Title}
         </h1>
         <p>
           Your voice. Your solution. Your community.

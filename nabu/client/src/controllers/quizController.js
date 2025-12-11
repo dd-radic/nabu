@@ -18,6 +18,24 @@ const createQuiz = async (payload) => {
     }
 };
 
+const fetchQuiz = async (quizId) => {
+     try {
+        const res = await fetch(`api/quizzes/getCurrent?quizId=${quizId}`);
+        const data = await res.json();
 
-const quizController = {createQuiz}
+        // If the response is not OK, log and stop
+        if (!res.ok) {
+            console.error('Failed to load all classrooms (status):', res.status, data);
+            return;
+        }
+        return data;
+        //setQuizdata(data);
+
+    } catch (err) {
+        console.error("Failed to load all classrooms:", err);
+    }
+};
+
+
+const quizController = {createQuiz, fetchQuiz}
 export default quizController;

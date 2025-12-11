@@ -15,6 +15,7 @@ const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem("site") || "");
     const [userdata, setUserdata] = useState(null);
     const [classrooms, setClassrooms] = useState([]); 
+    const [quizdata, setQuizdata] = useState("");
 
     // ======================Data fetching ============================================//
 
@@ -78,6 +79,17 @@ const AuthProvider = ({ children }) => {
         classroomController.loadContent(userdata, classroomId, setContent);
     };
 
+    useEffect((  ) => {
+        const fetchQuiz = async () => {
+            try {
+                    const data = await quizController.fetchQuiz(window.location.hash.substring(7));
+                    setQuizdata(data);
+                } catch (error) {
+                    console.error("Failed to fetch quiz data:", error);
+                }
+        };
+            fetchQuiz();
+    }, []);
     /**     Questions   {@link question}   */
 
 
@@ -127,6 +139,7 @@ const AuthProvider = ({ children }) => {
     token,
     userdata,
     classrooms,
+    quizdata,
 
     signupAction,
     loginAction,

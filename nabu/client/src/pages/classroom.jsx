@@ -4,7 +4,6 @@ import { useAuth } from '../AuthProvider';
 import { Navigate } from 'react-router-dom';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
-import QuizCard from '../components/QuizCard';
 
 
 const ClassroomPage = () => {

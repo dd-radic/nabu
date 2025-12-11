@@ -27,6 +27,25 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/getCurrent", async (req, res) => {
+  const quizId = req.query.quizId;
+  if (!quizId) {
+    return res.status(400).json({ error: "quizId required" });
+  }
+
+  try {
+    const [rows] = await pool.query(
+      "SELECT * FROM Quiz WHERE Id = ?",
+      [quizId]
+    );
+    
+    return res.status(200).json(rows[0]);
+  } catch (err) {
+    console.error("QUIZ GET ERROR:", err);
+    return res.status(500).json({ error: err.message, code: err.code });
+  }
+});
+
 // ============================
 // CREATE quiz
 // ============================
