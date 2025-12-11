@@ -4,6 +4,7 @@ import { useAuth } from '../AuthProvider';
 import { Navigate } from 'react-router-dom';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
+import QuizCard from '../components/QuizCard';
 
 
 const ClassroomPage = () => {
@@ -283,6 +284,21 @@ const ClassroomPage = () => {
                             ))}
                         </div>
                     )}
+                        {/* QUIZZES QUIZ */}
+
+                        <div className="dashboard-box-header">
+                            <h2>{currentClassroom.name} Quizzes</h2>
+                        </div>
+                        <div className ="classroom-grid">
+                            {/* Map through the content and display using ResourceCard */}
+                            {content.map((item) => (
+                                <ResourceCard
+                                    key={item.id}
+                                    resource={item}
+                                    isClassroomLevel={false} // Tells the card to render as static content
+                                />
+                            ))}
+                        </div>
 
                     {/* Floating Add Button */}
                     <button

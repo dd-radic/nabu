@@ -40,7 +40,7 @@ const ResourceCard = ({ resource, isClassroomLevel = false }) => {
             {/* Only shows this extra instruction if it's a content card */}
             {!isClassroomLevel && (
                  <p className="classroom-description">
-                    Click to view/edit this {resource.type.toLowerCase()}.
+                    Click to view/edit this {resource.type}.
                  </p>
             )}
         </article>
@@ -54,6 +54,19 @@ const ResourceCard = ({ resource, isClassroomLevel = false }) => {
         return (
             <Link 
                 to={`/classroom/${resource.id}`} 
+                key={resource.id} 
+                className="classroom-card-link"
+            >
+                {cardContent}
+            </Link>
+        );
+    }
+
+    if (resource.type.toLowerCase() === "quiz") {
+        console.log(resource);
+        return (
+            <Link 
+                to={`/quiz/${resource.id}`} 
                 key={resource.id} 
                 className="classroom-card-link"
             >

@@ -18,5 +18,6 @@ const createQuiz = async (payload) => {
     }
 };
 
-const quizController = {createQuiz, }
+
+const quizController = {createQuiz}
 export default quizController;

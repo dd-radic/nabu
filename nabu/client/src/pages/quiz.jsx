@@ -8,7 +8,7 @@ import React from 'react';
  * This is the Home Page component.
  * It renders the main "Welcome" message and the action buttons.
  */
-const Home = () => {
+const Quiz = () => {
 
   return (
     // This main container fills the remaining screen space
@@ -44,4 +44,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Quiz;

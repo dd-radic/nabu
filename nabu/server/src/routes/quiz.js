@@ -22,6 +22,7 @@ router.get("/", async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error("QUIZ GET ERROR:", err);
+    console.log(rows[0])
     return res.status(500).json({ error: err.message, code: err.code });
   }
 });
