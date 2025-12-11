@@ -63,7 +63,6 @@ const ResourceCard = ({ resource, isClassroomLevel = false }) => {
     }
 
     if (resource.type.toLowerCase() === "quiz") {
-        console.log(resource);
         return (
             <Link 
                 to={`/quiz/${resource.id}`} 

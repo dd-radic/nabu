@@ -79,17 +79,8 @@ const AuthProvider = ({ children }) => {
         classroomController.loadContent(userdata, classroomId, setContent);
     };
 
-    useEffect((  ) => {
-        const fetchQuiz = async () => {
-            try {           //TODO: i am so so sorry -David
-                    const data = await quizController.fetchQuiz(window.location.hash.substring(7));
-                    setQuizdata(data);
-                } catch (error) {
-                    console.error("Failed to fetch quiz data:", error);
-                }
-        };
-            fetchQuiz();
-    }, []);
+    const fetchQuiz = async (quizId) => (await quizController.fetchQuiz(quizId));
+
     /**     Questions   {@link question}   */
 
 
@@ -155,6 +146,7 @@ const AuthProvider = ({ children }) => {
     loadContent,
 
     createQuiz,
+    fetchQuiz,
 
     createFlashcard,
 

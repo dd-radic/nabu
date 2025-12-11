@@ -28,7 +28,7 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/getCurrent", async (req, res) => {
-  const quizId = req.query.quizId;
+  const {quizId} = req.query;
   if (!quizId) {
     return res.status(400).json({ error: "quizId required" });
   }

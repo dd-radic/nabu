@@ -1,6 +1,7 @@
-import React from 'react';
+import {React, useEffect, useState} from 'react';
 import { useAuth } from '../AuthProvider';
-import ResourceCard from '../components/ResourceCard';
+//import ResourceCard from '../components/ResourceCard';
+import { useParams, Navigate } from 'react-router-dom';
 
 /**
  * =========    COPIED FROM HOME.JSX    ===========
@@ -11,11 +12,45 @@ import ResourceCard from '../components/ResourceCard';
  * It renders the main "Welcome" message and the action buttons.
  */
 const Quiz = () => {
-    const {quizdata} = useAuth();
+    const {userdata, fetchQuiz} = useAuth();
+    const {quizId} = useParams();
+    const[quiz, setQuiz] = useState(null);
 
-    console.log(quizdata)
+    //====================== Initialization ===========================//
+    useEffect(() => {
+      const loadQuiz = async() => {
+        try {
+          const quiz = await fetchQuiz(quizId);
+          if(!quiz){
+            console.warn("Quiz not found.");
+            setQuiz(null);
+          }
 
-    const classroompageroute = "/#/classroom/" + quizdata.ClassRoomId;
+          setQuiz(quiz);
+        }
+        catch(err){
+          console.error("Error fetching quiz: ", err);
+          return;
+        }
+      }
+
+      loadQuiz();
+    }, [fetchQuiz, quizId]);
+
+    //============== Guards =========================================//
+    if (!userdata?.id) {
+      return <Navigate to="/" replace />;
+    }
+    if (!quizId) {
+      console.warn("No quizId provided in route.");
+      return <Navigate to="/dashboard" replace />;
+    }
+    if (!quiz) {
+      console.log("Quiz loading...");
+      return;
+    }
+
+    const classroompageroute = "/#/classroom/" + quiz.ClassRoomId;
 
 
 
@@ -27,7 +62,7 @@ const Quiz = () => {
         <h1>
           WELCOME
           <br />
-          TO {quizdata.Title}
+          TO {quiz.Title}
         </h1>
         <p>
           Your quiz. Your questions. Your Bugs.

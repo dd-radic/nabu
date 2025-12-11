@@ -20,19 +20,23 @@ const createQuiz = async (payload) => {
 
 const fetchQuiz = async (quizId) => {
      try {
-        const res = await fetch(`api/quizzes/getCurrent?quizId=${quizId}`);
+        const res = await fetch(`/api/quizzes/getCurrent?quizId=${quizId}`, {
+            method: "GET",
+            headers: {"Content-Type" : "application/json"},
+        });
         const data = await res.json();
 
         // If the response is not OK, log and stop
         if (!res.ok) {
-            console.error('Failed to load all classrooms (status):', res.status, data);
+            console.error('Failed to load all quizzes:', res.status, data);
             return;
         }
+        console.log("Data from fetchQuiz: ", data);
         return data;
         //setQuizdata(data);
 
     } catch (err) {
-        console.error("Failed to load all classrooms:", err);
+        console.error("Failed to load all quizzes:", err);
     }
 };
 
