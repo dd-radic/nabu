@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './ResourceCard.css';
 
 /**
  * ResourceCard Component: Your universal card template.

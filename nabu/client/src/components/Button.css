@@ -1,0 +1,74 @@
+/* Base Button Style (Shape, Font, Animation) */
+.nabu-btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 9999px; /* Pill shape */
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    /* Ensure it works with Flexbox layouts */
+    line-height: 1.5; 
+}
+
+.nabu-btn:hover {
+    transform: translateY(-2px);
+}
+
+.nabu-btn:disabled {
+    background-color: #E5E7EB;
+    color: #9CA3AF;
+    cursor: not-allowed;
+    transform: none;
+    background-image: none;
+    box-shadow: none;
+}
+
+/* --- VARIANTS --- */
+
+/* Primary: The Standard Gradient Button */
+.nabu-btn-primary {
+    /* Use the variable if defined, otherwise fallback to the hardcoded gradient */
+    background-image: var(--color-brand-gradient, linear-gradient(to right, #FF8080, #993333));
+    color: white;
+    border: none;
+}
+.nabu-btn-primary:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Secondary: Gray (Used for Leave/Cancel) */
+.nabu-btn-secondary {
+    background-color: #E5E7EB;
+    color: #374151;
+    border: 1px solid #D1D5DB;
+}
+.nabu-btn-secondary:hover {
+    background-color: #D1D5DB;
+}
+
+/* Danger: Red -> Gradient on Hover (Used for Delete) */
+.nabu-btn-danger {
+    background-color: #EF4444;
+    color: white;
+    border: none;
+}
+.nabu-btn-danger:hover {
+    /* This creates the effect you wanted: Red turns to Gradient */
+    background-image: var(--color-brand-gradient, linear-gradient(to right, #FF8080, #993333));
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Outline: White with Border (Used on Home Page) */
+.nabu-btn-outline {
+    background-color: white;
+    color: #1F2937;
+    border-color: #E5E7EB;
+}
+.nabu-btn-outline:hover {
+    border-color: #FF8080;
+    color: #FF8080;
+}
