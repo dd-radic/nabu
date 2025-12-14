@@ -2,26 +2,34 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useAuth } from '../AuthProvider';
 import DashboardNav from '../components/DashboardNav';
-import ResourceCard from '../components/ResourceCard'; 
+import ResourceCard from '../components/ResourceCard';
 import CreateContentModal from '../components/CreateContentModal';
 import Button from '../components/Button'; // Import the new Component
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+
+
 
 const ClassroomPage = () => {
     // 1. Extract Hooks
-    const { 
-        userdata, token, classrooms, addUser, removeUser, isMember, 
-        deleteClassroom, loadContent, createQuiz, createFlashcard 
+    const {
+        userdata, token, classrooms, addUser, removeUser, isMember,
+        deleteClassroom, loadContent, createQuiz, createFlashcard
     } = useAuth();
-    
+
     const { classroomId } = useParams();
 
     // 2. State
     const [activeTab, setActiveTab] = useState('content');
-    const [contentFilter, setContentFilter] = useState('all'); 
+    const [contentFilter, setContentFilter] = useState('all');
     const [creationStep, setCreationStep] = useState(null);
     const [content, setContent] = useState([]);
     const [isUserJoined, setIsUserJoined] = useState(false);
     const [newContentData, setNewContentData] = useState({ name: '', description: '' });
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [hoveredId, setHoveredId] = useState(null);
+
+
+
 
     // 3. Derived Values
     const currentClassroom = useMemo(() => {
@@ -85,19 +93,18 @@ const ClassroomPage = () => {
 
     const handleLeaveUser = useCallback(() => {
         if (!isUserJoined) return alert("You are not a member.");
-        if(window.confirm("Are you sure you want to leave this classroom?")) {
+        if (window.confirm("Are you sure you want to leave this classroom?")) {
             removeUser(currentClassroom.id);
             setIsUserJoined(false);
         }
     }, [isUserJoined, removeUser, currentClassroom]);
 
-    const handleDeleteClassroom = useCallback(async () => {
-        if (!isOwner) return alert("You cannot delete a classroom that you do not own.");
-        
-        if(window.confirm("WARNING: This will delete the classroom and all its content. Are you sure?")) {
-             await deleteClassroom(currentClassroom.id);
-        }
-    }, [isOwner, currentClassroom, deleteClassroom]);
+    const handleDeleteContent = useCallback((item) => {
+        if (!window.confirm(`Delete "${item.name}"?`)) return;
+        setContent((prev) => prev.filter((c) => c.id !== item.id));
+    }, []);
+
+
 
     const handleCreateContentSubmit = useCallback(async (e) => {
         e.preventDefault();
@@ -110,7 +117,7 @@ const ClassroomPage = () => {
                 creatorId: userdata.id
             };
             const savedQuiz = await createQuiz(quizPayload);
-            if(savedQuiz) newItem = { id: savedQuiz.Id, name: savedQuiz.Title, type: "Quiz", summary: savedQuiz.Description };
+            if (savedQuiz) newItem = { id: savedQuiz.Id, name: savedQuiz.Title, type: "Quiz", summary: savedQuiz.Description };
         } else if (creationStep === "flashcard") {
             const fcPayload = {
                 classRoomId: classroomId,
@@ -119,7 +126,7 @@ const ClassroomPage = () => {
                 tags: "default"
             };
             const savedFC = await createFlashcard(fcPayload);
-            if(savedFC) newItem = { id: savedFC.id, name: newContentData.name, type: "Flashcard", summary: newContentData.description };
+            if (savedFC) newItem = { id: savedFC.id, name: newContentData.name, type: "Flashcard", summary: newContentData.description };
         }
 
         if (newItem) setContent(prev => [...prev, newItem]);
@@ -134,13 +141,14 @@ const ClassroomPage = () => {
     // 7. Render
     return (
         <main className="dashboard-page">
-            <DashboardNav initialActiveTab={'content'} onTabChange={setActiveTab} />
+            <DashboardNav initialActiveTab={'content'} onTabChange={setActiveTab} showBackButton={true} />
 
             {/* === HEADER SECTION === */}
             <section className="dashboard-box classroom-header-box">
                 <div className="classroom-info">
-                    <h1>{currentClassroom.name}</h1>
-                    <p>{currentClassroom.description || "No description provided."}</p>
+                    <h2>My Classroom: {currentClassroom.name}</h2>
+                    <p>Description: {currentClassroom.description || "No description provided."}</p>
+
                 </div>
 
                 <div className="classroom-actions">
@@ -153,33 +161,28 @@ const ClassroomPage = () => {
                     <Button variant="secondary" onClick={handleLeaveUser}>
                         Leave Classroom
                     </Button>
-                    
-                    {/* 3. Delete Button (Replaced with Component) */}
-                    {isOwner && (
-                        <Button variant="danger" onClick={handleDeleteClassroom}>
-                            Delete Classroom
-                        </Button>
-                    )}
+
+
                 </div>
             </section>
 
             {/* === CONTENT SECTION === */}
             {(activeTab === 'content' || activeTab === 'classrooms') && (
                 <section className="dashboard-box">
-                    <div className="dashboard-row" style={{justifyContent: 'flex-start', marginBottom: '1.5rem'}}>
-                        <button 
+                    <div className="dashboard-row" style={{ justifyContent: 'flex-start', marginBottom: '1.5rem' }}>
+                        <button
                             className={`dashboard-tab ${contentFilter === 'all' ? 'dashboard-tab-active' : ''}`}
                             onClick={() => setContentFilter('all')}
                         >
                             All
                         </button>
-                        <button 
+                        <button
                             className={`dashboard-tab ${contentFilter === 'Flashcard' ? 'dashboard-tab-active' : ''}`}
                             onClick={() => setContentFilter('Flashcard')}
                         >
                             Flashcards
                         </button>
-                        <button 
+                        <button
                             className={`dashboard-tab ${contentFilter === 'Quiz' ? 'dashboard-tab-active' : ''}`}
                             onClick={() => setContentFilter('Quiz')}
                         >
@@ -188,15 +191,41 @@ const ClassroomPage = () => {
                     </div>
 
                     {displayedContent.length === 0 ? (
-                        <div style={{textAlign: 'center', padding: '3rem', color: '#888'}}>
+                        <div style={{ textAlign: 'center', padding: '3rem', color: '#888' }}>
                             <p>No {contentFilter === 'all' ? 'content' : contentFilter} found.</p>
                             <p>Click the <strong>+</strong> button to create one!</p>
                         </div>
                     ) : (
                         <div className="classroom-grid">
                             {displayedContent.map((item) => (
-                                <ResourceCard key={item.id} resource={item} isClassroomLevel={false} />
+                                <div
+                                    key={item.id}
+                                    style={{ position: "relative" }}
+                                    onMouseEnter={() => setHoveredId(item.id)}
+                                    onMouseLeave={() => setHoveredId(null)}
+                                >
+
+                                    <ResourceCard resource={item} isClassroomLevel={false} />
+                                    {hoveredId === item.id && (
+                                        <div style={{ position: "absolute", top: 10, right: 10 }}>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                title="Delete"
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // prevent card navigation
+                                                    setDeleteTarget(item);
+                                                }}
+                                            >
+                                                🗑️
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
                             ))}
+
+
+
                         </div>
                     )}
 
@@ -204,7 +233,7 @@ const ClassroomPage = () => {
                         +
                     </button>
 
-                    <CreateContentModal 
+                    <CreateContentModal
                         step={creationStep}
                         onClose={closeCreationModal}
                         onSelectType={setCreationStep}
@@ -222,6 +251,19 @@ const ClassroomPage = () => {
                     <p><strong>Email:</strong> {userdata?.email}</p>
                 </section>
             )}
+            <ConfirmDeleteModal
+                isOpen={!!deleteTarget}
+                title="Delete content?"
+                message={`Are you sure you want to delete "${deleteTarget?.name}"?`}
+                onCancel={() => setDeleteTarget(null)}
+                onConfirm={() => {
+                    setContent((prev) =>
+                        prev.filter((c) => c.id !== deleteTarget.id)
+                    );
+                    setDeleteTarget(null);
+                }}
+            />
+
         </main>
     );
 };

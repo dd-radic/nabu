@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { useAuth } from '../AuthProvider';
 import { useNavigate } from 'react-router-dom';
 
-const DashboardNav = ({ initialActiveTab, onTabChange }) => {
+const DashboardNav = ({ initialActiveTab, onTabChange, showBackButton = false }) => {
     const auth = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(initialActiveTab);
 
     const handleGoHome = () => {
         // STYLE GUIDE FIX: Use navigate, not window.location
-        navigate('/dashboard'); 
+        navigate('/dashboard');
     };
 
     const handleLogout = () => {
@@ -27,15 +27,26 @@ const DashboardNav = ({ initialActiveTab, onTabChange }) => {
 
     return (
         <div className="dashboard-row">
-            <button
-                className={`dashboard-tab ${activeTab === 'classrooms' || activeTab === 'content' ? 'dashboard-tab-active' : ''}`}
-                onClick={() => {
-                    handleTabClick('classrooms');
-                    navigate('/dashboard');
-                }}
-            >
-                Dashboard
-            </button>
+            {showBackButton ? (
+                <button
+                    className="dashboard-tab"
+                    type="button"
+                    onClick={() => navigate(-1)}
+                >
+                    ← Back
+                </button>
+            ) : (
+
+                <button
+                    className={`dashboard-tab ${activeTab === 'classrooms' || activeTab === 'content' ? 'dashboard-tab-active' : ''}`}
+                    onClick={() => {
+                        handleTabClick('classrooms');
+                        navigate('/dashboard');
+                    }}
+                >
+                    Dashboard
+                </button>
+            )}
 
             {/* Renamed "Home" button to avoid confusion, or kept as requested but using Navigate */}
             <button
@@ -45,7 +56,7 @@ const DashboardNav = ({ initialActiveTab, onTabChange }) => {
             >
                 Home
             </button>
-            
+
             <button
                 className={`dashboard-tab ${activeTab === 'profile' ? 'dashboard-tab-active' : ''}`}
                 type="button"

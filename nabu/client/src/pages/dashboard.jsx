@@ -7,6 +7,7 @@ import { Navigate } from 'react-router-dom';
 import CreateClassroomModal from '../components/CreateClassroomModal';
 import UpdateUserModal from '../components/UpdateUserModal';
 import Button from '../components/Button'; // Import Button Component
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 const Dashboard = () => {
     // 1. Extract Hooks
@@ -24,19 +25,24 @@ const Dashboard = () => {
     const [search, setSearch] = useState("");
     const [showAddClassroomForm, setShowAddClassroomForm] = useState(false);
     const [newClassroomData, setNewClassroomData] = useState({ name: '', description: '' });
+    const [hiddenClassroomIds, setHiddenClassroomIds] = useState([]);
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [hoveredId, setHoveredId] = useState(null);
+
 
     // 3. Derived Values
     const filteredClassrooms = useMemo(() => {
         let result = classrooms.filter(c =>
-            c.name.toLowerCase().includes(search.toLowerCase())
-        );
+            !hiddenClassroomIds.includes(c.id)).filter((c) =>
+                c.name.toLowerCase().includes(search.toLowerCase())
+            );
         if (sortMode === "az") {
             result = [...result].sort((a, b) => a.name.localeCompare(b.name));
         } else if (sortMode === "za") {
             result = [...result].sort((a, b) => b.name.localeCompare(a.name));
         }
         return result;
-    }, [classrooms, search, sortMode]);
+    }, [classrooms, search, sortMode, hiddenClassroomIds]);
 
     const userProfile = useMemo(() => ({
         username: userdata?.name || 'Loading...',
@@ -117,13 +123,13 @@ const Dashboard = () => {
                     <p><strong>Username:</strong> {userProfile.username}</p>
                     <p><strong>Email:</strong> {userProfile.email}</p>
                     <p><strong>Role:</strong> {userProfile.role}</p>
-                    
+
                     <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}>
                         {/* REPLACED WITH BUTTON COMPONENT */}
                         <Button onClick={openUpdateBox}>
                             Update details
                         </Button>
-                        <Button variant="danger" onClick={() => {}}>
+                        <Button variant="danger" onClick={() => { }}>
                             Delete account
                         </Button>
                     </div>
@@ -162,11 +168,35 @@ const Dashboard = () => {
                     ) : (
                         <div className="classroom-grid">
                             {filteredClassrooms.map((room) => (
-                                <ResourceCard
+                                <div
                                     key={room.id}
-                                    resource={room}
-                                    isClassroomLevel={true}
-                                />
+                                    style={{ position: "relative" }}
+                                    onMouseEnter={() => setHoveredId(room.id)}
+                                    onMouseLeave={() => setHoveredId(null)}
+                                >
+                                    <ResourceCard
+
+                                        resource={room}
+                                        isClassroomLevel={true}
+                                    />
+                                    {hoveredId === room.id && (
+                                        <div style={{ position: "absolute", top: 10, right: 10 }}>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                title="Delete"
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // prevent navigation
+                                                    setDeleteTarget(room);
+                                                }}
+                                            >
+                                                🗑️
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+
                             ))}
                         </div>
                     )}
@@ -179,7 +209,7 @@ const Dashboard = () => {
                         +
                     </button>
 
-                    <CreateClassroomModal 
+                    <CreateClassroomModal
                         isOpen={showAddClassroomForm}
                         onClose={closeAddClassroomForm}
                         formData={newClassroomData}
@@ -189,7 +219,7 @@ const Dashboard = () => {
                 </section>
             )}
 
-            <UpdateUserModal 
+            <UpdateUserModal
                 isOpen={showUpdateBox}
                 onClose={closeUpdateBox}
                 currentUsername={userProfile.username}
@@ -198,6 +228,16 @@ const Dashboard = () => {
                 onSubmit={handleUpdateSubmit}
                 error={updateError}
                 success={updateSuccess}
+            />
+            <ConfirmDeleteModal
+                isOpen={!!deleteTarget}
+                title="Delete classroom?"
+                message={`Are you sure you want to delete "${deleteTarget?.name}"?`}
+                onCancel={() => setDeleteTarget(null)}
+                onConfirm={() => {
+                    setHiddenClassroomIds((prev) => [...prev, deleteTarget.id]);
+                    setDeleteTarget(null);
+                }}
             />
 
         </main>

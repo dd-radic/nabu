@@ -1,15 +1,18 @@
-import './App.css'; 
+import './App.css';
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
 // Import Page Components
 import Home from './pages/home.jsx';
 import Login from './pages/login.jsx';
 import Signup from './pages/signup.jsx';
-import Dashboard from './pages/dashboard.jsx'; 
-import ClassroomPage from './pages/classroom.jsx'; 
+import Dashboard from './pages/dashboard.jsx';
+import ClassroomPage from './pages/classroom.jsx';
+import QuizQuestionPage from './pages/QuizQuestionPage.jsx';
+import FlashcardDetailPage from './pages/FlashcardDetailPage.jsx';
+
 
 // Import Auth Provider 
-import AuthProvider from './AuthProvider.js'; 
+import AuthProvider from './AuthProvider.js';
 
 // Import Layout Component
 import { Layout } from './components/Layout.jsx';
@@ -20,7 +23,7 @@ import { Layout } from './components/Layout.jsx';
 const App = () => {
   return (
     <Router>
-      <AuthProvider> 
+      <AuthProvider>
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
@@ -29,9 +32,12 @@ const App = () => {
 
             {/* Dashboard route (lists all classrooms) */}
             <Route path="/dashboard" element={<Dashboard />} />
-            
+
             {/*  NEW DYNAMIC CLASSROOM ROUTE */}
             <Route path="/classroom/:classroomId" element={<ClassroomPage />} />
+            <Route path="/quiz/:quizId" element={<QuizQuestionPage />} />
+            <Route path="/flashcard/:flashcardId" element={<FlashcardDetailPage />} />
+
 
           </Route>
         </Routes>

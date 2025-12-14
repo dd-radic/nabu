@@ -26,7 +26,7 @@
   --color-bg-white: #FFFFFF;
   --color-bg-light-gray: #F9FAFB;
   --color-border: #E5E7EB;
-  
+
   --color-disabled: #E5E7EB;
   --color-disabled-text: #9CA3AF;
 }
@@ -47,7 +47,10 @@ body {
   line-height: 1.6;
 }
 
-html, body, #root, .app-layout-wrapper {
+html,
+body,
+#root,
+.app-layout-wrapper {
   height: 100%;
 }
 
@@ -77,7 +80,9 @@ html, body, #root, .app-layout-wrapper {
   padding: 4rem 0;
 }
 
-.home-content-wrapper { text-align: center; }
+.home-content-wrapper {
+  text-align: center;
+}
 
 .home-content-section h1 {
   font-size: 4rem;
@@ -112,21 +117,34 @@ html, body, #root, .app-layout-wrapper {
   transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); }
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
 
 .btn-brand {
   background-color: var(--color-brand-red);
   color: var(--color-bg-white);
   border-color: var(--color-brand-red);
 }
-.btn-brand:hover { background-image: var(--color-brand-gradient); border-color: transparent; }
+
+.btn-brand:hover {
+  background-image: var(--color-brand-gradient);
+  border-color: transparent;
+}
 
 .btn-secondary {
   background-color: var(--color-bg-white);
   color: var(--color-text-dark);
   border-color: var(--color-border);
 }
-.btn-secondary:hover { background-image: var(--color-brand-gradient); color: var(--color-bg-white); border-color: transparent; }
+
+.btn-secondary:hover {
+  background-image: var(--color-brand-gradient);
+  color: var(--color-bg-white);
+  border-color: transparent;
+}
 
 
 /* ========================================
@@ -153,7 +171,10 @@ html, body, #root, .app-layout-wrapper {
   text-decoration: none;
 }
 
-.header-logo-img { height: 32px; width: auto; }
+.header-logo-img {
+  height: 32px;
+  width: auto;
+}
 
 .header-app-name {
   font-size: 1.5rem;
@@ -183,7 +204,8 @@ html, body, #root, .app-layout-wrapper {
   max-width: 100%;
 }
 
-.auth-form-box h2, .auth-form-box h1 {
+.auth-form-box h2,
+.auth-form-box h1 {
   text-align: center;
 }
 
@@ -311,9 +333,22 @@ html, body, #root, .app-layout-wrapper {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-.dashboard-tab:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08); }
-.dashboard-tab-active { background-image: var(--color-brand-gradient); color: var(--color-bg-white); border-color: transparent; }
-.dashboard-tab-logout { color: var(--color-brand-dark-red); border-color: var(--color-brand-dark-red); }
+
+.dashboard-tab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-tab-active {
+  background-image: var(--color-brand-gradient);
+  color: var(--color-bg-white);
+  border-color: transparent;
+}
+
+.dashboard-tab-logout {
+  color: var(--color-brand-dark-red);
+  border-color: var(--color-brand-dark-red);
+}
 
 /* Grid Layout for Cards */
 .classroom-grid {
@@ -344,7 +379,11 @@ html, body, #root, .app-layout-wrapper {
   transition: all 0.2s ease;
   z-index: 20;
 }
-.floating-add-btn:hover { background-image: var(--color-brand-gradient); transform: translateY(-2px); }
+
+.floating-add-btn:hover {
+  background-image: var(--color-brand-gradient);
+  transform: translateY(-2px);
+}
 
 /* Classroom Header */
 .classroom-header-box {
@@ -355,9 +394,23 @@ html, body, #root, .app-layout-wrapper {
   gap: 1.5rem;
   margin-bottom: 1.5rem;
 }
-.classroom-info h1 { margin: 0; font-size: 2rem; color: var(--color-text-dark); }
-.classroom-info p { color: var(--color-text-light); margin-top: 0.5rem; margin-bottom: 0; }
-.classroom-actions { display: flex; gap: 1rem; }
+
+.classroom-info h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--color-text-dark);
+}
+
+.classroom-info p {
+  color: var(--color-text-light);
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.classroom-actions {
+  display: flex;
+  gap: 1rem;
+}
 
 
 /* ========================================
@@ -402,10 +455,21 @@ html, body, #root, .app-layout-wrapper {
   justify-content: center;
   transition: background 0.2s ease;
 }
-.add-type-close:hover { background: rgba(255, 0, 0, 0.15); }
 
-.add-type-text { margin-bottom: 1rem; color: #555; }
-.add-type-options { display: flex; gap: 1rem; flex-wrap: wrap; }
+.add-type-close:hover {
+  background: rgba(255, 0, 0, 0.15);
+}
+
+.add-type-text {
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.add-type-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
 
 .add-type-card {
   flex: 1 1 45%;
@@ -417,7 +481,12 @@ html, body, #root, .app-layout-wrapper {
   background: #f7f7f7;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
-.add-type-card:hover { background: #ffffff; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); }
+
+.add-type-card:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
 
 .form-input-text {
   width: 100%;
@@ -428,6 +497,15 @@ html, body, #root, .app-layout-wrapper {
   font-size: 1rem;
   resize: vertical;
 }
-.form-input-text:focus { outline: none; border-color: var(--color-brand-red); box-shadow: 0 0 0 3px rgba(255, 130, 130, 0.4); }
 
-.form-submit-btn { margin-top: 0.5rem; width: 100%; padding: 12px; }
+.form-input-text:focus {
+  outline: none;
+  border-color: var(--color-brand-red);
+  box-shadow: 0 0 0 3px rgba(255, 130, 130, 0.4);
+}
+
+.form-submit-btn {
+  margin-top: 0.5rem;
+  width: 100%;
+  padding: 12px;
+}
