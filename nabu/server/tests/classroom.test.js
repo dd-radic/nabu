@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import request from "supertest";
 
+// =======================
 // Mocks
+// =======================
 vi.mock("../src/db-connection.js", () => ({
   default: { query: vi.fn() }
 }));
@@ -19,8 +21,11 @@ describe("Classroom Routes", () => {
     vi.clearAllMocks();
   });
 
+  // =======================
+  // GET classrooms by user
+  // =======================
   it("should return classrooms for a user", async () => {
-    pool.query.mockResolvedValue([
+    pool.query.mockResolvedValueOnce([
       [{ ID: "1", OwnerID: "7", Title: "Math", Description: "basic" }]
     ]);
 
@@ -31,7 +36,7 @@ describe("Classroom Routes", () => {
   });
 
   it("should return empty array if user has no classrooms", async () => {
-    pool.query.mockResolvedValue([[]]);
+    pool.query.mockResolvedValueOnce([[]]);
 
     const res = await request(app).get("/api/classrooms?userId=99");
 
@@ -39,26 +44,94 @@ describe("Classroom Routes", () => {
     expect(res.body).toEqual([]);
   });
 
-  it("should return 404 if title or ownerID missing", async () => {
-    const res = await request(app)
-      .post("/api/classrooms")
-      .send({ title: "Physics" });
+  // =======================
+  // GET all classrooms
+  // =======================
+  it("should return all classrooms (admin)", async () => {
+    pool.query.mockResolvedValueOnce([
+      [{ ID: "1", Title: "Math" }, { ID: "2", Title: "Physics" }]
+    ]);
 
-    expect(res.status).toBe(404);
+    const res = await request(app).get("/api/classrooms/all");
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(2);
   });
 
-  it("should return 404 when trying to create a classroom", async () => {
-    generateUniqueId.mockResolvedValue("NEW123");
-    pool.query.mockResolvedValue([{ affectedRows: 1 }]);
+  // =======================
+  // CREATE classroom
+  // =======================
+  it("should create a classroom", async () => {
+    generateUniqueId.mockResolvedValueOnce("NEW123");
+    pool.query.mockResolvedValueOnce([{}]);
 
     const res = await request(app)
-      .post("/api/classrooms")
+      .post("/api/classrooms/add")
       .send({
         title: "Biology",
         description: "Cells",
         ownerID: 5
       });
 
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(200);
+    expect(res.body.Title).toBe("Biology");
+  });
+
+  // =======================
+  // JOIN classroom
+  // =======================
+  it("should allow user to join classroom", async () => {
+    pool.query
+      .mockResolvedValueOnce([[{ OwnerId: 1 }]]) // classroom exists
+      .mockResolvedValueOnce([[]])               // not member
+      .mockResolvedValueOnce([{}]);              // insert ok
+
+    const res = await request(app)
+      .post("/api/classrooms/join")
+      .send({ userId: 2, classroomId: "C1" });
+
+    expect(res.status).toBe(201);
+  });
+
+  // =======================
+  // LEAVE classroom
+  // =======================
+  it("should allow user to leave classroom", async () => {
+    pool.query
+      .mockResolvedValueOnce([[{ OwnerId: 1 }]]) // classroom exists
+      .mockResolvedValueOnce([[{ UserId: 2 }]])  // membership exists
+      .mockResolvedValueOnce([{}]);              // delete ok
+
+    const res = await request(app)
+      .delete("/api/classrooms/leave")
+      .send({ userId: 2, classroomId: "C1" });
+
+    expect(res.status).toBe(200);
+  });
+
+  // =======================
+  // IS MEMBER
+  // =======================
+  it("should return true if user is member", async () => {
+    pool.query.mockResolvedValueOnce([[{ UserId: 2 }]]);
+
+    const res = await request(app)
+      .get("/api/classrooms/isMember?userId=2&classroomId=C1");
+
+    expect(res.body).toBe(true);
+  });
+
+  // =======================
+  // DELETE classroom
+  // =======================
+  it("should delete a classroom", async () => {
+    pool.query
+      .mockResolvedValueOnce([{}]) // delete UserClassroom
+      .mockResolvedValueOnce([{}]); // delete ClassRoom
+
+    const res = await request(app)
+      .delete("/api/classrooms/delete?classroomId=C1");
+
+    expect(res.status).toBe(200);
   });
 });
