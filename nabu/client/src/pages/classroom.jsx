@@ -1,105 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useParams, Navigate } from 'react-router-dom';
 import { useAuth } from '../AuthProvider';
-import { Navigate } from 'react-router-dom';
 import DashboardNav from '../components/DashboardNav';
-import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
+import ResourceCard from '../components/ResourceCard';
+import CreateContentModal from '../components/CreateContentModal';
+import Button from '../components/Button'; // Import the new Component
+import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
+
 
 
 const ClassroomPage = () => {
-    //=============== Imports =============================================//
-    const { userdata, token, 
-            classrooms, addUser, removeUser, isMember, deleteClassroom, 
-            loadContent, createQuiz, createFlashcard 
-        } = useAuth();
+    // 1. Extract Hooks
+    const {
+        userdata, token, classrooms, addUser, removeUser, isMember,
+        deleteClassroom, loadContent, createQuiz, createFlashcard
+    } = useAuth();
+
     const { classroomId } = useParams();
 
-    //=============== React States =======================================//
-    // Sets the display name
-    // Controls the main view: 'content' (default) or 'profile'
+    // 2. State
     const [activeTab, setActiveTab] = useState('content');
-
-    // Controls the modal's internal state (what form to show: null, 'selectType', 'flashcard', 'quiz')
+    const [contentFilter, setContentFilter] = useState('all');
     const [creationStep, setCreationStep] = useState(null);
-
-    // Mock data for the content (Quizzes, Flashcards) inside this specific classroom.
-    // BACKEND TASK: This data should be fetched using the classroomId (e.g., GET /api/classrooms/ID/content)
     const [content, setContent] = useState([]);
-
-    // State for the data being entered into the creation forms
-    const [newContentData, setNewContentData] = useState({
-        name: '',
-        description: '',
-    });
-
     const [isUserJoined, setIsUserJoined] = useState(false);
+    const [newContentData, setNewContentData] = useState({ name: '', description: '' });
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [hoveredId, setHoveredId] = useState(null);
 
-    // Look up the classroom based on the URL parameter
-    const currentClassroom = classrooms.find(
-        (room) => String(room.id) === classroomId
-    );
 
-    //=============== Initialization Steps ===============================//
-    //Guard that returns empty content if the userdata or classroom data is not loaded in yet
+
+
+    // 3. Derived Values
+    const currentClassroom = useMemo(() => {
+        return classrooms.find((room) => String(room.id) === String(classroomId));
+    }, [classrooms, classroomId]);
+
+    const displayedContent = useMemo(() => {
+        if (contentFilter === 'all') return content;
+        return content.filter(item => item.type === contentFilter);
+    }, [content, contentFilter]);
+
+    // Check ownership
+    const isOwner = useMemo(() => {
+        if (!userdata || !currentClassroom) return false;
+        const roomOwner = currentClassroom.ownerID || currentClassroom.ownerId;
+        return String(userdata.id) === String(roomOwner);
+    }, [userdata, currentClassroom]);
+
+    // 4. Effects
     useEffect(() => {
         if (!userdata?.id && !token) return;
         if (!currentClassroom) return;
-
         loadContent(userdata, classroomId, setContent);
     }, [userdata, token, loadContent, currentClassroom, classroomId]);
 
-    // Initialize whether the user has joined this classroom
     useEffect(() => {
         if (!currentClassroom) return;
-
         const initJoin = async () => {
             try {
                 const member = await isMember(currentClassroom.id);
                 setIsUserJoined(member);
             } catch (err) {
-                console.error('Error checking membership:', err);
+                // handle error silently
             }
         };
-
         initJoin();
     }, [currentClassroom, isMember]);
 
-    //Guards to safely reroute out of classroom page if classroom or userdata not found
-    if (!userdata?.id && !token) return <Navigate to="/" />;
-    if (!currentClassroom) {
-        console.warn("Classroom not found (probably deleted). Redirecting to dashboard.");
-        return <Navigate to="/dashboard" replace />;
-    }
+    // 5. Handlers
+    const handleAddClick = useCallback(() => {
+        if (contentFilter === 'Flashcard') setCreationStep('flashcard');
+        else if (contentFilter === 'Quiz') setCreationStep('quiz');
+        else setCreationStep('selectType');
+    }, [contentFilter]);
 
-    //=============== Modal Control ============================================//
-    // Step 1: Triggered by the Floating '+' button
-    const handleAddTypeClick = () => {
-        setCreationStep('selectType');
-    };
-
-    // Resets the modal and closes it
-    const closeCreationModal = () => {
+    const closeCreationModal = useCallback(() => {
         setCreationStep(null);
         setNewContentData({ name: '', description: '' });
-    };
+    }, []);
 
-    //=============== Handler functions =======================================//
-    // Step 2: Moves from type selection to showing the specific form
-    const handleSelectType = (type) => {
-        setCreationStep(type);
-    };
-
-    // Captures form input
-    const handleFormChange = (e) => {
+    const handleFormChange = useCallback((e) => {
         const { name, value } = e.target;
-        setNewContentData({ ...newContentData, [name]: value });
-    };
+        setNewContentData(prev => ({ ...prev, [name]: value }));
+    }, []);
 
-    // Final Step: Submits the data and creates the new item
-    const handleCreateContentSubmit = async (e) => {
+    const handleJoinUser = useCallback(() => {
+        if (isUserJoined) return alert("You are already a member.");
+        addUser(currentClassroom.id);
+        setIsUserJoined(true);
+    }, [isUserJoined, addUser, currentClassroom]);
+
+    const handleLeaveUser = useCallback(() => {
+        if (!isUserJoined) return alert("You are not a member.");
+        if (window.confirm("Are you sure you want to leave this classroom?")) {
+            removeUser(currentClassroom.id);
+            setIsUserJoined(false);
+        }
+    }, [isUserJoined, removeUser, currentClassroom]);
+
+    const handleDeleteContent = useCallback((item) => {
+        if (!window.confirm(`Delete "${item.name}"?`)) return;
+        setContent((prev) => prev.filter((c) => c.id !== item.id));
+    }, []);
+
+
+
+    const handleCreateContentSubmit = useCallback(async (e) => {
         e.preventDefault();
-
-        // Nur Quiz speichern (Flashcards später)
+        let newItem = null;
         if (creationStep === "quiz") {
             const quizPayload = {
                 title: newContentData.name,
@@ -108,222 +117,153 @@ const ClassroomPage = () => {
                 creatorId: userdata.id
             };
             const savedQuiz = await createQuiz(quizPayload);
-
-            if (savedQuiz) {
-                setContent(prev => [
-                    ...prev,
-                    {
-                        id: savedQuiz.Id,
-                        name: savedQuiz.Title,
-                        type: "Quiz",
-                        summary: savedQuiz.Description || "No description"
-                    }
-                ]);
-            }
-        }
-        if (creationStep === "flashcard") {
-            const flashcardPayload = {
+            if (savedQuiz) newItem = { id: savedQuiz.Id, name: savedQuiz.Title, type: "Quiz", summary: savedQuiz.Description };
+        } else if (creationStep === "flashcard") {
+            const fcPayload = {
                 classRoomId: classroomId,
                 title: newContentData.name,
                 information: newContentData.description,
                 tags: "default"
-            }
-            const savedFC = await createFlashcard(flashcardPayload);
-
-            if (savedFC) {
-                setContent(prev => [
-                    ...prev,
-                    {
-                        id: savedFC.id,
-                        name: newContentData.name,
-                        type: "Flashcard",
-                        summary: newContentData.description || "Flashcard"
-                    }
-                ]);
-            }
+            };
+            const savedFC = await createFlashcard(fcPayload);
+            if (savedFC) newItem = { id: savedFC.id, name: newContentData.name, type: "Flashcard", summary: newContentData.description };
         }
 
+        if (newItem) setContent(prev => [...prev, newItem]);
         closeCreationModal();
-    };
-
-    //======= Handlers for user join/leave =======================//
-    const handleJoinUser = () => {
-        //Check if the user is already a member of the classroom
-        if (isUserJoined) {
-            alert("You are already a member of this classroom.");
-            return;
-        }
-
-        //Send API call to join the user in the backend
-        addUser(currentClassroom.id);
-        setIsUserJoined(true);
-    }
-
-    const handleLeaveUser = () => {
-        //Check if the user is not a member of this classroom
-        if (!isUserJoined) {
-            alert("You are not a member of this classroom.");
-            return;
-        }
-
-        //Send API call to leave the user in the backend
-        removeUser(currentClassroom.id);
-        setIsUserJoined(false);
-    }
-
-    //======= Handler for delete classroom ===============================//
-    const handleDeleteClassroom = async() => {
-        //Check that the user owns the classroom
-        console.log("Classroom: ", currentClassroom);
-        console.log(`UserId: ${userdata.id} and Classroom owner: ${currentClassroom.ownerId}`);
-        if (userdata.id !== currentClassroom.ownerId) {
-            alert("You cannot delete a classroom that you do not own.");
-            return;
-        }
-
-        //Send API call to delete classroom in the backend
-        await deleteClassroom(currentClassroom.id);
-    }
+    }, [creationStep, newContentData, classroomId, userdata, createQuiz, createFlashcard, closeCreationModal]);
 
 
-    // ====== Modal Rendering Helper: Handles the two-step form flow ======//
+    // 6. Guards
+    if (!userdata?.id && !token) return <Navigate to="/" />;
+    if (!currentClassroom) return <Navigate to="/dashboard" replace />;
 
-    const renderCreationModalContent = () => {
-        switch (creationStep) {
-            case 'selectType':
-                // Renders the buttons to choose between Flashcard or Quiz
-                return (
-                    <>
-                        <p className="add-type-text">Choose what type of content you want to create:</p>
-                        <div className="add-type-options">
-                            <button type="button" className="add-type-card" onClick={() => handleSelectType('flashcard')}>
-                                <h4>Flash Card</h4>
-                                <p>Define terms and concepts for study.</p>
-                            </button>
-                            <button type="button" className="add-type-card" onClick={() => handleSelectType('quiz')}>
-                                <h4>Quiz</h4>
-                                <p>Create questions for assessment.</p>
-                            </button>
-                        </div>
-                    </>
-                );
-
-            case 'flashcard':
-            case 'quiz':
-                // Renders the specific form based on selection ('flashcard' or 'quiz')
-                const isFlashcard = creationStep === 'flashcard';
-                const typeName = isFlashcard ? 'Flash Card Set' : 'Quiz';
-
-                return (
-                    <form onSubmit={handleCreateContentSubmit}>
-                        <label>{typeName} Name:</label>
-                        <input type="text" name="name" value={newContentData.name}
-                            onChange={handleFormChange} required className="form-input-text" />
-
-                        <label>Summary / Description:</label>
-                        <textarea name="description" value={newContentData.description}
-                            onChange={handleFormChange} rows="2" className="form-input-text"
-                            maxLength="150"
-                            placeholder={isFlashcard ? "e.g., Key definitions for Chapter 1" : "e.g., Multiple choice questions on history"}
-                        />
-
-                        <button type="submit" className="dashboard-btn form-submit-btn"
-                            disabled={!newContentData.name}>
-                            Create {typeName}
-                        </button>
-                    </form>
-                );
-            default:
-                return null;
-        }
-    };
-
-
-    // ====== Main JSX Structure ======
+    // 7. Render
     return (
         <main className="dashboard-page">
-            {/* Navigation component. 'content' is the active tab for this page's context */}
-            <DashboardNav
-                initialActiveTab={'content'}
-                onTabChange={setActiveTab}
-            />
+            <DashboardNav initialActiveTab={'content'} onTabChange={setActiveTab} showBackButton={true} />
 
-            {/*Buttons for adding/removing a user to a classroom*/}
-            {<section className="classroom-button-box">
-                <div className="classroom-button-group"> {/*Not sure if this needs a wrapper div, so this can be removed if not*/}
-                    <button id="join-classroom" onClick={handleJoinUser}>Join Classroom</button>
-                    <button id="leave-classroom" onClick={handleLeaveUser}>Leave Classroom</button>
+            {/* === HEADER SECTION === */}
+            <section className="dashboard-box classroom-header-box">
+                <div className="classroom-info">
+                    <h2>My Classroom: {currentClassroom.name}</h2>
+                    <p>Description: {currentClassroom.description || "No description provided."}</p>
+
                 </div>
-            </section>}
 
-            {/*Button for deleting a classroom*/}
-            {<section className="delete-button-box">
-                <button id="delete-classroom" onClick={handleDeleteClassroom}>Delete Classroom</button>
-            </section>}
+                <div className="classroom-actions">
+                    {/* 1. Join Button (Replaced with Component) */}
+                    <Button onClick={handleJoinUser}>
+                        Join Classroom
+                    </Button>
 
-            {/* CLASSROOM CONTENT VIEW: Renders the list of content items */}
+                    {/* 2. Leave Button (Replaced with Component) */}
+                    <Button variant="secondary" onClick={handleLeaveUser}>
+                        Leave Classroom
+                    </Button>
+
+
+                </div>
+            </section>
+
+            {/* === CONTENT SECTION === */}
             {(activeTab === 'content' || activeTab === 'classrooms') && (
                 <section className="dashboard-box">
-                    <div className="dashboard-box-header">
-                        <h2>{currentClassroom.name} Content</h2>
+                    <div className="dashboard-row" style={{ justifyContent: 'flex-start', marginBottom: '1.5rem' }}>
+                        <button
+                            className={`dashboard-tab ${contentFilter === 'all' ? 'dashboard-tab-active' : ''}`}
+                            onClick={() => setContentFilter('all')}
+                        >
+                            All
+                        </button>
+                        <button
+                            className={`dashboard-tab ${contentFilter === 'Flashcard' ? 'dashboard-tab-active' : ''}`}
+                            onClick={() => setContentFilter('Flashcard')}
+                        >
+                            Flashcards
+                        </button>
+                        <button
+                            className={`dashboard-tab ${contentFilter === 'Quiz' ? 'dashboard-tab-active' : ''}`}
+                            onClick={() => setContentFilter('Quiz')}
+                        >
+                            Quizzes
+                        </button>
                     </div>
 
-                    {/* Check if content list is empty */}
-                    {content.length === 0 ? (
-                        <p>No content in this classroom yet. Click the + button to add a Flash Card or Quiz.</p>
+                    {displayedContent.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '3rem', color: '#888' }}>
+                            <p>No {contentFilter === 'all' ? 'content' : contentFilter} found.</p>
+                            <p>Click the <strong>+</strong> button to create one!</p>
+                        </div>
                     ) : (
                         <div className="classroom-grid">
-                            {/* Map through the content and display using ResourceCard */}
-                            {content.map((item) => (
-                                <ResourceCard
+                            {displayedContent.map((item) => (
+                                <div
                                     key={item.id}
-                                    resource={item}
-                                    isClassroomLevel={false} // Tells the card to render as static content
-                                />
+                                    style={{ position: "relative" }}
+                                    onMouseEnter={() => setHoveredId(item.id)}
+                                    onMouseLeave={() => setHoveredId(null)}
+                                >
+
+                                    <ResourceCard resource={item} isClassroomLevel={false} />
+                                    {hoveredId === item.id && (
+                                        <div style={{ position: "absolute", top: 10, right: 10 }}>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                title="Delete"
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // prevent card navigation
+                                                    setDeleteTarget(item);
+                                                }}
+                                            >
+                                                🗑️
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
                             ))}
+
+
+
                         </div>
                     )}
 
-                    {/* Floating Add Button */}
-                    <button
-                        type="button"
-                        className="floating-add-btn"
-                        onClick={handleAddTypeClick}
-                    >
+                    <button type="button" className="floating-add-btn" onClick={handleAddClick}>
                         +
                     </button>
 
-                    {/* Content Creation Modal (Appears when creationStep is set) */}
-                    {creationStep && (
-                        <div className="add-type-overlay" onClick={closeCreationModal}>
-                            <div className="add-type-modal" onClick={(e) => e.stopPropagation()}>
-                                <div className="add-type-header">
-                                    {/* Dynamic Modal Title */}
-                                    <h3>
-                                        {creationStep === 'selectType' && 'Select Content Type'}
-                                        {creationStep === 'flashcard' && 'Create Flash Card Set'}
-                                        {creationStep === 'quiz' && 'Create Quiz'}
-                                    </h3>
-                                    <button type="button" className="add-type-close" onClick={closeCreationModal}>
-                                        ×
-                                    </button>
-                                </div>
-                                {renderCreationModalContent()}
-                            </div>
-                        </div>
-                    )}
+                    <CreateContentModal
+                        step={creationStep}
+                        onClose={closeCreationModal}
+                        onSelectType={setCreationStep}
+                        formData={newContentData}
+                        onFormChange={handleFormChange}
+                        onSubmit={handleCreateContentSubmit}
+                    />
                 </section>
             )}
 
-            {/* PROFILE TAB View */}
             {activeTab === 'profile' && (
                 <section className="dashboard-box">
                     <h2>Profile</h2>
-                    <p><strong>Username:</strong> {userdata?.name || 'Loading...'}</p>
-                    <p><strong>Email:</strong> {userdata?.email || 'N/A'}</p>
-                    <p><strong>Role:</strong> Student</p>
+                    <p><strong>Username:</strong> {userdata?.name}</p>
+                    <p><strong>Email:</strong> {userdata?.email}</p>
                 </section>
             )}
+            <ConfirmDeleteModal
+                isOpen={!!deleteTarget}
+                title="Delete content?"
+                message={`Are you sure you want to delete "${deleteTarget?.name}"?`}
+                onCancel={() => setDeleteTarget(null)}
+                onConfirm={() => {
+                    setContent((prev) =>
+                        prev.filter((c) => c.id !== deleteTarget.id)
+                    );
+                    setDeleteTarget(null);
+                }}
+            />
+
         </main>
     );
 };

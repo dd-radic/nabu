@@ -1,62 +1,54 @@
 import React from 'react';
 import { useState } from 'react';
 import { useAuth } from '../AuthProvider';
-import { useNavigate } from 'react-router-dom'; // Import Link
+import { useNavigate } from 'react-router-dom';
 
-/**
- * Reusable navigation component for the Dashboard and Classroom pages.
- * It manages the active tab state (Profile, Classrooms) and handles global actions like Logout.
- * @param {string} initialActiveTab - Sets the tab that should be active when the component loads (e.g., 'classrooms' or 'content').
- * @param {function} onTabChange - Callback function run when a tab is clicked.
- */
-const DashboardNav = ({ initialActiveTab, onTabChange }) => {
+const DashboardNav = ({ initialActiveTab, onTabChange, showBackButton = false }) => {
     const auth = useAuth();
     const navigate = useNavigate();
-    // Manage the active tab state internally
     const [activeTab, setActiveTab] = useState(initialActiveTab);
 
-    // ====== Handlers ======
-
     const handleGoHome = () => {
-        window.location.href = '/#/dashboard';
+        // STYLE GUIDE FIX: Use navigate, not window.location
+        navigate('/dashboard');
     };
 
     const handleLogout = () => {
         auth.logOut();
+        navigate('/'); // Redirect after logout
     };
 
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
-        // Notify the parent page (Dashboard or ClassroomPage) of the change
         if (onTabChange) {
             onTabChange(tabName);
         }
     };
 
-    // ====== JSX (The reusable button row) ======
-
     return (
         <div className="dashboard-row">
-            {/* The Classrooms tab uses Link to force navigation back to the main list 
-            <Link 
-                to="/dashboard"
-                // Check for 'classrooms' or 'content' to keep the tab highlighted when inside a classroom
-                className={`dashboard-tab ${activeTab === 'classrooms' || activeTab === 'content' ? 'dashboard-tab-active' : ''}`}
-                onClick={() => handleTabClick('classrooms')} 
-            >
-                Classrooms
-            </Link>*/}
-            <button
-                className={`dashboard-tab ${activeTab === 'classrooms' || activeTab === 'content' ? 'dashboard-tab-active' : ''}`}
-                onClick={() => {
-                    handleTabClick('classrooms');
-                    navigate('/dashboard');
-                }}
-            >
-                Dashboard
-            </button>
+            {showBackButton ? (
+                <button
+                    className="dashboard-tab"
+                    type="button"
+                    onClick={() => navigate(-1)}
+                >
+                    ← Back
+                </button>
+            ) : (
 
+                <button
+                    className={`dashboard-tab ${activeTab === 'classrooms' || activeTab === 'content' ? 'dashboard-tab-active' : ''}`}
+                    onClick={() => {
+                        handleTabClick('classrooms');
+                        navigate('/dashboard');
+                    }}
+                >
+                    Dashboard
+                </button>
+            )}
 
+            {/* Renamed "Home" button to avoid confusion, or kept as requested but using Navigate */}
             <button
                 className="dashboard-tab"
                 type="button"
@@ -64,6 +56,7 @@ const DashboardNav = ({ initialActiveTab, onTabChange }) => {
             >
                 Home
             </button>
+
             <button
                 className={`dashboard-tab ${activeTab === 'profile' ? 'dashboard-tab-active' : ''}`}
                 type="button"

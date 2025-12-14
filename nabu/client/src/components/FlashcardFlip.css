@@ -1,0 +1,142 @@
+/* =========================================
+   Flashcard Grid & Flip Animation Styles
+   Used in: FlashcardDetailPage.js
+   ========================================= */
+
+/* Grid Layout 
+   Creates a responsive grid that fits as many 240px cards as possible per row.
+*/
+.flashcard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+/* Card Container 
+   Sets the 3D perspective so the flip looks realistic (depth).
+*/
+.flashcard {
+    height: 220px;
+    perspective: 1000px;
+    /* Essential for the 3D effect */
+    cursor: pointer;
+}
+
+/* Inner Container 
+   Holds the Front and Back faces and handles the rotation transition.
+*/
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    /* Smooth ease */
+    transform-style: preserve-3d;
+    /* Keeps children in 3D space */
+    border-radius: 14px;
+}
+
+/* State: Flipped */
+.flashcard.is-flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+/* Face Styling (Shared)
+   Styles common to both Front and Back of the card.
+*/
+.flashcard-face {
+    position: absolute;
+    inset: 0;
+    /* Shorthand for top:0, right:0, bottom:0, left:0 */
+    backface-visibility: hidden;
+    /* Hides the back side when facing away */
+    border: 1px solid var(--color-border, #e5e5e5);
+    /* Fallback color added */
+    border-radius: 14px;
+    padding: 1rem;
+    background: var(--color-bg-white, #ffffff);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Headers inside the card */
+.flashcard-front h3,
+.flashcard-back h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: var(--color-primary, #333);
+}
+
+/* Main Content Text
+   Handles long words and enables scrolling if text is too long.
+*/
+.flashcard-text {
+    margin: 0;
+    color: var(--color-text-dark, #444);
+
+    /* Text Wrapping Logic */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: pre-wrap;
+
+    /* Layout Logic: fill available space */
+    flex: 1;
+    min-height: 0;
+    /* Allows flex child to shrink properly */
+
+    /* Scrollbar Logic: allow scrolling inside the card if text overflows */
+    overflow-y: auto;
+    scrollbar-width: thin;
+    /* Firefox thin scrollbar */
+}
+
+/* Hint Text 
+   "Click to flip" instruction at the bottom.
+*/
+.flashcard-hint {
+    margin-top: auto;
+    /* Pushes element to the bottom of the flex container */
+    padding-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-light, #888);
+    text-align: center;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* Back Side Specifics 
+   Rotated 180deg initially so it appears correct when flipped.
+*/
+.flashcard-back {
+    transform: rotateY(180deg);
+    background: var(--color-bg-light-gray, #f9f9f9);
+}
+
+/* Edit Button Styling 
+   Used for the floating action button on the card.
+*/
+.flashcard-edit-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: 1px solid var(--color-border, #ccc);
+    background: white;
+    border-radius: 50%;
+    /* Perfect circle */
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    z-index: 10;
+}
+
+.flashcard-edit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
