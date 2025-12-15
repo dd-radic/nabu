@@ -8,6 +8,7 @@ import loginController from "./controllers/loginController.js";
 import dashboardController from "./controllers/dashboardController.js";
 import quizController from "./controllers/quizController.js";
 import flashcardController from "./controllers/flashcardController.js";
+import questionController from "./controllers/questionController.js";
 
 const AuthContext = createContext();
 
@@ -83,6 +84,8 @@ const AuthProvider = ({ children }) => {
 
     /**     Questions   {@link question}   */
 
+    const fetchQuizQuestions = async (quizId) => (await questionController.fetchQuizQuestions(quizId));
+
 
 
     //============User Verification (signup/login) Routes ===============================================//
@@ -147,6 +150,8 @@ const AuthProvider = ({ children }) => {
 
     createQuiz,
     fetchQuiz,
+
+    fetchQuizQuestions,
 
     createFlashcard,
 

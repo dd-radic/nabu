@@ -5,12 +5,13 @@ import generateUniqueId from "../idGenerator.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const quizId = req.body.quizId;
+  const {quizId} = req.query;
+  console.log(quizId);
 
   if (!quizId) {
     return res.status(400).json({ error: "quizId required" });
   }
-
+  
   try {
     const [rows] = await pool.query(
       "SELECT * FROM Question WHERE QuizId = ?",

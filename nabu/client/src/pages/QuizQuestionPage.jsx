@@ -10,7 +10,7 @@ import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 const QuizQuestionPage = () => {
     const { quizId } = useParams();
     const location = useLocation();
-    const { userdata, token } = useAuth();
+    const { userdata, token, fetchQuiz, fetchQuizQuestions } = useAuth();
 
     const quiz = location.state?.quiz;
 
@@ -26,11 +26,28 @@ const QuizQuestionPage = () => {
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [deleteTarget, setDeleteTarget] = useState(null);
 
-    // Init questions from quiz state
+    // // Init questions from quiz state
+    // useEffect(() => {
+    //     const initial = quiz?.questions || quiz?.Questions || quiz?.quizQuestions || [];
+    //     setQuestions(Array.isArray(initial) ? initial : []);
+    // }, [quiz]);
+
     useEffect(() => {
-        const initial = quiz?.questions || quiz?.Questions || quiz?.quizQuestions || [];
-        setQuestions(Array.isArray(initial) ? initial : []);
-    }, [quiz]);
+          const loadQuiz = async() => {
+            try {
+              const initial = await fetchQuizQuestions(quizId);
+              if(!quiz){
+                console.warn("Quiz not found.");
+              }
+              setQuestions(initial);
+            }
+            catch(err){
+              console.error("Error fetching quiz: ", err);
+              return;
+            }
+          }
+          loadQuiz();
+        }, []);
 
     // Normalize shape: { id, text, options[] }
     const normalizedQuestions = useMemo(() => {
