@@ -1,0 +1,59 @@
+/* =========================================
+   Quiz Table Styles
+   Used in: QuizQuestionPage.js
+   ========================================= */
+
+/* Main container for the table */
+.quiz-table {
+    width: 100%;
+    border-collapse: collapse;
+    /* Ensures borders are shared between cells */
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    /* Rounds the outer corners */
+    overflow: hidden;
+    /* Ensures children do not overflow the rounded corners */
+    margin-bottom: 1rem;
+    /* Spacing below the table */
+}
+
+/* Table Header (th) styling */
+.quiz-table th {
+    text-align: left;
+    background-color: #f6f6f6;
+    padding: 12px 14px;
+    font-weight: 600;
+    color: #333;
+    /* Dark grey for text contrast */
+    border-bottom: 1px solid #e5e5e5;
+}
+
+/* Table Body (td) styling */
+.quiz-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #eeeeee;
+    color: #555;
+    /* Softer grey for body text */
+    vertical-align: middle;
+    /* Vertically centers content (like icons) */
+}
+
+/* Interactive Hover Effect 
+   Since rows are clickable in React, this helps user experience.
+*/
+.quiz-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.quiz-table tbody tr:hover {
+    background-color: #fafafa;
+    /* Light grey highlight on mouse over */
+    cursor: pointer;
+    /* Shows the hand icon */
+}
+
+/* Remove the bottom border from the very last row to look cleaner */
+.quiz-table tr:last-child td {
+    border-bottom: none;
+}

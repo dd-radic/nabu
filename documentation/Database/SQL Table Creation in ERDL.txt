@@ -20,6 +20,7 @@ Name varchar
 Email varchar
 Password varchar
 CreatedAt datetime
+EXP int
 
 FlashCard
 -
@@ -44,6 +45,7 @@ UserClassroom
 ClassroomID int FK > ClassRoom.Id
 UserId int FK > User.Id
 JoinedAt datetime
+Score int
 
 Quiz
 -
@@ -52,6 +54,7 @@ ClassroomId int FK > ClassRoom.Id
 CreatorId int FK > User.Id
 Title varchar
 CreatedAt datetime
+Yield int
 
 Question
 -
@@ -68,3 +71,4 @@ UserQuiz
 QuizId int FK > Quiz.Id
 UserId int FK > User.Id
 JoinedAt datetime
+Completed boolean

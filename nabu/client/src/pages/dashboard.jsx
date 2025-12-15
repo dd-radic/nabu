@@ -1,171 +1,142 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useAuth } from '../AuthProvider';
 import DashboardNav from '../components/DashboardNav';
-import ResourceCard from '../components/ResourceCard'; // Imports the new reusable card
+import ResourceCard from '../components/ResourceCard';
 import SearchBar from "../components/SearchBar";
 import { Navigate } from 'react-router-dom';
-
+import CreateClassroomModal from '../components/CreateClassroomModal';
+import UpdateUserModal from '../components/UpdateUserModal';
+import Button from '../components/Button'; // Import Button Component
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 const Dashboard = () => {
-    //==================== Imports ============================================//
-    //NOTE: DO NOT USE AUTH, use userdata instead
+    // 1. Extract Hooks
     const { classrooms, userdata, token, addClassroom } = useAuth();
 
-    // We use the real auth data (user, email) for the profile view
-    const userProfile = {
-        username: userdata?.name || 'Loading...',
-        email: userdata?.email || 'N/A',
-        role: 'Student', // Still hardcoded for now
-    };
-
-    //================== React states ========================================//
-    // Controls which view is currently shown: Classrooms list or Profile details
+    // 2. State
     const [activeTab, setActiveTab] = useState('classrooms');
-    // for the update-username popup 
     const [showUpdateBox, setShowUpdateBox] = useState(false);
     const [newUsername, setNewUsername] = useState("");
     const [updateError, setUpdateError] = useState("");
     const [updateSuccess, setUpdateSuccess] = useState("");
 
-    // State for the existing classrooms
-
-    // Filter Dropdown sichtba
     const [showFilter, setShowFilter] = useState(false);
-
-    // Optional: Sorting mode state
     const [sortMode, setSortMode] = useState("none");
-
     const [search, setSearch] = useState("");
-    let filteredClassrooms = classrooms.filter(c =>
-        c.name.toLowerCase().includes(search.toLowerCase())
-    );
-
-    if (sortMode === "az") {
-        filteredClassrooms = [...filteredClassrooms].sort((a, b) =>
-            a.name.localeCompare(b.name)
-        );
-    }
-
-    //ALWAYS SORT A COPY OF THE ARRAY OTHERWISE IT MESSES UP THE RENDERING IDs
-    if (sortMode === "za") {
-        filteredClassrooms = [...filteredClassrooms].sort((a, b) =>
-            b.name.localeCompare(a.name)
-        );
-    }
-
-    // State for managing the "Create Classroom" modal visibility and form data
     const [showAddClassroomForm, setShowAddClassroomForm] = useState(false);
     const [newClassroomData, setNewClassroomData] = useState({ name: '', description: '' });
+    const [hiddenClassroomIds, setHiddenClassroomIds] = useState([]);
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [hoveredId, setHoveredId] = useState(null);
 
-    //=========== Page protection ==========================//
-    //Redirect out to welcome page if there is no user
-    if (!token && !userdata?.id) {
-        return <Navigate to="/" replace />;
-    }
 
-    // ====== Classroom Creation Handlers ======
+    // 3. Derived Values
+    const filteredClassrooms = useMemo(() => {
+        let result = classrooms.filter(c =>
+            !hiddenClassroomIds.includes(c.id)).filter((c) =>
+                c.name.toLowerCase().includes(search.toLowerCase())
+            );
+        if (sortMode === "az") {
+            result = [...result].sort((a, b) => a.name.localeCompare(b.name));
+        } else if (sortMode === "za") {
+            result = [...result].sort((a, b) => b.name.localeCompare(a.name));
+        }
+        return result;
+    }, [classrooms, search, sortMode, hiddenClassroomIds]);
 
-    const handleAddClassroomClick = () => {
-        // Opens the classroom creation modal
+    const userProfile = useMemo(() => ({
+        username: userdata?.name || 'Loading...',
+        email: userdata?.email || 'N/A',
+        role: 'Student',
+    }), [userdata]);
+
+    // 4. Handlers
+    const handleAddClassroomClick = useCallback(() => {
         setShowAddClassroomForm(true);
-    };
+    }, []);
 
-    const closeAddClassroomForm = () => {
-        // Closes the modal and resets the form data
+    const closeAddClassroomForm = useCallback(() => {
         setShowAddClassroomForm(false);
         setNewClassroomData({ name: '', description: '' });
-    };
+    }, []);
 
-    const handleFormChange = (e) => {
-        // Captures input from the form fields
-        setNewClassroomData({ ...newClassroomData, [e.target.name]: e.target.value });
-    };
+    const handleFormChange = useCallback((e) => {
+        const { name, value } = e.target;
+        setNewClassroomData(prev => ({ ...prev, [name]: value }));
+    }, []);
 
-    const handleCreateClassroomSubmit = async (e) => {
+    const handleCreateClassroomSubmit = useCallback(async (e) => {
         e.preventDefault();
-
-
-        // Backend waits for: title, description, ownerID
         const payload = {
             title: newClassroomData.name,
             description: newClassroomData.description,
             ownerID: userdata.id
         };
-
         await addClassroom(payload);
         closeAddClassroomForm();
-    };
-    // open the update username box <-------------------------
-    const openUpdateBox = () => {
+    }, [newClassroomData, userdata, addClassroom, closeAddClassroomForm]);
+
+    const openUpdateBox = useCallback(() => {
         setNewUsername("");
         setUpdateError("");
         setUpdateSuccess("");
         setShowUpdateBox(true);
-    };
+    }, []);
 
-    // close the update username box <-------------------------
-    const closeUpdateBox = () => {
+    const closeUpdateBox = useCallback(() => {
         setShowUpdateBox(false);
-    };
+    }, []);
 
-    // handle submit  <-------------------------
-    const handleUpdateSubmit = (e) => {
+    const handleUpdateSubmit = useCallback((e) => {
         e.preventDefault();
         setUpdateError("");
         setUpdateSuccess("");
 
         if (!newUsername.trim()) {
-            setUpdateError("Error");
+            setUpdateError("Error: Username cannot be empty");
             return;
         }
+        setUpdateSuccess("Success (Mock)");
+    }, [newUsername]);
 
-        // pretend it worked <-------------------------
-        setUpdateSuccess("success");
-    };
+    const toggleFilter = useCallback(() => {
+        setShowFilter(prev => !prev);
+    }, []);
 
+    // 5. Guards
+    if (!token && !userdata?.id) {
+        return <Navigate to="/" replace />;
+    }
 
-    // ====== JSX Render ======
+    // 6. Render
     return (
         <main className="dashboard-page">
-            {/* Replaced the old button block with the reusable component */}
             <DashboardNav
                 initialActiveTab={activeTab}
-                onTabChange={setActiveTab} // Updates the local 'activeTab' state
+                onTabChange={setActiveTab}
             />
 
-            {/* Profile View: Only rendered if 'profile' tab is active */}
+            {/* Profile View */}
             {activeTab === 'profile' && (
                 <section className="dashboard-box">
                     <h2>Profile</h2>
                     <p><strong>Username:</strong> {userProfile.username}</p>
                     <p><strong>Email:</strong> {userProfile.email}</p>
                     <p><strong>Role:</strong> {userProfile.role}</p>
-                    {/* Action buttons <---------------------*/}
+
                     <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}>
-                        <button
-                            type="button"
-                            className="dashboard-btn"
-                            onClick={openUpdateBox}
-                        >
+                        {/* REPLACED WITH BUTTON COMPONENT */}
+                        <Button onClick={openUpdateBox}>
                             Update details
-                        </button>
-
-                        <button
-                            type="button"
-                            className="dashboard-btn"
-                            style={{ backgroundColor: "#b91c1c" }} // simple red-ish color
-                            onClick={() => {
-                                // delete functionality will be added later
-                            }}
-                        >
+                        </Button>
+                        <Button variant="danger" onClick={() => { }}>
                             Delete account
-                        </button>
+                        </Button>
                     </div>
-
                 </section>
             )}
 
-            {/* Classrooms List View: Only rendered if 'classrooms' tab is active */}
+            {/* Classrooms List View */}
             {activeTab === 'classrooms' && (
                 <section className="dashboard-box">
                     <div className="dashboard-box-header">
@@ -173,32 +144,23 @@ const Dashboard = () => {
                         <SearchBar
                             value={search}
                             onChange={setSearch}
-                            onFilterClick={() => setShowFilter(prev => !prev)}
+                            onFilterClick={toggleFilter}
                         />
                         {showFilter && (
                             <div className="filter-dropdown">
                                 <button onClick={() => setSortMode("az")}>
-                                    Sort A → Z
-                                    {sortMode === "az" && <span className="checkmark">✔</span>}
+                                    Sort A → Z {sortMode === "az" && <span className="checkmark">✔</span>}
                                 </button>
-
                                 <button onClick={() => setSortMode("za")}>
-                                    Sort Z → A
-                                    {sortMode === "za" && <span className="checkmark">✔</span>}
+                                    Sort Z → A {sortMode === "za" && <span className="checkmark">✔</span>}
                                 </button>
-
                                 <button onClick={() => setSortMode("none")}>
-                                    Reset
-                                    {sortMode === "none" && <span className="checkmark">✔</span>}
+                                    Reset {sortMode === "none" && <span className="checkmark">✔</span>}
                                 </button>
                             </div>
                         )}
-
-
-
                     </div>
 
-                    {/* Check if the list is empty */}
                     {classrooms.length === 0 ? (
                         <p>No classrooms created yet. Click + to add one.</p>
                     ) : filteredClassrooms.length === 0 ? (
@@ -206,17 +168,39 @@ const Dashboard = () => {
                     ) : (
                         <div className="classroom-grid">
                             {filteredClassrooms.map((room) => (
-                                <ResourceCard
+                                <div
                                     key={room.id}
-                                    resource={room}
-                                    isClassroomLevel={true}
-                                />
+                                    style={{ position: "relative" }}
+                                    onMouseEnter={() => setHoveredId(room.id)}
+                                    onMouseLeave={() => setHoveredId(null)}
+                                >
+                                    <ResourceCard
+
+                                        resource={room}
+                                        isClassroomLevel={true}
+                                    />
+                                    {hoveredId === room.id && (
+                                        <div style={{ position: "absolute", top: 10, right: 10 }}>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                title="Delete"
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // prevent navigation
+                                                    setDeleteTarget(room);
+                                                }}
+                                            >
+                                                🗑️
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+
                             ))}
                         </div>
                     )}
 
-
-                    {/* Floating Add Button for creating a new Classroom */}
                     <button
                         type="button"
                         className="floating-add-btn"
@@ -225,96 +209,36 @@ const Dashboard = () => {
                         +
                     </button>
 
-                    {/* Classroom Creation Form Modal */}
-                    {showAddClassroomForm && (
-                        <div className="add-type-overlay" onClick={closeAddClassroomForm}>
-                            <div className="add-type-modal" onClick={(e) => e.stopPropagation()}>
-                                <div className="add-type-header">
-                                    <h3>Create New Classroom</h3>
-                                    <button type="button" className="add-type-close" onClick={closeAddClassroomForm}>
-                                        ×
-                                    </button>
-                                </div>
-
-                                <form onSubmit={handleCreateClassroomSubmit}>
-                                    <label>Classroom Name:</label>
-                                    <input type="text" name="name" value={newClassroomData.name}
-                                        onChange={handleFormChange} required className="form-input-text" />
-
-                                    <label>Description:</label>
-                                    <textarea name="description" value={newClassroomData.description}
-                                        onChange={handleFormChange} rows="3" className="form-input-text"
-                                        maxLength="150" />
-
-                                    <button type="submit" className="dashboard-btn form-submit-btn"
-                                        disabled={!newClassroomData.name}>
-                                        Create Classroom
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    )}
+                    <CreateClassroomModal
+                        isOpen={showAddClassroomForm}
+                        onClose={closeAddClassroomForm}
+                        formData={newClassroomData}
+                        onFormChange={handleFormChange}
+                        onSubmit={handleCreateClassroomSubmit}
+                    />
                 </section>
             )}
-            {/* Update Username Popup  <------------------------------ */}
-            {showUpdateBox && (
-                <div className="add-type-overlay" onClick={closeUpdateBox}>
-                    <div
-                        className="add-type-modal"
-                        onClick={(e) => e.stopPropagation()} // so clicking inside doesn't close
-                    >
-                        <div className="add-type-header">
-                            <h3>Update Username</h3>
-                            <button
-                                type="button"
-                                className="add-type-close"
-                                onClick={closeUpdateBox}
-                            >
-                                ×
-                            </button>
-                        </div>
 
-                        <form onSubmit={handleUpdateSubmit}>
-                            <label>Current username:</label>
-                            <input
-                                type="text"
-                                value={userProfile.username || ""}
-                                readOnly
-                                className="form-input-text"
-                            />
-
-                            <label>New username:</label>
-                            <input
-                                type="text"
-                                value={newUsername}
-                                onChange={(e) => setNewUsername(e.target.value)}
-                                placeholder="Enter a new username"
-                                className="form-input-text"
-                            />
-
-                            {/* messages, frontend-only */}
-                            {updateError && (
-                                <p style={{ color: "red", marginTop: "0.5rem" }}>
-                                    {updateError}
-                                </p>
-                            )}
-                            {updateSuccess && (
-                                <p style={{ color: "green", marginTop: "0.5rem" }}>
-                                    {updateSuccess}
-                                </p>
-                            )}
-
-                            <button
-                                type="submit"
-                                className="dashboard-btn form-submit-btn"
-                                style={{ marginTop: "1rem" }}
-                            >
-                                Submit
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <UpdateUserModal
+                isOpen={showUpdateBox}
+                onClose={closeUpdateBox}
+                currentUsername={userProfile.username}
+                newUsername={newUsername}
+                setNewUsername={setNewUsername}
+                onSubmit={handleUpdateSubmit}
+                error={updateError}
+                success={updateSuccess}
+            />
+            <ConfirmDeleteModal
+                isOpen={!!deleteTarget}
+                title="Delete classroom?"
+                message={`Are you sure you want to delete "${deleteTarget?.name}"?`}
+                onCancel={() => setDeleteTarget(null)}
+                onConfirm={() => {
+                    setHiddenClassroomIds((prev) => [...prev, deleteTarget.id]);
+                    setDeleteTarget(null);
+                }}
+            />
 
         </main>
     );
