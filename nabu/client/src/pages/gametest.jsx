@@ -1,5 +1,5 @@
 import React from "react";
-import GameEngine from "../components/game/GameEngine";
+import GameEngine from "../components/game/StateController";
 
 const GameTest = () => {
 
