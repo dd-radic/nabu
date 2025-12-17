@@ -32,11 +32,12 @@ const QuizQuestionPage = () => {
     //     setQuestions(Array.isArray(initial) ? initial : []);
     // }, [quiz]);
 
+    // Questions from db query
     useEffect(() => {
           const loadQuiz = async() => {
             try {
               const initial = await fetchQuizQuestions(quizId);
-              if(!quiz){
+              if(!initial){
                 console.warn("Quiz not found.");
               }
               setQuestions(initial);
@@ -47,7 +48,7 @@ const QuizQuestionPage = () => {
             }
           }
           loadQuiz();
-        }, []);
+        }, [quizId, fetchQuizQuestions]);
 
     // Normalize shape: { id, text, options[] }
     const normalizedQuestions = useMemo(() => {
