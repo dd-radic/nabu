@@ -10,7 +10,7 @@ import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 const QuizQuestionPage = () => {
     // 1. Get Data (No params needed)
     const location = useLocation();
-    const { userdata, token, fetchQuiz, fetchQuizQuestions } = useAuth();
+    const { userdata, token, fetchQuizQuestions } = useAuth();
 
     const quiz = location.state?.quiz;
 
@@ -34,7 +34,7 @@ const QuizQuestionPage = () => {
     useEffect(() => {
           const loadQuiz = async() => {
             try {
-              const initial = await fetchQuizQuestions(quizId);
+              const initial = await fetchQuizQuestions(quiz.id);
               if(!initial){
                 console.warn("Quiz not found.");
               }
@@ -46,7 +46,7 @@ const QuizQuestionPage = () => {
             }
           }
           loadQuiz();
-        }, [quizId, fetchQuizQuestions]);
+        }, [quiz, fetchQuizQuestions]);
 
     // Normalize shape: { id, text, options[] }
     const normalizedQuestions = useMemo(() => {
