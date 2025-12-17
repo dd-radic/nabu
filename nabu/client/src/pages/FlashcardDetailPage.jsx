@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useParams, Navigate } from "react-router-dom";
+import { useLocation, Navigate } from "react-router-dom"; // Removed useParams
 import { useAuth } from "../AuthProvider";
 import DashboardNav from "../components/DashboardNav";
 import CreateFlashcardModal from "../components/CreateFlashcardModal";
@@ -8,26 +8,25 @@ import Button from "../components/Button";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 const FlashcardDetailPage = () => {
-    const { flashcardId } = useParams();
+    // 1. Get Data from State (No params needed)
     const location = useLocation();
     const { userdata, token } = useAuth();
 
     // Passed from ResourceCard
     const flashcardSet = location.state?.flashcardSet;
 
-    // Local cards state (frontend-only)
+    // Local cards state
     const [cards, setCards] = useState([]);
-    const [flipped, setFlipped] = useState({}); // { [index]: true/false }
+    const [flipped, setFlipped] = useState({}); 
 
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingIndex, setEditingIndex] = useState(null); // null=add
+    const [editingIndex, setEditingIndex] = useState(null); 
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [deleteTarget, setDeleteTarget] = useState(null);
 
-    // Initialize cards from flashcardSet if any exist
+    // Initialize cards
     useEffect(() => {
-        // Support multiple possible shapes
         const initial =
             flashcardSet?.cards ||
             flashcardSet?.Cards ||
@@ -42,15 +41,13 @@ const FlashcardDetailPage = () => {
     const normalizedCards = useMemo(() => {
         const src = Array.isArray(cards) ? cards : [];
         return src.map((c, idx) => {
-            const question =
-                c?.question || c?.front || c?.Question || c?.Front || c?.text || "";
-            const answer =
-                c?.answer || c?.back || c?.Answer || c?.Back || c?.value || "";
+            const question = c?.question || c?.front || c?.Question || c?.Front || c?.text || "";
+            const answer = c?.answer || c?.back || c?.Answer || c?.Back || c?.value || "";
             return { id: c?.id ?? c?.Id ?? idx, question, answer };
         });
     }, [cards]);
 
-    // Handlers (hooks before guards)
+    // Handlers
     const toggleFlip = useCallback((index) => {
         setFlipped((prev) => ({ ...prev, [index]: !prev[index] }));
     }, []);
@@ -75,26 +72,20 @@ const FlashcardDetailPage = () => {
         };
     }, [editingIndex, normalizedCards]);
 
-    const handleSubmit = useCallback(
-        ({ question, answer }) => {
-            if (editingIndex === null) {
-                // ADD
-                setCards((prev) => [
-                    ...prev,
-                    { id: Date.now(), question, answer },
-                ]);
-            } else {
-                // EDIT
-                setCards((prev) => {
-                    const copy = [...prev];
-                    const existing = copy[editingIndex] || {};
-                    copy[editingIndex] = { ...existing, question, answer };
-                    return copy;
-                });
-            }
-        },
-        [editingIndex]
-    );
+    const handleSubmit = useCallback(({ question, answer }) => {
+        if (editingIndex === null) {
+            // ADD
+            setCards((prev) => [...prev, { id: Date.now(), question, answer }]);
+        } else {
+            // EDIT
+            setCards((prev) => {
+                const copy = [...prev];
+                const existing = copy[editingIndex] || {};
+                copy[editingIndex] = { ...existing, question, answer };
+                return copy;
+            });
+        }
+    }, [editingIndex]);
 
     // Guards
     if (!userdata?.id && !token) return <Navigate to="/" />;
@@ -102,7 +93,6 @@ const FlashcardDetailPage = () => {
 
     return (
         <main className="dashboard-page">
-            {/* Keep other buttons; only Dashboard tab can be replaced by Back if you already implemented showBackButton */}
             <DashboardNav initialActiveTab={"content"} showBackButton={true} />
 
             <section className="dashboard-box" style={{ marginTop: "1.5rem" }}>
@@ -137,7 +127,6 @@ const FlashcardDetailPage = () => {
                                                 <p className="flashcard-text">{card.question}</p>
                                                 <p className="flashcard-hint">Click to flip</p>
                                             </div>
-
                                             {/* BACK */}
                                             <div className="flashcard-face flashcard-back">
                                                 <h3>Answer</h3>
@@ -147,32 +136,20 @@ const FlashcardDetailPage = () => {
                                         </div>
                                     </div>
 
-                                    {/* ✏️ edit + 🗑️ delete (hover only) */}
+                                    {/* Edit/Delete Buttons (Hover only) */}
                                     {hoveredIndex === index && (
-                                        <div style={{
-                                            position: "absolute", top: 10, right: 10, display: "flex",
-                                            gap: 8,
-                                            zIndex: 20,
-                                        }}>
+                                        <div style={{ position: "absolute", top: 10, right: 10, display: "flex", gap: 8, zIndex: 20 }}>
                                             <Button
                                                 variant="outline"
-                                                size="icon"
                                                 title="Edit"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    openEdit(index);
-                                                }}
+                                                onClick={(e) => { e.stopPropagation(); openEdit(index); }}
                                             >
                                                 ✏️
                                             </Button>
                                             <Button
                                                 variant="outline"
-                                                size="icon"
                                                 title="Delete"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setDeleteTarget(index);
-                                                }}
+                                                onClick={(e) => { e.stopPropagation(); setDeleteTarget(index); }}
                                             >
                                                 🗑️
                                             </Button>
@@ -181,14 +158,10 @@ const FlashcardDetailPage = () => {
                                 </div>
                             );
                         })}
-
                     </div>
                 )}
 
-                {/* Floating + button */}
-                <button type="button" className="floating-add-btn" onClick={openAdd}>
-                    +
-                </button>
+                <button type="button" className="floating-add-btn" onClick={openAdd}>+</button>
 
                 <CreateFlashcardModal
                     isOpen={isModalOpen}
@@ -198,6 +171,7 @@ const FlashcardDetailPage = () => {
                     initialData={initialModalData}
                 />
             </section>
+            
             <ConfirmDeleteModal
                 isOpen={deleteTarget !== null}
                 title="Delete flashcard?"
@@ -208,7 +182,6 @@ const FlashcardDetailPage = () => {
                     setDeleteTarget(null);
                 }}
             />
-
         </main>
     );
 };

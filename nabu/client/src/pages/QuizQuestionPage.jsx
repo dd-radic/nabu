@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
-import { useLocation, useParams, Navigate, useNavigate } from "react-router-dom";
+import { useLocation, Navigate } from "react-router-dom"; // Removed useParams, useNavigate
 import { useAuth } from "../AuthProvider";
 import DashboardNav from "../components/DashboardNav";
 import Button from "../components/Button";
@@ -8,25 +8,23 @@ import ViewQuizQuestionModal from "../components/ViewQuizQuestionModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 const QuizQuestionPage = () => {
-    const { quizId } = useParams();
+    // 1. Get Data (No params needed)
     const location = useLocation();
     const { userdata, token, fetchQuiz, fetchQuizQuestions } = useAuth();
 
     const quiz = location.state?.quiz;
 
-    // Questions stored locally (frontend-only)
+    // Local Questions State
     const [questions, setQuestions] = useState([]);
 
-    // Add modal (CreateQuizQuestionModal)
+    // Modals
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-    // View/Edit modal (ViewQuizQuestionModal)
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [viewIndex, setViewIndex] = useState(null);
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [deleteTarget, setDeleteTarget] = useState(null);
 
-    // // Init questions from quiz state
+    // // Init questions
     // useEffect(() => {
     //     const initial = quiz?.questions || quiz?.Questions || quiz?.quizQuestions || [];
     //     setQuestions(Array.isArray(initial) ? initial : []);
@@ -54,28 +52,16 @@ const QuizQuestionPage = () => {
     const normalizedQuestions = useMemo(() => {
         const source = Array.isArray(questions) ? questions : [];
         return source.map((q, idx) => {
-            const text =
-                q?.text || q?.question || q?.QuestionText || q?.Title || `Question ${idx + 1}`;
-
-
-            const rawOptions =
-                q?.options ||
-                q?.Options ||
-                q?.answers ||
-                q?.Answers ||
-                q?.choices ||
-                q?.Choices ||
-                [];
-
+            const text = q?.text || q?.question || q?.QuestionText || q?.Title || `Question ${idx + 1}`;
+            const rawOptions = q?.options || q?.Options || q?.answers || q?.Answers || q?.choices || q?.Choices || [];
             const opts = Array.isArray(rawOptions)
                 ? rawOptions.map((o) => (typeof o === "string" ? o : (o?.text || o?.Text || o?.value || "")))
                 : [];
-
             return { id: q?.id ?? q?.Id ?? idx, text, options: opts };
         });
     }, [questions]);
 
-    // ---------- Handlers (hooks before guards) ----------
+    // Handlers
     const openAdd = useCallback(() => setIsAddModalOpen(true), []);
     const closeAdd = useCallback(() => setIsAddModalOpen(false), []);
 
@@ -86,7 +72,6 @@ const QuizQuestionPage = () => {
 
     const closeView = useCallback(() => setIsViewOpen(false), []);
 
-    // Add new question from Create modal (+)
     const handleAddQuestion = useCallback((payload) => {
         setQuestions((prev) => [
             ...prev,
@@ -94,31 +79,22 @@ const QuizQuestionPage = () => {
         ]);
     }, []);
 
-    // Save edits from View modal (inline edit)
-    const handleSaveFromView = useCallback(
-        (payload) => {
-            if (viewIndex === null) return;
-
-            setQuestions((prev) => {
-                const copy = [...prev];
-                const existing = copy[viewIndex] || {};
-                copy[viewIndex] = { ...existing, text: payload.text, options: payload.options };
-                return copy;
-            });
-        },
-        [viewIndex]
-    );
+    const handleSaveFromView = useCallback((payload) => {
+        if (viewIndex === null) return;
+        setQuestions((prev) => {
+            const copy = [...prev];
+            const existing = copy[viewIndex] || {};
+            copy[viewIndex] = { ...existing, text: payload.text, options: payload.options };
+            return copy;
+        });
+    }, [viewIndex]);
 
     const viewedQuestion = useMemo(() => {
         if (viewIndex === null) return null;
         return normalizedQuestions[viewIndex] || null;
     }, [viewIndex, normalizedQuestions]);
 
-    const navigate = useNavigate();
-
-
-
-    // ---------- Guards ----------
+    // Guards
     if (!userdata?.id && !token) return <Navigate to="/" />;
     if (!quiz) return <Navigate to="/dashboard" replace />;
 
@@ -127,27 +103,14 @@ const QuizQuestionPage = () => {
             <DashboardNav initialActiveTab={"content"} showBackButton={true} />
 
             <section className="dashboard-box" style={{ marginTop: "1.5rem" }}>
-                {/* Header row: left text, right button */}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        gap: "1rem",
-                        flexWrap: "wrap",
-                        marginBottom: "1.5rem",
-                    }}
-                >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
                     <div>
                         <h2>Quiz Questions: {quiz.name}</h2>
                         <p style={{ color: "#777", marginTop: "0.5rem" }}>
                             Description: {quiz.summary || quiz.description || "No description provided."}
                         </p>
                     </div>
-
-                    <Button type="button">
-                        Start Quiz
-                    </Button>
+                    <Button type="button">Start Quiz</Button>
                 </div>
 
                 {normalizedQuestions.length === 0 ? (
@@ -173,24 +136,16 @@ const QuizQuestionPage = () => {
                                 >
                                     <td>{index + 1}</td>
                                     <td style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                        <span
-                                            style={{
-                                                maxWidth: 700,
-                                                whiteSpace: "nowrap",
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis",
-                                            }}
-                                        >
+                                        <span style={{ maxWidth: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                             {q.text}
                                         </span>
-
                                         {hoveredIndex === index && (
                                             <Button
                                                 variant="outline"
-                                                size="icon"
+                                                className="icon-btn" // Reusing styling
                                                 title="Delete Question"
                                                 onClick={(e) => {
-                                                    e.stopPropagation(); // prevent opening modal
+                                                    e.stopPropagation();
                                                     setDeleteTarget(index);
                                                 }}
                                             >
@@ -204,17 +159,8 @@ const QuizQuestionPage = () => {
                     </table>
                 )}
 
-                {/* Floating + button (add new) */}
-                <button
-                    type="button"
-                    className="floating-add-btn"
-                    onClick={openAdd}
-                    title="Add Question"
-                >
-                    +
-                </button>
+                <button type="button" className="floating-add-btn" onClick={openAdd} title="Add Question">+</button>
 
-                {/* View/Edit modal (inline edit inside the modal) */}
                 <ViewQuizQuestionModal
                     isOpen={isViewOpen}
                     onClose={closeView}
@@ -222,15 +168,13 @@ const QuizQuestionPage = () => {
                     onSave={handleSaveFromView}
                 />
 
-                {/* Add modal only */}
                 <CreateQuizQuestionModal
                     isOpen={isAddModalOpen}
                     onClose={closeAdd}
                     onSubmit={handleAddQuestion}
-                    mode="add"
-                    initialData={null}
                 />
             </section>
+            
             <ConfirmDeleteModal
                 isOpen={deleteTarget !== null}
                 title="Delete Question"
