@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from './Button'; // Import the Button Component
 
 const UpdateUserModal = ({ 
     isOpen, 
@@ -47,13 +48,15 @@ const UpdateUserModal = ({
                         <p style={{ color: "green", marginTop: "0.5rem" }}>{success}</p>
                     )}
 
-                    <button
-                        type="submit"
-                        className="dashboard-btn form-submit-btn"
-                        style={{ marginTop: "1rem" }}
-                    >
-                        Submit
-                    </button>
+                    <div style={{ marginTop: "1rem" }}>
+                        {/* REPLACED OLD BUTTON WITH NEW COMPONENT */}
+                        <Button
+                            type="submit"
+                            style={{ width: '100%' }} // Optional inline style if you want full width
+                        >
+                            Submit
+                        </Button>
+                    </div>
                 </form>
             </div>
         </div>
