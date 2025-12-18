@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import Button from "./Button";
 import "../components/Quiz.css";
+import { useAuth } from "../AuthProvider";
 
 /**
  * CreateQuizQuestionModal
@@ -13,9 +14,11 @@ import "../components/Quiz.css";
  */
 const CreateQuizQuestionModal = ({ isOpen, onClose, onSubmit }) => {
     // Local state for the form
+    const {createQuestion} = useAuth();
     const [optionCount, setOptionCount] = useState(4);
     const [questionText, setQuestionText] = useState("");
     const [options, setOptions] = useState(["", "", "", ""]);
+    const [questionType, setQuestionType] = useState("");
 
     // Reset the form whenever the modal opens to ensure a clean state
     useEffect(() => {
@@ -25,7 +28,6 @@ const CreateQuizQuestionModal = ({ isOpen, onClose, onSubmit }) => {
         setOptions(["", "", "", ""]);
     }, [isOpen]);
 
-    const questionType = "";
 
     // Calculate which options are currently relevant based on the count selector
     const visibleOptions = useMemo(
@@ -55,7 +57,7 @@ const CreateQuizQuestionModal = ({ isOpen, onClose, onSubmit }) => {
 
         // Pass data to parent (Pure JS object, no API call)
         onSubmit({
-            questiontype: questionType,
+            questionType: questionType,
             text: questionText.trim(),
             options: visibleOptions.map((o) => o.trim()),
         });
@@ -88,15 +90,20 @@ const CreateQuizQuestionModal = ({ isOpen, onClose, onSubmit }) => {
                     <Button
                         variant={optionCount === 2 ? "primary" : "outline"}
                         questionType = "multiplechoice"
-                        onClick={() => setOptionCount(4)}
+                        onClick={() => {
+                            setOptionCount(4);
+                            setQuestionType("multiplechoice");
+                        } }
                         type="button"
                     >
                         Multiple Choice
                     </Button>
                     <Button
                         variant={optionCount === 3 ? "primary" : "outline"}
-                        questionType = "truefalse"
-                        onClick={() => setOptionCount(1)}
+                        onClick={() => {
+                            setOptionCount(1);
+                            setQuestionType("truefalse");
+                        } }
                         type="button"
                     >
                         True/False

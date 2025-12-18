@@ -24,12 +24,6 @@ const QuizQuestionPage = () => {
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [deleteTarget, setDeleteTarget] = useState(null);
 
-    // // Init questions
-    // useEffect(() => {
-    //     const initial = quiz?.questions || quiz?.Questions || quiz?.quizQuestions || [];
-    //     setQuestions(Array.isArray(initial) ? initial : []);
-    // }, [quiz]);
-
     // Questions from db query
     useEffect(() => {
           const loadQuiz = async() => {
@@ -52,8 +46,8 @@ const QuizQuestionPage = () => {
     const normalizedQuestions = useMemo(() => {
         const source = Array.isArray(questions) ? questions : [];
         return source.map((q, idx) => {
-            const text = q?.text || q?.question || q?.QuestionText || q?.Title || `Question ${idx + 1}`;
-            const rawOptions = q?.options || q?.Options || q?.answers || q?.Answers || q?.choices || q?.Choices || [];
+            const text = q?.Query || q?.text || q?.question || q?.QuestionText || q?.Title || `Question ${idx + 1}`;
+            const rawOptions = q?.Answer || q?.options || q?.Options || q?.answers || q?.Answers || q?.choices || q?.Choices || [];
             const opts = Array.isArray(rawOptions)
                 ? rawOptions.map((o) => (typeof o === "string" ? o : (o?.text || o?.Text || o?.value || "")))
                 : [];
@@ -75,8 +69,9 @@ const QuizQuestionPage = () => {
     const handleAddQuestion = useCallback((payload) => {
         setQuestions((prev) => [
             ...prev,
-            { id: Date.now(), text: payload.text, options: payload.options },
+            { id: Date.now(), text: payload.text, options: payload.options, questionType: payload.questionType },
         ]);
+        console.log(payload);
     }, []);
 
     const handleSaveFromView = useCallback((payload) => {

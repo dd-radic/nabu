@@ -19,6 +19,26 @@ const fetchQuizQuestions = async (quizId) => {
     }
 };
 
+const createQuestion = async (payload) => {
+    try {
+        const res = await fetch("/api/question", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        });
 
-const questionController = {fetchQuizQuestions}
+        const data = await res.json();
+        if (!res.ok) return null;
+        return data;
+
+    } catch (err) {
+        console.error("POST quiz error:", err);
+        return null;
+    }
+};
+
+
+const questionController = {fetchQuizQuestions, createQuestion}
 export default questionController;

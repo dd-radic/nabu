@@ -120,6 +120,7 @@ const AuthProvider = ({ children }) => {
     const createQuiz = async(payload) => (await quizController.createQuiz(payload));
 
     /**     Create Questions   {@link question}   */
+    const createQuestion = async(payload) => (await questionController.createQuestion(payload));
 
     //============Update/Change========================================================//
     const updateUsername = async(userdata, newUsername) => (await dashboardController.updateUsername(userdata.id, newUsername));
@@ -152,6 +153,7 @@ const AuthProvider = ({ children }) => {
     fetchQuiz,
 
     fetchQuizQuestions,
+    createQuestion,
 
     createFlashcard,
 
