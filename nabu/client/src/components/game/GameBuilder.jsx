@@ -6,7 +6,9 @@ const GameEngine = ({ children, question}) => {
     return (
         <div>
             <div className="scalable-div">
-                <Game question={question}/>
+                
+                    <Game question={question}/>    
+                
             </div>
         </div>
     );

@@ -13,7 +13,6 @@ const Game_MultipleChoice = ({question}) => {
     shuffleArray(questionArr);
 
     const handleClick = (selectedAnswer) => {
-        alert(selectedAnswer + " " + question.options[0]);
         if (selectedAnswer === question.options[0]) {
             question.isCorrect = true;
         } else {
@@ -21,7 +20,7 @@ const Game_MultipleChoice = ({question}) => {
         }
     };
 
-    return (
+    return  (
         <div>
             <h2>{question.text}</h2>
             {questionArr.map((option, index) => (
@@ -33,7 +32,7 @@ const Game_MultipleChoice = ({question}) => {
                 </div>
             ))}
         </div>
-    );
+    )
 };
 
 
