@@ -6,9 +6,9 @@ import OrderGame from "./OrderGame";
 
 const Game = ({question}) => {
     switch (question.type){
-        case "multiplechoice": return <MultipleChoiceGame/>
-        case "truefalse": return <TrueFalseGame/>
-        case "order": return <OrderGame/>
+        case "multiplechoice": return <MultipleChoiceGame question={question}/>
+        case "truefalse": return <TrueFalseGame question={question}/>
+        case "order": return <OrderGame question={question}/>
         default: return <p>[{question.type}] to default , select a valid game type</p>;
     }
 };

@@ -18,7 +18,7 @@ const QuizQuestionPage = () => {
     // Local Questions State
     const [questions, setQuestions] = useState([]);
     const [quizIsActive, setQuizIsActive] = useState(false);
-    const [score, setScore] = useState(0);
+    let score = 0;
 
     // Modals
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -168,8 +168,19 @@ const QuizQuestionPage = () => {
     
     const handleQuizStart = () => {
         if (quizIsActive){
-            alert (`Score: ${score} \nPassed: ${score > questions.length/2}\nPercentage:${(score/questions.length)*100}%`);
-            setScore(0);
+            for (const q of normalizedQuestions){
+                if (q.isCorrect)
+                    score++;
+            }
+            let passed = score >= questions.length*0.66;
+            if (passed) {
+                //MARK AS COMPLETE
+
+                //CALCULATE EXP
+
+                //UPDATE LEADERBOARD
+            }
+            alert (`Score: ${score}/${questions.length} \nPassed: ${passed}\nPercentage:${(score/questions.length)*100}%`);
         }
         setQuizIsActive(!quizIsActive);
     };
