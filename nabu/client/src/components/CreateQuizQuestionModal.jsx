@@ -25,6 +25,8 @@ const CreateQuizQuestionModal = ({ isOpen, onClose, onSubmit }) => {
         setOptions(["", "", "", ""]);
     }, [isOpen]);
 
+    const questionType = "";
+
     // Calculate which options are currently relevant based on the count selector
     const visibleOptions = useMemo(
         () => options.slice(0, optionCount),
@@ -53,6 +55,7 @@ const CreateQuizQuestionModal = ({ isOpen, onClose, onSubmit }) => {
 
         // Pass data to parent (Pure JS object, no API call)
         onSubmit({
+            questiontype: questionType,
             text: questionText.trim(),
             options: visibleOptions.map((o) => o.trim()),
         });
@@ -84,24 +87,19 @@ const CreateQuizQuestionModal = ({ isOpen, onClose, onSubmit }) => {
                 <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1rem" }}>
                     <Button
                         variant={optionCount === 2 ? "primary" : "outline"}
-                        onClick={() => setOptionCount(2)}
-                        type="button"
-                    >
-                        2 options
-                    </Button>
-                    <Button
-                        variant={optionCount === 3 ? "primary" : "outline"}
-                        onClick={() => setOptionCount(3)}
-                        type="button"
-                    >
-                        3 options
-                    </Button>
-                    <Button
-                        variant={optionCount === 4 ? "primary" : "outline"}
+                        questionType = "multiplechoice"
                         onClick={() => setOptionCount(4)}
                         type="button"
                     >
-                        4 options
+                        Multiple Choice
+                    </Button>
+                    <Button
+                        variant={optionCount === 3 ? "primary" : "outline"}
+                        questionType = "truefalse"
+                        onClick={() => setOptionCount(1)}
+                        type="button"
+                    >
+                        True/False
                     </Button>
                 </div>
 
