@@ -51,10 +51,9 @@ const QuizQuestionPage = () => {
         return source.map((q, idx) => {
             const text = q?.Query || q?.text || q?.question || q?.QuestionText || q?.Title || `Question ${idx + 1}`;
             const rawOptions = q?.Answer || q?.options || q?.Options || q?.answers || q?.Answers || q?.choices || q?.Choices || [];
-            const opts = Array.isArray(rawOptions)
-                ? rawOptions.map((o) => (typeof o === "string" ? o : (o?.text || o?.Text || o?.value || "")))
-                : [];
-            return { id: q?.id ?? q?.Id ?? idx, text, options: opts };
+            const opts = rawOptions.split("//");
+            const isCorrect = null;
+            return { id: q?.id ?? q?.Id ?? idx, text, options: opts, isCorrect: isCorrect, type:q.Type };
         });
     }, [questions]);
 
@@ -114,12 +113,12 @@ const QuizQuestionPage = () => {
         </tr>
     </thead>
     <tbody>
-        {questions.map((q, index) => (
+        {normalizedQuestions.map((q, index) => (
             <tr
             >
                 <td>{index + 1}</td>
                 <td>
-                    <GameEngine question={q}/>
+                    <GameEngine question={q}></GameEngine>
                 </td>
             </tr>
         ))}
