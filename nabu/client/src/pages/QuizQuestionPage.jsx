@@ -10,7 +10,7 @@ import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 const QuizQuestionPage = () => {
     // 1. Get Data (No params needed)
     const location = useLocation();
-    const { userdata, token, fetchQuizQuestions } = useAuth();
+    const { userdata, token, fetchQuizQuestions, createQuestion } = useAuth();
 
     const quiz = location.state?.quiz;
 
@@ -71,8 +71,14 @@ const QuizQuestionPage = () => {
             ...prev,
             { id: Date.now(), text: payload.text, options: payload.options, questionType: payload.questionType },
         ]);
+        createQuestion({
+            quizId: quiz.id,
+            type: payload.questionType,
+            query: payload.text,
+            answer: payload.options,
+        });
         console.log(payload);
-    }, []);
+    }, [createQuestion, quiz]);
 
     const handleSaveFromView = useCallback((payload) => {
         if (viewIndex === null) return;

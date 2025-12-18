@@ -14,16 +14,16 @@ import { useAuth } from "../AuthProvider";
  */
 const CreateQuizQuestionModal = ({ isOpen, onClose, onSubmit }) => {
     // Local state for the form
-    const {createQuestion} = useAuth();
     const [optionCount, setOptionCount] = useState(4);
     const [questionText, setQuestionText] = useState("");
-    const [options, setOptions] = useState(["", "", "", ""]);
+    const [options, setOptions] = useState("");
     const [questionType, setQuestionType] = useState("");
 
     // Reset the form whenever the modal opens to ensure a clean state
     useEffect(() => {
         if (!isOpen) return;
         setOptionCount(4);
+        setQuestionType("multiplechoice");
         setQuestionText("");
         setOptions(["", "", "", ""]);
     }, [isOpen]);
@@ -59,7 +59,7 @@ const CreateQuizQuestionModal = ({ isOpen, onClose, onSubmit }) => {
         onSubmit({
             questionType: questionType,
             text: questionText.trim(),
-            options: visibleOptions.map((o) => o.trim()),
+            options: visibleOptions.map((o) => o.trim()).join("//"),
         });
 
         onClose();
@@ -88,7 +88,7 @@ const CreateQuizQuestionModal = ({ isOpen, onClose, onSubmit }) => {
                 {/* Option Count Selector Buttons */}
                 <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1rem" }}>
                     <Button
-                        variant={optionCount === 2 ? "primary" : "outline"}
+                        variant={optionCount === 4 ? "primary" : "outline"}
                         questionType = "multiplechoice"
                         onClick={() => {
                             setOptionCount(4);
@@ -99,7 +99,7 @@ const CreateQuizQuestionModal = ({ isOpen, onClose, onSubmit }) => {
                         Multiple Choice
                     </Button>
                     <Button
-                        variant={optionCount === 3 ? "primary" : "outline"}
+                        variant={optionCount === 1 ? "primary" : "outline"}
                         onClick={() => {
                             setOptionCount(1);
                             setQuestionType("truefalse");

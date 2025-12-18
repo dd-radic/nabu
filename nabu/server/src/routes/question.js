@@ -6,7 +6,6 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   const {quizId} = req.query;
-  console.log(quizId);
 
   if (!quizId) {
     return res.status(400).json({ error: "quizId required" });
