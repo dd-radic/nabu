@@ -1,11 +1,12 @@
 import React from "react";
-import GameEngine from "../components/game/StateController";
+import GameEngine from "../components/game/GameBuilder";
+import Game from "../components/game/gametypes/Game";
 
 const GameTest = () => {
 
     return (
         <GameEngine>
-            test
+            <Game></Game>
         </GameEngine>
     );
 }
