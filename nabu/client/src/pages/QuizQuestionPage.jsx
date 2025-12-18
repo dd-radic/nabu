@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import CreateQuizQuestionModal from "../components/CreateQuizQuestionModal";
 import ViewQuizQuestionModal from "../components/ViewQuizQuestionModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import GameEngine from "../components/game/GameBuilder.jsx"
 
 const QuizQuestionPage = () => {
     // 1. Get Data (No params needed)
@@ -16,6 +17,8 @@ const QuizQuestionPage = () => {
 
     // Local Questions State
     const [questions, setQuestions] = useState([]);
+    const [quizIsActive, setQuizIsActive] = useState(false);
+    const [score, setScore] = useState(0);
 
     // Modals
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -90,14 +93,87 @@ const QuizQuestionPage = () => {
         });
     }, [viewIndex]);
 
+
     const viewedQuestion = useMemo(() => {
         if (viewIndex === null) return null;
         return normalizedQuestions[viewIndex] || null;
     }, [viewIndex, normalizedQuestions]);
 
+
     // Guards
     if (!userdata?.id && !token) return <Navigate to="/" />;
     if (!quiz) return <Navigate to="/dashboard" replace />;
+
+    const quizTable = quizIsActive ?
+    //active
+    (<table className="quiz-table">
+    <thead>
+        <tr>
+            <th style={{ width: "80px" }}>No</th>
+            <th>Question</th>
+        </tr>
+    </thead>
+    <tbody>
+        {questions.map((q, index) => (
+            <tr
+            >
+                <td>{index + 1}</td>
+                <td>
+                    <GameEngine question={q}/>
+                </td>
+            </tr>
+        ))}
+    </tbody>
+</table>) : 
+    //inactive
+    (<table className="quiz-table">
+    <thead>
+        <tr>
+            <th style={{ width: "80px" }}>No</th>
+            <th>Question Text</th>
+        </tr>
+    </thead>
+    <tbody>
+        {normalizedQuestions.map((q, index) => (
+            <tr
+                key={q.id ?? index}
+                onClick={() => openView(index)}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                style={{ cursor: "pointer", position: "relative" }}
+            >
+                <td>{index + 1}</td>
+                <td style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ maxWidth: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {q.text}
+                    </span>
+                    {hoveredIndex === index && (
+                        <Button
+                            variant="outline"
+                            className="icon-btn" // Reusing styling
+                            title="Delete Question"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteTarget(index);
+                            }}
+                        >
+                            🗑️
+                        </Button>
+                    )}
+                </td>
+            </tr>
+        ))}
+    </tbody>
+</table>);
+
+    
+    const handleQuizStart = () => {
+        if (quizIsActive){
+            alert (`Score: ${score} \nPassed: ${score > questions.length/2}\nPercentage:${(score/questions.length)*100}%`);
+            setScore(0);
+        }
+        setQuizIsActive(!quizIsActive);
+    };
 
     return (
         <main className="dashboard-page">
@@ -111,7 +187,7 @@ const QuizQuestionPage = () => {
                             Description: {quiz.summary || quiz.description || "No description provided."}
                         </p>
                     </div>
-                    <Button type="button">Start Quiz</Button>
+                    <Button type="button" onClick={handleQuizStart}>Start Quiz</Button>
                 </div>
 
                 {normalizedQuestions.length === 0 ? (
@@ -119,45 +195,7 @@ const QuizQuestionPage = () => {
                         No questions available. Click the <strong>+</strong> button to add one.
                     </div>
                 ) : (
-                    <table className="quiz-table">
-                        <thead>
-                            <tr>
-                                <th style={{ width: "80px" }}>No</th>
-                                <th>Question Text</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {normalizedQuestions.map((q, index) => (
-                                <tr
-                                    key={q.id ?? index}
-                                    onClick={() => openView(index)}
-                                    onMouseEnter={() => setHoveredIndex(index)}
-                                    onMouseLeave={() => setHoveredIndex(null)}
-                                    style={{ cursor: "pointer", position: "relative" }}
-                                >
-                                    <td>{index + 1}</td>
-                                    <td style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                        <span style={{ maxWidth: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                            {q.text}
-                                        </span>
-                                        {hoveredIndex === index && (
-                                            <Button
-                                                variant="outline"
-                                                className="icon-btn" // Reusing styling
-                                                title="Delete Question"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setDeleteTarget(index);
-                                                }}
-                                            >
-                                                🗑️
-                                            </Button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    quizTable
                 )}
 
                 <button type="button" className="floating-add-btn" onClick={openAdd} title="Add Question">+</button>

@@ -1,6 +1,7 @@
 import React from "react";
 
-const Game_TrueFalse = () => {
+const Game_TrueFalse = ({...prev}) => {
+    return (<p>test</p>);
 };
 
 

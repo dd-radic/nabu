@@ -1,20 +1,13 @@
 import React, { useState } from "react";
 import "./Game.css";
+import Game from "./gametypes/Game.jsx";
 
-const GameEngine = ({ children }) => {
-    const [isCorrect, setIsCorrect] = useState("");
-    
+const GameEngine = ({ children, question}) => {
     return (
         <div>
             <div className="scalable-div">
-                <span>{children}</span>
-                    <button onClick={()=>{
-                        setIsCorrect(true);
-                    }}>
-                    Click me
-                    </button>
+                <Game question={question}/>
             </div>
-            {String(isCorrect)}
         </div>
     );
 };

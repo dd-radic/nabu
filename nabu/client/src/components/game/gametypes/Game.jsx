@@ -4,12 +4,12 @@ import MultipleChoiceGame from "./MultipleChoiceGame";
 import TrueFalseGame from "./TrueFalseGame";
 import OrderGame from "./OrderGame";
 
-const Game = (type) => {
-    switch (type){
+const Game = ({question}) => {
+    switch (question.Type){
         case "multiplechoice": return <MultipleChoiceGame/>
         case "truefalse": return <TrueFalseGame/>
         case "order": return <OrderGame/>
-        default: return <p>default, select a valid game type</p>;
+        default: return <p>[{question.Type}] to default , select a valid game type</p>;
     }
 };
 
