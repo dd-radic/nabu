@@ -1,6 +1,6 @@
 const createFlashcard = async (payload, userdata) => {
     try {
-        const res = await fetch(`http://localhost:5000/api/flashcard/create?userId=${userdata.id}`, {
+        const res = await fetch(`/api/flashcard/create?userId=${userdata.id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)

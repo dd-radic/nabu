@@ -120,5 +120,67 @@ router.delete("/delete", verifyToken, async (req, res) => {
     }
 });
 
+router.post('/updateExp', async(req, res) => {
+    try{
+        const userId = req.query.userId;
+        const dexp = req.query.dexp;
+
+        const [userRows] = await pool.query(
+            "SELECT * FROM ?? WHERE ID = ?",
+            ["User", userId]
+        );
+        if (userRows.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const user = userRows[0];
+        const newExp = (user.EXP ? user.EXP : 0) + parseInt(dexp);
+
+        const [result] = await pool.query(
+            "UPDATE ?? SET EXP = ? WHERE ID = ?",
+            ["User", newExp, userId]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(406).json({ error: "Failed to update User EXP" });
+        }
+
+        res.status(200).json({ message: "User EXP updated successfully" });
+
+    } catch(err){
+        console.error("Error updating user EXP:", err);
+        return res.status(500).json({ error: err.message || "Unknown error" });
+    }
+});
+
+router.get(`/level`, async(req, res) => {
+    try {
+        const userId = req.query.userId;
+
+                const [userRows] = await pool.query(
+            "SELECT * FROM ?? WHERE ID = ?",
+            ["User", userId]
+        );
+        if (userRows.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const user = userRows[0];
+        const exp = (user.EXP ? parseInt(user.EXP) : 0);
+
+        //Calculate the level according to Pokemon's level calculation formula
+        const level = Math.floor(Math.cbrt(5*exp/4));
+
+        res.status(200).json({
+            userId : userId,
+            level: level,
+        });
+
+    } catch(err){
+        console.error("Error calculating user level", err);
+        return res.status(407).json({ error: err.message || "Unknown error" });  
+    }
+});
+
 
 export default router;

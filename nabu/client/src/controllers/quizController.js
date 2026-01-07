@@ -1,6 +1,6 @@
 const createQuiz = async (payload) => {
     try {
-        const res = await fetch("http://localhost:5000/api/quizzes", {
+        const res = await fetch("/api/quizzes", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -40,6 +40,28 @@ const fetchQuiz = async (quizId) => {
     }
 };
 
+const complete = async(quizId, userId, correct) => {
+    try{
+        const res = await fetch(`/api/quizzes/getCurrent?quizId=${quizId}`, {
+            method: "GET",
+            headers: {"Content-Type" : "application/json"},
+        });
+        const quiz = await res.json();
+        const classroomId = quiz.classroomId;
 
-const quizController = {createQuiz, fetchQuiz}
+        //Determine the EXP this quiz should drop. correct is the ratio of correct answers
+        const dexp = Math.round((20*quiz.yield/7)*correct);
+
+        //Adjust the user's overall EXP level
+        await fetch(`/api/user/updateExp?userId=${userId}&dexp=${dexp}`);
+
+        //Check if the user completed a quiz from a classroom they are part of, if so, update their exp within the classroom
+        await fetch(`/api/classroom/updateScore?userId=${userId}&classroomId=${classroomId}&dexp=${dexp}`);
+
+    } catch (err) {
+        console.error("Error completing quiz:", err);
+    }
+}
+
+const quizController = {createQuiz, fetchQuiz, complete}
 export default quizController;

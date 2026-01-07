@@ -217,4 +217,92 @@ router.delete("/delete", async(req, res) => {
   }
 });
 
+//====================UPDATES User score by Classroom=====================//
+router.post("/updateScore", async(req, res) => {
+    try{
+        const userId = req.query.userId;
+        const classroomId = req.query.classroomId;
+        const dexp = req.query.dexp;
+
+        const [result] = await pool.query(
+            "SELECT * FROM ?? WHERE USERID = ? AND CLASSROOMID = ?",
+            ["UserClassroom", userId, classroomId]
+        );
+        if (result.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const user = result[0];
+        const newScore = (user.Score ? user.Score : 0) + parseInt(dexp);
+
+        const [updateResult] = await pool.query(
+            "UPDATE ?? SET SCORE = ? WHERE USERID = ? AND CLASSROOMID = ?",
+            ["UserClassroom", newScore, userId, classroomId]
+        );
+
+        if (updateResult.affectedRows === 0) {
+            return res.status(406).json({ error: "Failed to update User score in Classroom" });
+        }
+
+        res.status(200).json({ message: "User Score in Classroom updated successfully" });
+
+    } catch(err){
+        console.error("Error updating user score in Classroom:", err);
+        return res.status(500).json({ error: err.message || "Unknown error" });
+    }
+});
+
+//================GETS a user's level in the classroom==========================//
+router.get(`/userLevel`, async(req, res) => {
+    try {
+        const userId = req.query.userId;
+        const classroomId = req.query.classroomId;
+
+        const [userRows] = await pool.query(
+            "SELECT * FROM ?? WHERE USERID = ? AND CLASSROOMID = ?",
+            ["UserClassroom", userId, classroomId]
+        );
+        if (userRows.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const user = userRows[0];
+        const score = (user.Score ? parseInt(user.Score) : 0);
+
+        //Calculate the level according to Pokemon's level calculation formula
+        const level = Math.floor(Math.cbrt(5*score/4));
+
+        res.status(200).json({
+            userId : userId,
+            classroomId : classroomId,
+            level: level,
+        });
+
+    } catch(err){
+        console.error("Error calculating user level in classroom", err);
+        return res.status(407).json({ error: err.message || "Unknown error" });  
+    }
+});
+
+//==============GETS all users in the classroom sorted by score=====================//
+router.get(`/leaderboard`, async(req, res) => {
+  try{
+      const classroomId = req.query.classroomId;
+
+      const [leaderboard] = await pool.query(
+          "SELECT * FROM ?? WHERE CLASSROOMID = ? ORDER BY SCORE DESC",
+          ["UserClassroom", classroomId]
+      );
+
+      res.status(200).json({
+        classroomId: classroomId,
+        leaderboard: leaderboard
+      });
+      
+    } catch (err) {
+        console.error("Error fetching classroom leaderboard", err);
+        return res.status(408).json({ error: err.message || "Unknown error" });  
+    }
+});
+
 export default router;

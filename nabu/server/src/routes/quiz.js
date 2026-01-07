@@ -52,8 +52,6 @@ router.get("/getCurrent", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const { title, description, classRoomId, creatorId } = req.body;
-    console.log("REQ BODY KOMMT AN:", req.body);
-console.log("Description, die ankommt:", description);
 
     if (!title || !classRoomId || !creatorId) {
       return res.status(400).json({
