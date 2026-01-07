@@ -290,12 +290,14 @@ router.get(`/leaderboard`, async(req, res) => {
       const classroomId = req.query.classroomId;
 
       const [leaderboard] = await pool.query(
-          "SELECT * FROM ?? WHERE CLASSROOMID = ? ORDER BY SCORE DESC",
-          ["UserClassroom", classroomId]
+          `SELECT uc.UserId, uc.ClassRoomId, uc. Score, u.Name as Username 
+            FROM ?? uc 
+            JOIN ?? u ON uc.UserId = u.Id 
+            WHERE CLASSROOMID = ? ORDER BY uc.Score DESC`,
+          ["UserClassroom", "User", classroomId]
       );
 
       res.status(200).json({
-        classroomId: classroomId,
         leaderboard: leaderboard
       });
       

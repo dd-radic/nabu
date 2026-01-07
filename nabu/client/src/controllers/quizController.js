@@ -61,7 +61,7 @@ const complete = async(quizId, userId, correct) => {
     } catch (err) {
         console.error("Error completing quiz:", err);
     }
-}
+};
 
 const quizController = {createQuiz, fetchQuiz, complete}
 export default quizController;

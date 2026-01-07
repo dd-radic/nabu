@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import Button from "./Button";
 import "../components/Quiz.css";
-import { useAuth } from "../AuthProvider";
 
 /**
  * CreateQuizQuestionModal

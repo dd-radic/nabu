@@ -13,7 +13,7 @@ const ClassroomPage = () => {
     // 1. Extract Hooks
     const {
         userdata, token, classrooms, addUser, removeUser, isMember,
-        deleteClassroom, loadContent, createQuiz, createFlashcard
+        loadContent, createQuiz, createFlashcard, leaderboard
     } = useAuth();
 
     const { classroomId } = useParams();
@@ -28,12 +28,7 @@ const ClassroomPage = () => {
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [hoveredId, setHoveredId] = useState(null);
     const [showLeaderboard, setShowLeaderboard] = useState(false);
-
-    ///////////////////////////////////////////////
-    // Mock Data (Later you will fetch this from your API)
-    const leaderboardData = [];
-
-
+    const [leaderboardData, setLeaderboardData] = useState([]);
 
     // 3. Derived Values
     const currentClassroom = useMemo(() => {
@@ -72,6 +67,28 @@ const ClassroomPage = () => {
         initJoin();
     }, [currentClassroom, isMember]);
 
+    
+    //Leaderboard data
+    useEffect(() => {
+        const fetchLeaderboard = async() => {
+            if(!currentClassroom || !showLeaderboard) return;
+            try {
+                const data = await leaderboard(classroomId);
+                if(data && Array.isArray(data)){
+                    setLeaderboardData(data || []);
+                }else{
+                    console.warn("Leaderboard data is not an array:", data);
+                    setLeaderboardData([]);
+                }
+            } catch (err){
+                console.error("Failed to fetch leaderboard: ", err);
+                setLeaderboardData([]);
+            }
+        };
+
+        fetchLeaderboard();
+    }, [classroomId, currentClassroom, leaderboard, leaderboardData, showLeaderboard]);
+
     // 5. Handlers
     const handleAddClick = useCallback(() => {
         if (contentFilter === 'Flashcard') setCreationStep('flashcard');
@@ -106,6 +123,7 @@ const ClassroomPage = () => {
 
     const handleDeleteContent = useCallback((item) => {
         if (!window.confirm(`Delete "${item.name}"?`)) return;
+        //Determine if the item is a flashcard or quiz, then delete it
         setContent((prev) => prev.filter((c) => c.id !== item.id));
     }, []);
 
@@ -210,18 +228,21 @@ const ClassroomPage = () => {
                                     ) : (
                                         leaderboardData.map((user, index) => (
                                             <tr 
-                                                key={user.id} 
+                                                key={user.UserId} 
                                                 style={{ 
                                                     borderBottom: '1px solid #f0f0f0',
-                                                    backgroundColor: user.name === 'You' ? '#f0f9ff' : 'transparent',
+                                                    backgroundColor: user.UserId === userdata?.id ? '#f0f9ff' : 'transparent',
                                                     fontWeight: index < 3 ? 'bold' : 'normal' 
                                                 }}
                                             >
                                                 <td style={{ padding: '15px' }}>
-                                                    {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${user.rank}`}
+                                                    {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
                                                 </td>
-                                                <td style={{ padding: '15px' }}>{user.name}</td>
-                                                <td style={{ padding: '15px', color: '#2563eb' }}>{user.score} pts</td>
+                                                <td style={{ padding: '15px' }}>
+                                                    {user.Username}
+                                                    {user.UserId === userdata?.id && ' (You)'}
+                                                </td>
+                                                <td style={{ padding: '15px', color: '#2563eb' }}>{user.Score || 0} pts</td>
                                             </tr>
                                         ))
                                     )}
@@ -277,6 +298,7 @@ const ClassroomPage = () => {
                                                         size="icon"
                                                         title="Delete"
                                                         onClick={(e) => {
+                                                            handleDeleteContent(item);
                                                             e.stopPropagation();
                                                             setDeleteTarget(item);
                                                         }}

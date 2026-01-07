@@ -180,37 +180,76 @@ const isMember = async (userdata, classroomId) => {
 };
 
 const loadContent = async (userdata, classroomId, setContent) => {
-            try {
-                const quizRes = await fetch(`http://localhost:5000/api/quizzes?classRoomId=${classroomId}`);
-                const quizzes = await quizRes.json();
+    try {
+        const quizRes = await fetch(`/api/quizzes?classRoomId=${classroomId}`);
+        const quizzes = await quizRes.json();
 
-                const quizItems = quizzes.map(q => ({
-                    id: q.Id,
-                    name: q.Title,
-                    type: "Quiz",
-                    summary: q.Description || "No description"
-                }));
+        const quizItems = quizzes.map(q => ({
+            id: q.Id,
+            name: q.Title,
+            type: "Quiz",
+            summary: q.Description || "No description"
+        }));
 
-                // FLASHCARDS LADEN
-                const fcRes = await fetch(`http://localhost:5000/api/flashcard/allCards?userId=${userdata.id}`);
-                const flashcards = await fcRes.json();
+        // FLASHCARDS LADEN
+        const fcRes = await fetch(`/api/flashcard/allCards?userId=${userdata.id}`);
+        const flashcards = await fcRes.json();
 
-                const flashItems = flashcards
-                    .filter(fc => fc.ClassRoomId === classroomId) // Nur Flashcards für dieses Classroom
-                    .map(fc => ({
-                        id: fc.Id,
-                        name: fc.Title,
-                        type: "Flashcard",
-                        summary: fc.Information || "Flashcard set"
-                    }));
+        const flashItems = flashcards
+            .filter(fc => fc.ClassRoomId === classroomId) // Nur Flashcards für dieses Classroom
+            .map(fc => ({
+                id: fc.Id,
+                name: fc.Title,
+                type: "Flashcard",
+                summary: fc.Information || "Flashcard set"
+            }));
 
-                setContent([...quizItems, ...flashItems]);
+        setContent([...quizItems, ...flashItems]);
 
 
-            } catch (err) {
-                console.error("Error loading quizzes:", err);
-            }
-        };
+    } catch (err) {
+        console.error("Error loading quizzes:", err);
+    }
+};
 
-const classroomController = {fetchClassrooms, fetchAllClassrooms, addClassroom, deleteClassroom, addUser, removeUser, isMember, loadContent};
+const updateClassroomScore = async(userdata, classroomId, dexp) => {
+    try{
+        const result = await fetch(`/api/classrooms/updateScore?userId=${userdata.id}&classroomId=${classroomId}&dexp=${dexp}`);
+        const data = await result.json();
+        if (!result.ok) {
+            console.error("Error:", data);
+            return;
+        }
+    } catch(error){
+        console.error("Request to update classroom score failed: ", error);
+    }
+}
+
+const classroomLevel = async(userId, classroomId) => {
+    try{
+        const result = await fetch(`/api/classrooms/userlevel?userId=${userId}&classroomId=${classroomId}`);
+        const data = await result.json();
+        if (!result.ok) {
+            console.error("Error:", data);
+            return;
+        }
+        return data;
+    } catch(error){
+        console.error("Request to update classroom score failed: ", error);
+    }
+}
+
+const leaderboard = async(classroomId) => {
+    try{
+        const result = await fetch(`/api/classrooms/leaderboard?classroomId=${classroomId}`);
+        const leaders = await result.json();
+
+        return leaders.leaderboard;
+
+    } catch (err) {
+        console.error("Error loading leaderboard: ", err);
+    }
+};  
+
+const classroomController = {fetchClassrooms, fetchAllClassrooms, addClassroom, deleteClassroom, addUser, removeUser, isMember, loadContent, leaderboard, updateClassroomScore, classroomLevel};
 export default classroomController;

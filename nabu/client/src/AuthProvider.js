@@ -55,6 +55,78 @@ const AuthProvider = ({ children }) => {
             fetchUserdata();
     }, [token]);
 
+    const userLevel = async() => {
+        try {
+                const userId = userdata?.id;
+                if (!userId) {
+                    console.error("No user ID available");
+                    return;
+                }
+
+                const res = await fetch(`/api/user/level?userId=${userId}`, {
+                method: 'GET',
+                // Include Token for Auth
+                headers: {
+                    'Authorization': `Bearer ${token}`, 
+                },
+            });
+
+            //Protect from invalid userdata
+            if(!res.ok){
+                setUserdata(null);
+                //Nuke the token if the user is not authorized so that the reroutes work correctly
+                if(res.status === 401 || res.status === 403){
+                    setToken("");
+                    localStorage.removeItem("site");
+                }
+                return;
+            }
+
+            const data = await res.json();
+            setUserdata(data);
+
+        } catch (err) {
+            console.error("Failed to fetch user level: ", err);
+            setUserdata(null);
+        }
+    };
+
+    const updateExp = async(dexp) => {
+        try {
+                const userId = userdata?.id;
+                if (!userId) {
+                    console.error("No user ID available");
+                    return;
+                }
+
+                const res = await fetch(`/api/user/updateExp?userId=${userId}&dexp=${dexp}`, {
+                method: 'POST',
+                // Include Token for Auth
+                headers: {
+                    'Authorization': `Bearer ${token}`, 
+                },
+            });
+
+            //Protect from invalid userdata
+            if(!res.ok){
+                setUserdata(null);
+                //Nuke the token if the user is not authorized so that the reroutes work correctly
+                if(res.status === 401 || res.status === 403){
+                    setToken("");
+                    localStorage.removeItem("site");
+                }
+                return;
+            }
+
+            const data = await res.json();
+            setUserdata(data);
+
+        } catch (err) {
+            console.error("Failed to fetch user level: ", err);
+            setUserdata(null);
+        }
+    };
+
     /**Classroom Data   {@link classroom}   */
     const fetchClassrooms = () => {classroomController.fetchClassrooms(userdata, setClassrooms)};
     const fetchAllClassrooms = () => {classroomController.fetchAllClassrooms(setClassrooms)};
@@ -72,6 +144,8 @@ const AuthProvider = ({ children }) => {
         const res = await classroomController.isMember(userdata, classroomId);
         return res;
     }
+
+    const leaderboard = async(classroomId) => (await classroomController.leaderboard(classroomId));
 
     //TODO: Do the same thing for flaschards, quizzes, and questions
     /**     Flashcards   {@link flashcard}   */
@@ -112,6 +186,8 @@ const AuthProvider = ({ children }) => {
         await classroomController.addUser(userdata, classroomId)
     };
     const removeUser = async(classroomId) => (await classroomController.removeUser(userdata, classroomId));
+    const updateScore = async(classroomId) => (await classroomController.updateClassroomScore(userdata, classroomId));
+    const classroomLevel = async(userId, classroomId) => (await classroomController.classroomLevel(userId, classroomId));
     
     /**     Add Flashcard to DB   {@link flashcard}   */
     const createFlashcard = async(payload) => (await flashcardController.createFlashcard(payload, userdata));
@@ -136,6 +212,9 @@ const AuthProvider = ({ children }) => {
     classrooms,
     quizdata,
 
+    userLevel,
+    updateExp,
+
     signupAction,
     loginAction,
     logOut,
@@ -148,9 +227,12 @@ const AuthProvider = ({ children }) => {
     removeUser,
     isMember,
     loadContent,
+    leaderboard,
+    classroomLevel,
 
     createQuiz,
     fetchQuiz,
+    updateScore,
 
     fetchQuizQuestions,
     createQuestion,
