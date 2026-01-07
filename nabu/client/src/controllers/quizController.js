@@ -63,5 +63,20 @@ const complete = async(quizId, userId, correct) => {
     }
 };
 
-const quizController = {createQuiz, fetchQuiz, complete}
+const deleteQuiz = async(quizId, userId) => {
+    try{
+        const res = await fetch(`/api/quizzes/delete?quizId=${quizId}&creatorId=${userId}`, {
+            method: 'DELETE'
+        });
+        
+        if(!res.ok){
+            console.error("Error deleting quiz");
+            return;
+        }
+    } catch(err){
+        console.error("Error deleting quiz:", err);
+    }
+}
+
+const quizController = {createQuiz, fetchQuiz, complete, deleteQuiz}
 export default quizController;

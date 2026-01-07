@@ -195,7 +195,9 @@ const AuthProvider = ({ children }) => {
 
     //============Deletion=============================================================//
     const deleteClassroom = async(classroomId) => (await classroomController.deleteClassroom(classroomId, setClassrooms));
-    
+    const deleteQuiz = async(quizId) => (await quizController.deleteQuiz(quizId, userdata.id));
+    const deleteFlashcard = async(flashcardId) => (await flashcardController.deleteFlashcard(flashcardId, userdata.id));
+    const deleteQuestion = async(questionId) => (await questionController.deleteQuestion(questionId));
 
     //=====================Return data ================================================//
     const contextValue = {
@@ -225,11 +227,14 @@ const AuthProvider = ({ children }) => {
     createQuiz,
     fetchQuiz,
     updateScore,
+    deleteQuiz,
 
     fetchQuizQuestions,
     createQuestion,
+    deleteQuestion,
 
     createFlashcard,
+    deleteFlashcard,
 
     updateUsername,
 

@@ -57,5 +57,32 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.delete(`/delete`, async(req, res) => {
+    try {
+      const id = req.query.questionId;
+      console.log(id);
+
+      if (!id) {
+          return res.status(207).json({ error: "Missing questionId" });
+      }
+
+    const [result] = await pool.query(
+          `DELETE FROM Question WHERE Id = ?`,
+          [id]
+      );
+
+      if (result.affectedRows === 0) {
+          return res.status(207).json({
+              error: "Question not found"
+          });
+      }
+
+      res.json({ message: "Question deleted successfully" });
+    } catch (err) {
+        console.error("QUESTION DELETE ERROR:", err);
+        res.status(500).json({ error: "Database error" });
+    }
+})
+
 
 export default router;

@@ -39,6 +39,23 @@ const createQuestion = async (payload) => {
     }
 };
 
+const deleteQuestion = async(questionId) => {
+    try{
+        const res = await fetch(`/api/question/delete?questionId=${questionId}`, {
+            method: 'DELETE'
+        });
 
-const questionController = {fetchQuizQuestions, createQuestion}
+        const data = await res.json();
+        if(!res.ok){
+            return null;
+        }
+        return data;
+    } catch(err){
+        console.error("delete question error:", err);
+        return null;
+    }
+}
+
+
+const questionController = {fetchQuizQuestions, createQuestion, deleteQuestion}
 export default questionController;

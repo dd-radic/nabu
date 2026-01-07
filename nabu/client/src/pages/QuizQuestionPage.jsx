@@ -11,7 +11,7 @@ import GameEngine from "../components/game/GameBuilder.jsx"
 const QuizQuestionPage = () => {
     // 1. Get Data (No params needed)
     const location = useLocation();
-    const { userdata, token, fetchQuizQuestions, createQuestion } = useAuth();
+    const { userdata, token, fetchQuizQuestions, createQuestion, deleteQuestion } = useAuth();
 
     const quiz = location.state?.quiz;
 
@@ -153,7 +153,7 @@ const QuizQuestionPage = () => {
                             title="Delete Question"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setDeleteTarget(index);
+                                setDeleteTarget(q.id);
                             }}
                         >
                             🗑️
@@ -229,9 +229,14 @@ const QuizQuestionPage = () => {
                 title="Delete Question"
                 message="Are you sure you want to permanently delete this question?"
                 onCancel={() => setDeleteTarget(null)}
-                onConfirm={() => {
-                    setQuestions((prev) => prev.filter((_, i) => i !== deleteTarget));
-                    setDeleteTarget(null);
+                onConfirm={async() => {
+                    try{
+                        await deleteQuestion(deleteTarget);
+                        setQuestions((prev) => prev.filter((_, i) => i !== deleteTarget));
+                        setDeleteTarget(null);
+                    } catch (err) {
+                        console.error("Failed to delete question: ", err);
+                    }
                 }}
             />
         </main>

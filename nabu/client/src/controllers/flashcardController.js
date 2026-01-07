@@ -16,5 +16,22 @@ const createFlashcard = async (payload, userdata) => {
     }
 };
 
-const flashcardController = {createFlashcard, };
+const deleteFlashcard = async(flashCardId, creatorId) => {
+    try{
+        const res = await fetch(`/api/flashcard/delete?flashCardId=${flashCardId}&creatorId=${creatorId}`, {
+            method: 'DELETE'
+        });
+
+        const data = await res.json();
+        if(!res.ok){
+            return null;
+        }
+        return data;
+    } catch (err) {
+        console.error("Delete flashcard error:", err);
+        return null;
+    }
+}
+
+const flashcardController = {createFlashcard, deleteFlashcard};
 export default flashcardController;

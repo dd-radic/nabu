@@ -82,4 +82,32 @@ router.post("/", async (req, res) => {
   }
 });
 
+//==========DELETE Quiz===============================//
+router.delete(`/delete`, async(req, res) => {
+  try {
+    const creatorId = req.query.creatorId;
+    const quizId = req.query.quizId;
+
+    if (!creatorId || !quizId) {
+        return res.status(207).json({ error: "Missing quizId or creatorId" });
+    }
+
+    const [result] = await pool.query(
+          `DELETE FROM Quiz WHERE Id = ? AND CreatorId = ?`,
+          [quizId, creatorId]
+      );
+
+      if (result.affectedRows === 0) {
+          return res.status(207).json({
+              error: "Quiz not found or unauthorized"
+          });
+      }
+
+      res.json({ message: "Quiz deleted successfully" });
+    } catch (err) {
+        console.error("QUIZ DELETE ERROR:", err);
+        res.status(500).json({ error: "Database error" });
+    }
+});
+
 export default router;

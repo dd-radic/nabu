@@ -13,7 +13,7 @@ const ClassroomPage = () => {
     // 1. Extract Hooks
     const {
         userdata, token, classrooms, addUser, removeUser, isMember,
-        loadContent, createQuiz, createFlashcard, leaderboard
+        loadContent, createQuiz, createFlashcard, leaderboard, deleteFlashcard, deleteQuiz,
     } = useAuth();
 
     const { classroomId } = useParams();
@@ -124,10 +124,13 @@ const ClassroomPage = () => {
     const handleDeleteContent = useCallback((item) => {
         if (!window.confirm(`Delete "${item.name}"?`)) return;
         //Determine if the item is a flashcard or quiz, then delete it
+        if(item.type === "Flashcard"){
+            deleteFlashcard(item.id);
+        } else if (item.type === "Quiz"){
+            deleteQuiz(item.id);
+        }
         setContent((prev) => prev.filter((c) => c.id !== item.id));
-    }, []);
-
-
+    }, [deleteFlashcard, deleteQuiz]);
 
     const handleCreateContentSubmit = useCallback(async (e) => {
         e.preventDefault();

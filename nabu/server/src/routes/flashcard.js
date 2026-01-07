@@ -56,7 +56,7 @@ router.post("/create", async (req, res) => {
 // Delete flashcard
 router.delete("/delete", async (req, res) => {
     const flashCardId = req.query.flashCardId;
-    const creatorId = req.query.userId;
+    const creatorId = req.query.creatorId;
 
     if (!flashCardId || !creatorId) {
         return res.status(400).json({ error: "Missing flashCardId or userId" });
