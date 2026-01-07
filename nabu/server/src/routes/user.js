@@ -89,7 +89,7 @@ router.get("/", verifyToken, async (req, res) => {
 
         res.status(200).json({
             name: user.Name,
-            mail: user.Email,
+            email: user.Email,
             id: user.ID,
         });
 

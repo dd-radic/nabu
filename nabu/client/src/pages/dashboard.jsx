@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useAuth } from '../AuthProvider';
 import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard';
@@ -11,7 +11,7 @@ import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 
 const Dashboard = () => {
     // 1. Extract Hooks
-    const { classrooms, userdata, token, addClassroom } = useAuth();
+    const { classrooms, userdata, token, addClassroom, userLevel } = useAuth();
 
     // 2. State
     const [activeTab, setActiveTab] = useState('classrooms');
@@ -28,7 +28,24 @@ const Dashboard = () => {
     const [hiddenClassroomIds, setHiddenClassroomIds] = useState([]);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [hoveredId, setHoveredId] = useState(null);
+    const [level, setLevel] = useState();
 
+
+    useEffect (() => {
+        const fetchLevel = async () => {
+            if(userdata?.id){
+                try{
+                    const levelData = await userLevel();
+                    setLevel(levelData);
+                } catch (err) {
+                    console.error('Error fetching user level: ', err);
+                    setLevel(0);
+                }
+            }
+        };
+
+        fetchLevel();
+    }, [userLevel, userdata?.id]);
 
     // 3. Derived Values
     const filteredClassrooms = useMemo(() => {
@@ -47,8 +64,8 @@ const Dashboard = () => {
     const userProfile = useMemo(() => ({
         username: userdata?.name || 'Loading...',
         email: userdata?.email || 'N/A',
-        role: 'Student',
-    }), [userdata]);
+        level: level || 0,
+    }), [level, userdata?.email, userdata?.name]);
 
     // 4. Handlers
     const handleAddClassroomClick = useCallback(() => {
@@ -122,7 +139,7 @@ const Dashboard = () => {
                     <h2>Profile</h2>
                     <p><strong>Username:</strong> {userProfile.username}</p>
                     <p><strong>Email:</strong> {userProfile.email}</p>
-                    <p><strong>Role:</strong> {userProfile.role}</p>
+                    <p><strong>Level:</strong> {userProfile.level}</p>
 
                     <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}>
                         {/* REPLACED WITH BUTTON COMPONENT */}

@@ -15,7 +15,7 @@ const ProfileBlurb = () => {
   
   return (
     <div className="container header-content">
-        {userdata.name} - {userdata.mail}
+        {userdata.name} - {userdata.email}
         
     </div>
   );

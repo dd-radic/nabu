@@ -60,7 +60,7 @@ const AuthProvider = ({ children }) => {
                 const userId = userdata?.id;
                 if (!userId) {
                     console.error("No user ID available");
-                    return;
+                    return -1;
                 }
 
                 const res = await fetch(`/api/user/level?userId=${userId}`, {
@@ -70,24 +70,16 @@ const AuthProvider = ({ children }) => {
                     'Authorization': `Bearer ${token}`, 
                 },
             });
-
-            //Protect from invalid userdata
             if(!res.ok){
-                setUserdata(null);
-                //Nuke the token if the user is not authorized so that the reroutes work correctly
-                if(res.status === 401 || res.status === 403){
-                    setToken("");
-                    localStorage.removeItem("site");
-                }
-                return;
+                return -1;
             }
 
             const data = await res.json();
-            setUserdata(data);
+            return data.level;
 
         } catch (err) {
             console.error("Failed to fetch user level: ", err);
-            setUserdata(null);
+            return -1;
         }
     };
 
