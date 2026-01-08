@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "../../Button";
 
 const Game_MultipleChoice = ({question}) => {
     
@@ -24,13 +25,16 @@ const Game_MultipleChoice = ({question}) => {
         <div>
             <h2>{question.text}</h2>
             {questionArr.map((option, index) => (
-                <div>
-                <button key={index} onClick={() => handleClick(option)}>
-                    <h3>{option}</h3>
-                </button>
-                <br/><br/>
-                </div>
+                <Button
+                    key={index}
+                    variant="outline"
+                    onClick={() => handleClick(option)}
+                    style={{ width: "100%", marginBottom: "10px" }}
+                >
+                    {option}
+                </Button>
             ))}
+
         </div>
     )
 };

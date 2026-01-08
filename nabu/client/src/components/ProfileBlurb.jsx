@@ -14,9 +14,11 @@ const ProfileBlurb = () => {
 
   
   return (
-    <div className="container header-content">
-        {userdata.name} - {userdata.email}
-        
+    <div className="profile-blurb">
+      <div className="avatar">
+        {userdata.name?.charAt(0).toUpperCase()}
+      </div>
+      <span className="username">{userdata.name}</span>
     </div>
   );
 };
