@@ -27,6 +27,24 @@ const QuizQuestionPage = () => {
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [deleteTarget, setDeleteTarget] = useState(null);
 
+    // Local funcs
+    //courtesy of https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+    function shuffleArr(array){
+        let currentIndex = array.length;
+        // While there remain elements to shuffle...
+        while (currentIndex !== 0) {
+
+        // Pick a remaining element...
+            let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+      }
+      return array;
+    }
+
     // Questions from db query
     useEffect(() => {
           const loadQuiz = async() => {
@@ -108,12 +126,12 @@ const QuizQuestionPage = () => {
     (<table className="quiz-table">
     <thead>
         <tr>
-            <th style={{ width: "80px" }}>No</th>
+            <th style={{ width: "80px" }}>No.</th>
             <th>Question</th>
         </tr>
     </thead>
     <tbody>
-        {normalizedQuestions.map((q, index) => (
+        {shuffleArr(normalizedQuestions).map((q, index) => (
             <tr
             >
                 <td>{index + 1}</td>
@@ -128,8 +146,7 @@ const QuizQuestionPage = () => {
     (<table className="quiz-table">
     <thead>
         <tr>
-            <th style={{ width: "80px" }}>No</th>
-            <th>Question Text</th>
+            <th>Questions</th>
         </tr>
     </thead>
     <tbody>
@@ -141,7 +158,6 @@ const QuizQuestionPage = () => {
                 onMouseLeave={() => setHoveredIndex(null)}
                 style={{ cursor: "pointer", position: "relative" }}
             >
-                <td>{index + 1}</td>
                 <td style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <span style={{ maxWidth: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {q.text}
@@ -192,12 +208,16 @@ const QuizQuestionPage = () => {
             <section className="dashboard-box" style={{ marginTop: "1.5rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
                     <div>
-                        <h2>Quiz Questions: {quiz.name}</h2>
+                        <h2>{quiz.name}</h2>
                         <p style={{ color: "#777", marginTop: "0.5rem" }}>
-                            Description: {quiz.summary || quiz.description || "No description provided."}
+                            {!quizIsActive?
+                                quiz.summary || quiz.description || "No description provided.":""
+                            }
                         </p>
                     </div>
-                    <Button type="button" onClick={handleQuizStart}>Start Quiz</Button>
+                    <Button type="button" onClick={handleQuizStart}>
+                        {!quizIsActive? "Start Quiz" : "Finish Quiz"}
+                        </Button>
                 </div>
 
                 {normalizedQuestions.length === 0 ? (
