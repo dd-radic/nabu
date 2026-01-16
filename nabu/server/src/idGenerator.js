@@ -1,5 +1,5 @@
 import pool from './db-connection.js';
-
+//The characters we will use to generate the id
 const char = "ABCDEFGHIJKLMNOBQRSTUVWXYZabcdefghijklmnobqrstuvwxyz0123456789";
 
 function idGenerator() {

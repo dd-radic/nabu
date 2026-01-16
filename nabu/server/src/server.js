@@ -1,14 +1,6 @@
 import express from "express";
-import bodyParser from "body-parser";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import pool from "./db-connection.js";
-import path from "path";
 import dotenv from "dotenv";
-import generateUniqueId from "./idGenerator.js";
 import cors from "cors";
-
-
 //  ----  ROUTES  -----
 // ideally we could have incorporated signup and login into user but at this point why bother
 import classroomRoute from "./routes/classroom.js";
@@ -22,11 +14,13 @@ import flashcardRoute from "./routes/flashcard.js";
 dotenv.config({ path: "../.env" });
 
 
-
+//  ----  CONTROLLERS  -----
+//Express app setup
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
-
+// Enable CORS for all routes and origins (adjust as needed for production) 
+// and allow credentials and specific headers
 app.use(cors({
     origin: "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -48,8 +42,8 @@ app.use((req, res, next) => {
   Promise.resolve().then(() => next()).catch(next);
 });
 
-
-app.get("/api/health", (req, res) => { // Health check endpoint
+//---------- HEALTH CHECK ENDPOINT -----------
+app.get("/api/health", (req, res) => {
   res.json({ message: "OK" });
 });
 
