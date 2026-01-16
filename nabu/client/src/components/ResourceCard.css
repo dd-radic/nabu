@@ -1,57 +1,140 @@
-/* Container for the card */
-.classroom-card {
-    border-radius: 10px;
-    border: 1px solid var(--color-border);
-    padding: 1rem;
-    background-color: var(--color-bg-light-gray);
+/* ======================================================
+   ResourceCard.css - Unified Card Styling
+   ====================================================== */
+
+/* 1. Base Styles for ALL Cards (Quiz, Flashcard, Classroom) */
+.classroom-card, 
+.flashcard {
+    /* STRICT DIMENSIONS FOR GRID UNIFORMITY */
+    height: 220px;          /* Fixed height for everything */
+    width: 100%;            /* Fill the grid column */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes content apart */
+    
+    /* Visuals */
+    background-color: #ffffff;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-sizing: border-box;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
 }
 
-/* Hover effect */
-.classroom-card:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
+/* Hover Effects */
+.classroom-card:hover,
+.flashcard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    border-color: #d1d5db;
 }
 
-/* Link wrapper style (removes underline) */
+/* Link Wrapper (Removes default link styles) */
 .classroom-card-link {
     text-decoration: none;
-    color: var(--color-text-dark);
+    color: inherit;
     display: block;
+    height: 100%; /* Ensure link fills the grid cell */
 }
 
-.classroom-card-link:hover .classroom-card {
-    /* Triggers the hover effect on the inner card when link is hovered */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
-}
+/* --- TEXT STYLES --- */
 
-.classroom-card h3 {
-    margin-bottom: 0.5rem;
-}
-
-/* Full description */
-.classroom-description {
-    font-size: 0.9rem;
-    color: var(--color-text-light);
-}
-
-/* Truncated description (max 2 lines) */
-.classroom-description-short {
-    font-size: 0.9rem;
-    color: var(--color-text-light);
-    overflow: hidden;
-    text-overflow: ellipsis;
+.classroom-card h3,
+.flashcard h3 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1F2937;
+    
+    /* Truncate Title after 2 lines */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    line-height: 1.4;
-    height: 2.8em;
+    overflow: hidden;
+}
+
+.classroom-description-short,
+.flashcard p {
+    font-size: 0.95rem;
+    color: #6B7280;
+    line-height: 1.5;
+    
+    /* Truncate Description */
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Show max 3 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: auto; /* Push footer down */
 }
 
 .classroom-type {
-    margin-top: 0.25rem;
     font-size: 0.8rem;
-    color: #666;
-    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #9CA3AF;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+/* ======================================================
+   FLIP CARD SPECIFICS (Overrides base .flashcard behavior)
+   ====================================================== */
+
+.flashcard {
+    perspective: 1000px;
+    background-color: transparent; /* Container is transparent */
+    border: none;                  /* Border handled by inner faces */
+    padding: 0;                    /* Padding handled by inner faces */
+    cursor: pointer;
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.flashcard.is-flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+/* Faces (Front & Back) - They inherit the "Card Look" */
+.flashcard-face {
+    position: absolute;
+    inset: 0; /* Fill container */
+    backface-visibility: hidden;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    background-color: #ffffff;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Front Specifics */
+.flashcard-front {
+    z-index: 2;
+}
+
+/* Back Specifics */
+.flashcard-back {
+    transform: rotateY(180deg);
+    background-color: #F9FAFB; /* Slightly gray back */
+    overflow-y: auto; /* Scroll if text is huge */
+}
+
+.flashcard-hint {
+    margin-top: auto;
+    font-size: 0.75rem;
+    color: #aaa;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
 }

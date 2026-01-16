@@ -8,7 +8,7 @@ import Signup from './pages/signup.jsx';
 import Dashboard from './pages/dashboard.jsx';
 import ClassroomPage from './pages/classroom.jsx';
 import QuizQuestionPage from './pages/QuizQuestionPage.jsx';
-import FlashcardDetailPage from './pages/FlashcardDetailPage.jsx';
+//import FlashcardDetailPage from './pages/FlashcardDetailPage.jsx';
 import Quiz from './pages/quiz.jsx';
 
 // Import Auth Provider 
@@ -36,8 +36,7 @@ const App = () => {
             {/*  NEW DYNAMIC CLASSROOM ROUTE */}
             <Route path="/classroom/:classroomId" element={<ClassroomPage />} />
             <Route path="/quiz/:quizId" element={<QuizQuestionPage />} />
-            <Route path="/flashcard/:flashcardId" element={<FlashcardDetailPage />} />
-
+           
 
           </Route>
         </Routes>
