@@ -50,12 +50,52 @@ describe("Flashcard Routes", () => {
     expect(res.body.id).toBe("F123");
   });
 
+  // userId missing
+it("should not query database if userId missing", async () => {
+  const res = await request(app).get("/api/flashcard/allCards");
+
+  expect(res.status).toBe(400);
+  expect(pool.query).not.toHaveBeenCalled();
+});
+
+//create – missing classRoomId
+it("should return 400 if classRoomId missing", async () => {
+  generateUniqueId.mockResolvedValueOnce("F123");
+
+  const res = await request(app)
+    .post("/api/flashcard/create?userId=1")
+    .send({
+      title: "Card",
+      information: "Info"
+    });
+
+  expect(res.status).toBe(400);
+});
+//delete – missing creatorId
+it("should return 400 if creatorId missing", async () => {
+  const res = await request(app)
+    .delete("/api/flashcard/delete?flashCardId=F1");
+
+  expect(res.status).toBe(400);
+});
+//delete – flashcard not found / not owner
+it("should return 404 if flashcard not found or unauthorized", async () => {
+  pool.query.mockResolvedValueOnce([{ affectedRows: 0 }]);
+
+  const res = await request(app)
+    .delete("/api/flashcard/delete?flashCardId=F1&creatorId=1");
+
+  expect(res.status).toBe(404);
+});
+
+
   it("should delete flashcard", async () => {
-    pool.query.mockResolvedValueOnce([{ affectedRows: 1 }]);
+  pool.query.mockResolvedValueOnce([{ affectedRows: 1 }]);
 
-    const res = await request(app)
-      .delete("/api/flashcard/delete?flashCardId=F1&userId=1");
+  const res = await request(app)
+    .delete("/api/flashcard/delete?flashCardId=F1&creatorId=1");
 
-    expect(res.status).toBe(200);
-  });
+  expect(res.status).toBe(200);
+});
+
 });

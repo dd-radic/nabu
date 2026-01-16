@@ -48,4 +48,57 @@ describe("Quiz Routes", () => {
     expect(res.status).toBe(201);
     expect(res.body.Id).toBe("Q123");
   });
+
+  it("should return 400 if quizId missing (getCurrent)", async () => {
+  const res = await request(app)
+    .get("/api/quizzes/getCurrent");
+
+  expect(res.status).toBe(400);
+});
+
+it("should return current quiz by id", async () => {
+  pool.query.mockResolvedValueOnce([[
+    { Id: "Q1", Title: "Quiz 1" }
+  ]]);
+
+  const res = await request(app)
+    .get("/api/quizzes/getCurrent?quizId=Q1");
+
+  expect(res.status).toBe(200);
+  expect(res.body.Id).toBe("Q1");
+});
+
+it("should return 400 if required fields missing on create", async () => {
+  const res = await request(app)
+    .post("/api/quizzes")
+    .send({ title: "Quiz ohne Raum" });
+
+  expect(res.status).toBe(400);
+});
+
+it("should return 400 if quizId or creatorId missing", async () => {
+  const res = await request(app)
+    .delete("/api/quizzes/delete?quizId=Q1");
+
+  expect(res.status).toBe(207);
+});
+
+it("should return 207 if quiz not found or unauthorized", async () => {
+  pool.query.mockResolvedValueOnce([{ affectedRows: 0 }]);
+
+  const res = await request(app)
+    .delete("/api/quizzes/delete?quizId=Q1&creatorId=1");
+
+  expect(res.status).toBe(207);
+});
+
+it("should delete quiz", async () => {
+  pool.query.mockResolvedValueOnce([{ affectedRows: 1 }]);
+
+  const res = await request(app)
+    .delete("/api/quizzes/delete?quizId=Q1&creatorId=1");
+
+  expect(res.status).toBe(200);
+});
+
 });

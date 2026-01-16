@@ -52,9 +52,15 @@ test("POST /api/login → wrong password", async () => {
 
 // === 3. Successful login ===
 test("POST /api/login → successful login", async () => {
-  pool.query.mockResolvedValueOnce([
-    [{ id: 1, username: "ben", password: "HASHEDPW" }]
-  ]);
+  pool.query.mockResolvedValueOnce([[
+  {
+    Id: 1,
+    Name: "ben",
+    Password: "HASHEDPW",
+    Email: "ben@test.de"
+  }
+]]);
+
 
   vi.spyOn(bcrypt, "compare").mockResolvedValueOnce(true);
 
@@ -67,3 +73,50 @@ test("POST /api/login → successful login", async () => {
   expect(res.status).toBe(200);
   expect(res.body.accessToken || res.body.token).toBe("FAKE_TOKEN");
 });
+
+test("POST /api/login → missing credentials", async () => {
+  const res = await request(app)
+    .post("/api/login")
+    .send({ username: "ben" });
+
+  expect(res.status).toBe(400);
+});
+
+
+// =======================
+test("POST /api/login → does not check password if user not found", async () => {
+  pool.query.mockResolvedValueOnce([[]]);
+
+  const spy = vi.spyOn(bcrypt, "compare");
+
+  await request(app)
+    .post("/api/login")
+    .send({ username: "ben", password: "123" });
+
+  expect(spy).not.toHaveBeenCalled();
+});
+
+test("POST /api/login → jwt payload is correct", async () => {
+ pool.query.mockResolvedValueOnce([[
+  {
+    Id: 1,
+    Name: "ben",
+    Password: "HASHEDPW",
+    Email: "ben@test.de"
+  }
+]]);
+
+
+  vi.spyOn(bcrypt, "compare").mockResolvedValueOnce(true);
+  jwt.sign.mockReturnValue("FAKE_TOKEN");
+
+  await request(app)
+    .post("/api/login")
+    .send({ username: "ben", password: "correct" });
+
+  expect(jwt.sign).toHaveBeenCalledWith(
+    { id: 1, username: "ben" },
+    process.env.DB_JWT_KEY
+  );
+});
+
