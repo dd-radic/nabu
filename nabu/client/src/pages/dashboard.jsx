@@ -1,49 +1,54 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useAuth } from '../AuthProvider';
-import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard';
 import SearchBar from "../components/SearchBar";
 import { Navigate } from 'react-router-dom';
 import CreateClassroomModal from '../components/CreateClassroomModal';
 import UpdateUserModal from '../components/UpdateUserModal';
-import Button from '../components/Button'; // Import Button Component
+import Button from '../components/Button';
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import { useSearchParams } from 'react-router-dom';
 
 const Dashboard = () => {
     // 1. Extract Hooks
-    const { classrooms, userdata, token, addClassroom, userLevel } = useAuth();
+    const {
+        classrooms, userdata, token, addClassroom, userLevel,
+        deleteClassroom, logOut
+    } = useAuth();
 
     // 2. State
-    const [activeTab, setActiveTab] = useState('classrooms');
+    //const [activeTab, setActiveTab] = useState('classrooms');
     const [showUpdateBox, setShowUpdateBox] = useState(false);
     const [newUsername, setNewUsername] = useState("");
     const [updateError, setUpdateError] = useState("");
     const [updateSuccess, setUpdateSuccess] = useState("");
+    const [searchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'classrooms';
 
     const [showFilter, setShowFilter] = useState(false);
     const [sortMode, setSortMode] = useState("none");
     const [search, setSearch] = useState("");
+
+    // Classroom Form State
     const [showAddClassroomForm, setShowAddClassroomForm] = useState(false);
     const [newClassroomData, setNewClassroomData] = useState({ name: '', description: '' });
+
     const [hiddenClassroomIds, setHiddenClassroomIds] = useState([]);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [hoveredId, setHoveredId] = useState(null);
     const [level, setLevel] = useState();
 
-
-    useEffect (() => {
+    useEffect(() => {
         const fetchLevel = async () => {
-            if(userdata?.id){
-                try{
+            if (userdata?.id) {
+                try {
                     const levelData = await userLevel();
                     setLevel(levelData);
                 } catch (err) {
-                    console.error('Error fetching user level: ', err);
                     setLevel(0);
                 }
             }
         };
-
         fetchLevel();
     }, [userLevel, userdata?.id]);
 
@@ -69,6 +74,7 @@ const Dashboard = () => {
 
     // 4. Handlers
     const handleAddClassroomClick = useCallback(() => {
+        setNewClassroomData({ name: '', description: '' });
         setShowAddClassroomForm(true);
     }, []);
 
@@ -84,6 +90,7 @@ const Dashboard = () => {
 
     const handleCreateClassroomSubmit = useCallback(async (e) => {
         e.preventDefault();
+        // CREATE MODE
         const payload = {
             title: newClassroomData.name,
             description: newClassroomData.description,
@@ -93,6 +100,7 @@ const Dashboard = () => {
         closeAddClassroomForm();
     }, [newClassroomData, userdata, addClassroom, closeAddClassroomForm]);
 
+    // ... (User Update Handlers) ...
     const openUpdateBox = useCallback(() => {
         setNewUsername("");
         setUpdateError("");
@@ -108,7 +116,6 @@ const Dashboard = () => {
         e.preventDefault();
         setUpdateError("");
         setUpdateSuccess("");
-
         if (!newUsername.trim()) {
             setUpdateError("Error: Username cannot be empty");
             return;
@@ -128,10 +135,7 @@ const Dashboard = () => {
     // 6. Render
     return (
         <main className="dashboard-page">
-            <DashboardNav
-                initialActiveTab={activeTab}
-                onTabChange={setActiveTab}
-            />
+            {/*<DashboardNav initialActiveTab={activeTab} onTabChange={setActiveTab} />*/}
 
             {/* Profile View */}
             {activeTab === 'profile' && (
@@ -142,13 +146,10 @@ const Dashboard = () => {
                     <p><strong>Level:</strong> {userProfile.level}</p>
 
                     <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}>
-                        {/* REPLACED WITH BUTTON COMPONENT */}
-                        <Button onClick={openUpdateBox}>
-                            Update details
-                        </Button>
-                        <Button variant="danger" onClick={() => { }}>
-                            Delete account
-                        </Button>
+                        <Button onClick={openUpdateBox}>Update details</Button>
+                        <Button variant="danger" onClick={() => { }}>Delete account</Button>
+                        <Button onClick={() => { logOut(); window.location.href = '/'; }}>   Logout   </Button>
+
                     </div>
                 </section>
             )}
@@ -165,15 +166,9 @@ const Dashboard = () => {
                         />
                         {showFilter && (
                             <div className="filter-dropdown">
-                                <button onClick={() => setSortMode("az")}>
-                                    Sort A → Z {sortMode === "az" && <span className="checkmark">✔</span>}
-                                </button>
-                                <button onClick={() => setSortMode("za")}>
-                                    Sort Z → A {sortMode === "za" && <span className="checkmark">✔</span>}
-                                </button>
-                                <button onClick={() => setSortMode("none")}>
-                                    Reset {sortMode === "none" && <span className="checkmark">✔</span>}
-                                </button>
+                                <button onClick={() => setSortMode("az")}>Sort A → Z {sortMode === "az" && "✔"}</button>
+                                <button onClick={() => setSortMode("za")}>Sort Z → A {sortMode === "za" && "✔"}</button>
+                                <button onClick={() => setSortMode("none")}>Reset {sortMode === "none" && "✔"}</button>
                             </div>
                         )}
                     </div>
@@ -184,47 +179,44 @@ const Dashboard = () => {
                         <p>No classrooms match your search.</p>
                     ) : (
                         <div className="classroom-grid">
-                            {filteredClassrooms.map((room) => (
-                                <div
-                                    key={room.id}
-                                    style={{ position: "relative" }}
-                                    onMouseEnter={() => setHoveredId(room.id)}
-                                    onMouseLeave={() => setHoveredId(null)}
-                                >
-                                    <ResourceCard
+                            {filteredClassrooms.map((room) => {
+                                // 🔒 SECURITY CHECK: Are you the owner?
+                                const roomOwner = room.ownerID || room.ownerId || room.creatorId;
+                                const isOwner = String(userdata.id) === String(roomOwner);
 
-                                        resource={room}
-                                        isClassroomLevel={true}
-                                    />
-                                    {hoveredId === room.id && (
-                                        <div style={{ position: "absolute", top: 10, right: 10 }}>
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                title="Delete"
-                                                type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation(); // prevent navigation
-                                                    setDeleteTarget(room);
-                                                }}
-                                            >
-                                                🗑️
-                                            </Button>
-                                        </div>
-                                    )}
-                                </div>
+                                return (
+                                    <div
+                                        key={room.id}
+                                        style={{ position: "relative" }}
+                                        onMouseEnter={() => setHoveredId(room.id)}
+                                        onMouseLeave={() => setHoveredId(null)}
+                                    >
+                                        <ResourceCard resource={room} isClassroomLevel={true} />
 
-                            ))}
+                                        {/* Only show DELETE button if hovered AND is owner */}
+                                        {hoveredId === room.id && isOwner && (
+                                            <div style={{ position: "absolute", top: 10, right: 10 }}>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    title="Delete"
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.preventDefault(); // Prevent link click
+                                                        setDeleteTarget(room);
+                                                    }}
+                                                >
+                                                    🗑️
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
 
-                    <button
-                        type="button"
-                        className="floating-add-btn"
-                        onClick={handleAddClassroomClick}
-                    >
-                        +
-                    </button>
+                    <button type="button" className="floating-add-btn" onClick={handleAddClassroomClick}>+</button>
 
                     <CreateClassroomModal
                         isOpen={showAddClassroomForm}
@@ -246,12 +238,16 @@ const Dashboard = () => {
                 error={updateError}
                 success={updateSuccess}
             />
+
             <ConfirmDeleteModal
                 isOpen={!!deleteTarget}
                 title="Delete classroom?"
                 message={`Are you sure you want to delete "${deleteTarget?.name}"?`}
                 onCancel={() => setDeleteTarget(null)}
                 onConfirm={() => {
+                    // Call backend delete if available
+                    if (deleteClassroom) deleteClassroom(deleteTarget.id);
+                    // Update local UI
                     setHiddenClassroomIds((prev) => [...prev, deleteTarget.id]);
                     setDeleteTarget(null);
                 }}

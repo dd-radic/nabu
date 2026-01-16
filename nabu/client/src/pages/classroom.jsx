@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthProvider';
-import DashboardNav from '../components/DashboardNav';
 import ResourceCard from '../components/ResourceCard';
 import CreateContentModal from '../components/CreateContentModal';
 import Button from '../components/Button';
@@ -11,7 +10,7 @@ const ClassroomPage = () => {
     // 1. Extract Hooks
     const {
         userdata, token, classrooms, addUser, removeUser, isMember,
-        loadContent, createQuiz, createFlashcard, 
+        loadContent, createQuiz, createFlashcard,
         leaderboard, deleteFlashcard, deleteQuiz
     } = useAuth();
 
@@ -21,7 +20,7 @@ const ClassroomPage = () => {
     // 2. State
     const [activeTab, setActiveTab] = useState('content');
     const [contentFilter, setContentFilter] = useState('all');
-    
+
     // Modal & Form State
     const [creationStep, setCreationStep] = useState(null);
     const [newContentData, setNewContentData] = useState({ name: '', description: '' });
@@ -31,7 +30,7 @@ const ClassroomPage = () => {
     const [isUserJoined, setIsUserJoined] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [hoveredId, setHoveredId] = useState(null);
-    
+
     const [showLeaderboard, setShowLeaderboard] = useState(false);
     const [leaderboardData, setLeaderboardData] = useState([]);
 
@@ -70,12 +69,12 @@ const ClassroomPage = () => {
     }, [currentClassroom, isMember]);
 
     useEffect(() => {
-        const fetchLeaderboard = async() => {
-            if(!currentClassroom || !showLeaderboard) return;
+        const fetchLeaderboard = async () => {
+            if (!currentClassroom || !showLeaderboard) return;
             try {
                 const data = await leaderboard(classroomId);
                 setLeaderboardData(Array.isArray(data) ? data : []);
-            } catch (err){
+            } catch (err) {
                 setLeaderboardData([]);
             }
         };
@@ -93,9 +92,9 @@ const ClassroomPage = () => {
     // --- NEW: Handle Edit Click ---
     const handleEditClick = useCallback((item) => {
         setEditingItem(item); // Set the item we are editing
-        setNewContentData({ 
-            name: item.name, 
-            description: item.description || item.summary || '' 
+        setNewContentData({
+            name: item.name,
+            description: item.description || item.summary || ''
         });
         // Open the correct modal type
         if (item.type === 'Flashcard') setCreationStep('flashcard');
@@ -136,9 +135,9 @@ const ClassroomPage = () => {
             // NOTE: You need an 'updateFlashcard' or 'updateQuiz' function from useAuth to save this to DB.
             // For now, we update the local UI so it looks like it works.
             const updatedItem = { ...editingItem, name: newContentData.name, description: newContentData.description };
-            
+
             setContent(prev => prev.map(item => item.id === editingItem.id ? updatedItem : item));
-            
+
             console.log("Updated Item (Backend needed):", updatedItem);
             closeCreationModal();
             return;
@@ -155,7 +154,7 @@ const ClassroomPage = () => {
             };
             const savedQuiz = await createQuiz(quizPayload);
             if (savedQuiz) newItem = { id: savedQuiz.Id, name: savedQuiz.Title, type: "Quiz", summary: savedQuiz.Description };
-            
+
         } else if (creationStep === "flashcard") {
             const fcPayload = {
                 classRoomId: classroomId,
@@ -165,11 +164,11 @@ const ClassroomPage = () => {
             };
             const savedFC = await createFlashcard(fcPayload);
             if (savedFC) {
-                newItem = { 
-                    id: savedFC.id, 
-                    name: newContentData.name, 
-                    type: "Flashcard", 
-                    description: newContentData.description 
+                newItem = {
+                    id: savedFC.id,
+                    name: newContentData.name,
+                    type: "Flashcard",
+                    description: newContentData.description
                 };
             }
         }
@@ -184,7 +183,7 @@ const ClassroomPage = () => {
 
     return (
         <main className="dashboard-page">
-            <DashboardNav initialActiveTab={'content'} onTabChange={setActiveTab} showBackButton={true} />
+
 
             <section className="dashboard-box classroom-header-box">
                 <div className="classroom-info">
@@ -193,7 +192,7 @@ const ClassroomPage = () => {
                 </div>
                 <div className="classroom-actions">
                     <Button variant="outline" onClick={() => setShowLeaderboard(true)} style={{ marginRight: '10px' }}>
-                         🏆 Leaderboard
+                        🏆 Leaderboard
                     </Button>
                     {!isUserJoined ? (
                         <Button onClick={handleJoinUser}>Join Classroom</Button>
@@ -253,11 +252,11 @@ const ClassroomPage = () => {
                                             style={{ position: "relative" }}
                                             onMouseEnter={() => setHoveredId(item.id)}
                                             onMouseLeave={() => setHoveredId(null)}
-                                            // Only Quizzes navigate; Flashcards just flip on internal click
-                                            //onClick={item.type === 'Quiz' ? () => navigate(`/quiz/${item.id}`) : undefined}
+                                        // Only Quizzes navigate; Flashcards just flip on internal click
+                                        //onClick={item.type === 'Quiz' ? () => navigate(`/quiz/${item.id}`) : undefined}
                                         >
                                             <ResourceCard resource={item} isClassroomLevel={false} />
-                                            
+
                                             {/* ACTION BUTTONS (Edit & Delete) */}
                                             {hoveredId === item.id && isOwner && (
                                                 <div style={{ position: "absolute", top: 10, right: 10, zIndex: 10, display: 'flex', gap: '5px' }}>
