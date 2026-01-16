@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { useLocation, Navigate } from "react-router-dom"; // Removed useParams, useNavigate
 import { useAuth } from "../AuthProvider";
-import DashboardNav from "../components/DashboardNav";
+
 import Button from "../components/Button";
 import CreateQuizQuestionModal from "../components/CreateQuizQuestionModal";
 import ViewQuizQuestionModal from "../components/ViewQuizQuestionModal";
@@ -29,21 +29,21 @@ const QuizQuestionPage = () => {
 
     // Questions from db query
     useEffect(() => {
-          const loadQuiz = async() => {
+        const loadQuiz = async () => {
             try {
-              const initial = await fetchQuizQuestions(quiz.id);
-              if(!initial){
-                console.warn("Quiz not found.");
-              }
-              setQuestions(initial);
+                const initial = await fetchQuizQuestions(quiz.id);
+                if (!initial) {
+                    console.warn("Quiz not found.");
+                }
+                setQuestions(initial);
             }
-            catch(err){
-              console.error("Error fetching quiz: ", err);
-              return;
+            catch (err) {
+                console.error("Error fetching quiz: ", err);
+                return;
             }
-          }
-          loadQuiz();
-        }, [quiz, fetchQuizQuestions]);
+        }
+        loadQuiz();
+    }, [quiz, fetchQuizQuestions]);
 
     // Normalize shape: { id, text, options[] }
     const normalizedQuestions = useMemo(() => {
@@ -53,7 +53,7 @@ const QuizQuestionPage = () => {
             const rawOptions = q?.Answer || q?.options || q?.Options || q?.answers || q?.Answers || q?.choices || q?.Choices || [];
             const opts = rawOptions.split("//");
             const isCorrect = null;
-            return { id: q?.id ?? q?.Id ?? idx, text, options: opts, isCorrect: isCorrect, type:q.Type };
+            return { id: q?.id ?? q?.Id ?? idx, text, options: opts, isCorrect: isCorrect, type: q.Type };
         });
     }, [questions]);
 
@@ -104,75 +104,75 @@ const QuizQuestionPage = () => {
     if (!quiz) return <Navigate to="/dashboard" replace />;
 
     const quizTable = quizIsActive ?
-    //active
-    (<table className="quiz-table">
-    <thead>
-        <tr>
-            <th style={{ width: "80px" }}>No</th>
-            <th>Question</th>
-        </tr>
-    </thead>
-    <tbody>
-        {normalizedQuestions.map((q, index) => (
-            <tr
-            >
-                <td>{index + 1}</td>
-                <td>
-                    <GameEngine question={q}></GameEngine>
-                </td>
-            </tr>
-        ))}
-    </tbody>
-</table>) : 
-    //inactive
-    (<table className="quiz-table">
-    <thead>
-        <tr>
-            <th style={{ width: "80px" }}>No</th>
-            <th>Question Text</th>
-        </tr>
-    </thead>
-    <tbody>
-        {normalizedQuestions.map((q, index) => (
-            <tr
-                key={q.id ?? index}
-                onClick={() => openView(index)}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                style={{ cursor: "pointer", position: "relative" }}
-            >
-                <td>{index + 1}</td>
-                <td style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ maxWidth: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {q.text}
-                    </span>
-                    {hoveredIndex === index && (
-                        <Button
-                            variant="outline"
-                            className="icon-btn" // Reusing styling
-                            title="Delete Question"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setDeleteTarget(q.id);
-                            }}
-                        >
-                            🗑️
-                        </Button>
-                    )}
-                </td>
-            </tr>
-        ))}
-    </tbody>
-</table>);
+        //active
+        (<table className="quiz-table">
+            <thead>
+                <tr>
+                    <th style={{ width: "80px" }}>No</th>
+                    <th>Question</th>
+                </tr>
+            </thead>
+            <tbody>
+                {normalizedQuestions.map((q, index) => (
+                    <tr
+                    >
+                        <td>{index + 1}</td>
+                        <td>
+                            <GameEngine question={q}></GameEngine>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>) :
+        //inactive
+        (<table className="quiz-table">
+            <thead>
+                <tr>
+                    <th style={{ width: "80px" }}>No</th>
+                    <th>Question Text</th>
+                </tr>
+            </thead>
+            <tbody>
+                {normalizedQuestions.map((q, index) => (
+                    <tr
+                        key={q.id ?? index}
+                        onClick={() => openView(index)}
+                        onMouseEnter={() => setHoveredIndex(index)}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                        style={{ cursor: "pointer", position: "relative" }}
+                    >
+                        <td>{index + 1}</td>
+                        <td style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ maxWidth: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                {q.text}
+                            </span>
+                            {hoveredIndex === index && (
+                                <Button
+                                    variant="outline"
+                                    className="icon-btn" // Reusing styling
+                                    title="Delete Question"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDeleteTarget(q.id);
+                                    }}
+                                >
+                                    🗑️
+                                </Button>
+                            )}
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>);
 
-    
+
     const handleQuizStart = () => {
-        if (quizIsActive){
-            for (const q of normalizedQuestions){
+        if (quizIsActive) {
+            for (const q of normalizedQuestions) {
                 if (q.isCorrect)
                     score++;
             }
-            let passed = score >= questions.length*0.66;
+            let passed = score >= questions.length * 0.66;
             if (passed) {
                 //MARK AS COMPLETE
 
@@ -180,14 +180,14 @@ const QuizQuestionPage = () => {
 
                 //UPDATE LEADERBOARD
             }
-            alert (`Score: ${score}/${questions.length} \nPassed: ${passed}\nPercentage:${(score/questions.length)*100}%`);
+            alert(`Score: ${score}/${questions.length} \nPassed: ${passed}\nPercentage:${(score / questions.length) * 100}%`);
         }
         setQuizIsActive(!quizIsActive);
     };
 
     return (
         <main className="dashboard-page">
-            <DashboardNav initialActiveTab={"content"} showBackButton={true} />
+
 
             <section className="dashboard-box" style={{ marginTop: "1.5rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
@@ -223,14 +223,14 @@ const QuizQuestionPage = () => {
                     onSubmit={handleAddQuestion}
                 />
             </section>
-            
+
             <ConfirmDeleteModal
                 isOpen={deleteTarget !== null}
                 title="Delete Question"
                 message="Are you sure you want to permanently delete this question?"
                 onCancel={() => setDeleteTarget(null)}
-                onConfirm={async() => {
-                    try{
+                onConfirm={async () => {
+                    try {
                         await deleteQuestion(deleteTarget);
                         setQuestions((prev) => prev.filter((_, i) => i !== deleteTarget));
                         setDeleteTarget(null);
