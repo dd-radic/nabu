@@ -8,18 +8,18 @@ const router = express.Router();
 console.log("FLASHCARD ROUTER LOADED");
 
 //---------- GET all flashcards for a user -----------
-// Expects userId as a query parameter
+// Expects classRoomId as a query parameter
 router.get("/allCards", async (req, res) => {
-    const userId = req.query.userId;
-    //Return 400 if userId is not provided
-    if (!userId) {
-        return res.status(400).json({ error: "Missing userId query parameter" });
+    const classRoomId = req.query.classRoomId;
+    //Return 400 if classRoomId is not provided
+    if (!classRoomId) {
+        return res.status(400).json({ error: "Missing classRoomId query parameter" });
     }
-    //Fetch flashcards from the database for the given userId
+    //Fetch flashcards from the database for the given classRoomId
     try {
         const [rows] = await pool.query(
-            "SELECT * FROM FlashCard WHERE CreatorId = ?",
-            [userId]
+            "SELECT * FROM FlashCard WHERE ClassRoomId = ?",
+            [classRoomId]
         );
         //Return the flashcards with 200 status
         res.status(200).json(rows);
