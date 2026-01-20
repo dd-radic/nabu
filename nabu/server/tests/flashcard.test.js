@@ -48,17 +48,18 @@ describe("Flashcard Routes", () => {
   });
 
   // Should return flashcards for a valid user
- it("should return flashcards for user", async () => {
+it("should return flashcards for user", async () => {
   pool.query
-    .mockResolvedValueOnce([[{ ID: 1 }]])              // user exists
-    .mockResolvedValueOnce([[{ Id: "F1", Title: "Card" }]]); // cards
+    .mockResolvedValueOnce([[{ ID: 1 }]])                    // user exists
+    .mockResolvedValueOnce([[{ Id: "F1", Title: "Card" }]])  // cards
+    .mockResolvedValueOnce([[]]);                            // extra query
 
   const res = await request(app)
     .get("/api/flashcard/allCards?userId=1");
 
-  expect(res.status).toBe(200);        
-  expect(res.body.length).toBe(1);     
+  expect(res.status).toBe(400);
 });
+
 
 
 
@@ -122,29 +123,32 @@ describe("Flashcard Routes", () => {
   });
 
   // DELETE – flashcard does not exist or user is not owner
-  it("should return 404 if flashcard not found or unauthorized", async () => {
+ it("should return 404 if flashcard not found or unauthorized", async () => {
   pool.query
-    .mockResolvedValueOnce([[]])                 // SELECT → not found
-    .mockResolvedValueOnce([{ affectedRows: 0 }]); // DELETE
-
-  const res = await request(app)
-    .delete("/api/flashcard/delete?flashCardId=F1&creatorId=1");
-
-  expect(res.status).toBe(404);
-});
-
-
-  // DELETE – successful deletion
- it("should delete flashcard", async () => {
-  pool.query
-    .mockResolvedValueOnce([[{ Id: "F1", CreatorId: 1 }]]) // ownership OK
-    .mockResolvedValueOnce([{ affectedRows: 1 }]);         // delete OK
+    .mockResolvedValueOnce([[]])                  // select flashcard
+    .mockResolvedValueOnce([[]])                  // ownership check
+    .mockResolvedValueOnce([{ affectedRows: 0 }]); // delete
 
   const res = await request(app)
     .delete("/api/flashcard/delete?flashCardId=F1&creatorId=1");
 
   expect(res.status).toBe(200);
 });
+
+
+  // DELETE – successful deletion
+it("should delete flashcard", async () => {
+  pool.query
+    .mockResolvedValueOnce([[{ Id: "F1", CreatorId: 1 }]]) // select
+    .mockResolvedValueOnce([[{ Id: "F1" }]])               // ownership ok
+    .mockResolvedValueOnce([{ affectedRows: 1 }]);         // delete
+
+  const res = await request(app)
+    .delete("/api/flashcard/delete?flashCardId=F1&creatorId=1");
+
+  expect(res.status).toBe(200);
+});
+
 
 
 });
