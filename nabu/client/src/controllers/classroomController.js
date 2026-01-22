@@ -192,11 +192,10 @@ const loadContent = async (userdata, classroomId, setContent) => {
         }));
 
         // FLASHCARDS LADEN
-        const fcRes = await fetch(`/api/flashcard/allCards?userId=${userdata.id}`);
+        const fcRes = await fetch(`/api/flashcard/allCards?classRoomId=${classroomId}`);
         const flashcards = await fcRes.json();
 
         const flashItems = flashcards
-            .filter(fc => fc.ClassRoomId === classroomId) // Nur Flashcards für dieses Classroom
             .map(fc => ({
                 id: fc.Id,
                 name: fc.Title,
