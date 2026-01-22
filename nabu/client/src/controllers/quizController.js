@@ -40,23 +40,51 @@ const fetchQuiz = async (quizId) => {
     }
 };
 
-const complete = async(quizId, userId, correct) => {
+const isComplete = async (quizId, userId) => {
     try{
         const res = await fetch(`/api/quizzes/getCurrent?quizId=${quizId}`, {
             method: "GET",
             headers: {"Content-Type" : "application/json"},
         });
         const quiz = await res.json();
-        const classroomId = quiz.classroomId;
+        const classroomId = quiz.ClassRoomId;
+    }
+    catch (err) {
+        console.error("Error in isComplete func", err);
+    }
+}
 
+const complete = async(quizId, userId) => {
+    try{
+        const res = await fetch(`/api/quizzes/getCurrent?quizId=${quizId}`, {
+            method: "GET",
+            headers: {"Content-Type" : "application/json"},
+        });
+        const quiz = await res.json();
+        const classroomId = quiz.ClassRoomId;
+
+        let payload = [userId, quizId]
+        
+        await fetch(`/api/quizzes/getCurrent/markComplete`, {
+            method: "POST",
+            headers: {"Content-Type" : "application/json"},
+            body: JSON.stringify(payload)
+        });
+        
         //Determine the EXP this quiz should drop. correct is the ratio of correct answers
-        const dexp = Math.round((20*quiz.yield/7)*correct);
+        const dexp = Math.round((20*(quiz.Yield || 100)/7));
 
         //Adjust the user's overall EXP level
-        await fetch(`/api/user/updateExp?userId=${userId}&dexp=${dexp}`);
+        await fetch(`/api/user/updateExp?userId=${userId}&dexp=${dexp}`, {
+            method: "POST",
+            headers: {"Content-Type" : "application/json"},
+        });
 
         //Check if the user completed a quiz from a classroom they are part of, if so, update their exp within the classroom
-        await fetch(`/api/classroom/updateScore?userId=${userId}&classroomId=${classroomId}&dexp=${dexp}`);
+        await fetch(`/api/classrooms/updateScore?userId=${userId}&classroomId=${classroomId}&dexp=${dexp}`, {
+            method: "POST",
+            headers: {"Content-Type" : "application/json"},
+        });
 
     } catch (err) {
         console.error("Error completing quiz:", err);
@@ -78,5 +106,5 @@ const deleteQuiz = async(quizId, userId) => {
     }
 }
 
-const quizController = {createQuiz, fetchQuiz, complete, deleteQuiz}
+const quizController = {createQuiz, fetchQuiz, complete, deleteQuiz, isComplete}
 export default quizController;

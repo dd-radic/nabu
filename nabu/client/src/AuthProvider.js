@@ -192,6 +192,7 @@ const AuthProvider = ({ children }) => {
 
     //============Update/Change========================================================//
     const updateUsername = async(userdata, newUsername) => (await dashboardController.updateUsername(userdata.id, newUsername));
+    const completeQuiz = async(quizId, userId) => (await quizController.complete(quizId, userId));
 
     //============Deletion=============================================================//
     const deleteClassroom = async(classroomId) => (await classroomController.deleteClassroom(classroomId, setClassrooms));
@@ -227,6 +228,7 @@ const AuthProvider = ({ children }) => {
     createQuiz,
     fetchQuiz,
     updateScore,
+    completeQuiz,
     deleteQuiz,
 
     fetchQuizQuestions,

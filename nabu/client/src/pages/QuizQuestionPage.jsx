@@ -11,7 +11,7 @@ import GameEngine from "../components/game/GameBuilder.jsx"
 const QuizQuestionPage = () => {
     // 1. Get Data (No params needed)
     const location = useLocation();
-    const { userdata, token, fetchQuizQuestions, createQuestion, deleteQuestion } = useAuth();
+    const { userdata, token, fetchQuizQuestions, createQuestion, deleteQuestion, completeQuiz } = useAuth();
 
     const quiz = location.state?.quiz;
 
@@ -195,6 +195,9 @@ const QuizQuestionPage = () => {
                 //CALCULATE EXP
 
                 //UPDATE LEADERBOARD
+
+                completeQuiz(quiz.id, userdata.id);
+                alert(quiz.id + userdata.id);
             }
             alert (`Score: ${score}/${questions.length} \nPassed: ${passed}\nPercentage:${(score/questions.length)*100}%`);
         }

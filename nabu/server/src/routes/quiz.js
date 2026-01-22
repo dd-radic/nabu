@@ -48,6 +48,27 @@ router.get("/getCurrent", async (req, res) => {
 
 //Mark Complete
 router.post("/getCurrent/markComplete", async (req, res) => {
+  let userId = req.body[0];
+  let quizId = req.body[1];
+  if (!quizId) {
+    return res.status(400).json({ error: "quizId required" });
+  }
+
+  try {
+    const [rows] = await pool.query(
+      "INSERT INTO UserQuiz (UserId, QuizId, JoinAt, Completed) VALUES (?, ?, ?, ?)",
+      [userId, quizId, new Date(), 1]
+    );
+    
+    return res.status(200).json(rows[0]);
+  } catch (err) {
+    console.error("QUIZ GET ERROR:", err);
+    return res.status(500).json({ error: err.message, code: err.code });
+  }
+});
+
+
+router.get("/getCurrent/isComplete", async (req, res) => {
   const {payload} = req.query;
   if (!payload.quizId) {
     return res.status(400).json({ error: "quizId required" });
@@ -55,8 +76,8 @@ router.post("/getCurrent/markComplete", async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM Quiz WHERE Id = ?",
-      [quizId]
+      "SELECT EXISTS(SELECT * FROM UserQuiz WHERE UserId = ? AND QuizId = ?)",
+      [payload.userId, payload.quizId]
     );
     
     return res.status(200).json(rows[0]);
@@ -83,9 +104,9 @@ router.post("/", async (req, res) => {
     const id = await generateUniqueId("Quiz");
 
     await pool.query(
-      `INSERT INTO Quiz (Id, ClassRoomId, CreatorId, Title, Description)
-       VALUES (?, ?, ?, ?, ?)`,
-      [id, classRoomId, creatorId, title, description || null]
+      `INSERT INTO Quiz (Id, ClassRoomId, CreatorId, Title, Description, Yield)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [id, classRoomId, creatorId, title, description || null, 100]
     );
 
     res.status(201).json({
