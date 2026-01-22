@@ -94,6 +94,95 @@ describe("Classroom Routes", () => {
   });
 
   // =======================
+  // Update Score
+  // =======================
+
+  it("should update user score in classroom", async () => {
+  pool.query
+    .mockResolvedValueOnce([[{ Score: 10 }]])
+    .mockResolvedValueOnce([{ affectedRows: 1 }]);
+
+  const res = await request(app)
+    .post("/api/classrooms/updateScore?userId=1&classroomId=C1&dexp=5");
+
+  expect(res.status).toBe(200);
+});
+// =======================
+  // userLevel
+  // =======================
+it("should return user level for a user in classroom", async () => {
+  pool.query.mockResolvedValueOnce([[{ Score: 100 }]]);
+
+  const res = await request(app)
+    .get("/api/classrooms/userLevel?userId=1&classroomId=C1");
+
+  expect(res.status).toBe(200);
+  expect(res.body.level).toBeTypeOf("number");
+});
+ // =======================
+  // leaderboard
+  // =======================
+it("should return leaderboard for classroom", async () => {
+  pool.query.mockResolvedValueOnce([[
+    { UserId: 1, Score: 50, Username: "Alice" },
+    { UserId: 2, Score: 30, Username: "Bob" }
+  ]]);
+
+  const res = await request(app)
+    .get("/api/classrooms/leaderboard?classroomId=C1");
+
+  expect(res.status).toBe(200);
+  expect(res.body.leaderboard.length).toBe(2);
+});
+
+
+  // =======================
+  // JOIN – Owner can not join their own classroom
+  // =======================
+it("should not allow owner to join own classroom", async () => {
+  pool.query.mockResolvedValueOnce([[{ OwnerId: 1 }]]);
+
+  const res = await request(app)
+    .post("/api/classrooms/join")
+    .send({ userId: 1, classroomId: "C1" });
+
+  expect(res.status).toBe(400);
+});
+
+
+  
+  // =======================
+  // JOIN – Already member
+  // =======================
+it("should not allow user to join twice", async () => {
+  pool.query
+    .mockResolvedValueOnce([[{ OwnerId: 1 }]])
+    .mockResolvedValueOnce([[{ UserId: 2 }]]);
+
+  const res = await request(app)
+    .post("/api/classrooms/join")
+    .send({ userId: 2, classroomId: "C1" });
+
+  expect(res.status).toBe(409);
+});
+
+  
+  // =======================
+  // LEAVE – User is not a Member
+  // =======================
+it("should not allow non-member to leave classroom", async () => {
+  pool.query
+    .mockResolvedValueOnce([[{ OwnerId: 1 }]])
+    .mockResolvedValueOnce([[]]);
+
+  const res = await request(app)
+    .delete("/api/classrooms/leave")
+    .send({ userId: 2, classroomId: "C1" });
+
+  expect(res.status).toBe(404);
+});
+
+  // =======================
   // LEAVE classroom
   // =======================
   it("should allow user to leave classroom", async () => {

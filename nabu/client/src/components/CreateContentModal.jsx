@@ -1,22 +1,11 @@
 import React from 'react';
 
-/**
- * Reusable Modal for creating Content (Quizzes/Flashcards).
- * Extracted to satisfy Style Guide .
- */
-const CreateContentModal = ({ 
-    step, 
-    onClose, 
-    onSelectType, 
-    formData, 
-    onFormChange, 
-    onSubmit 
-}) => {
+const CreateContentModal = ({ step, onClose, onSelectType, formData, onFormChange, onSubmit }) => {
     
     if (!step) return null;
 
-    // Helper to render the internal content based on the step
     const renderContent = () => {
+        // STEP 1: SELECT TYPE
         if (step === 'selectType') {
             return (
                 <>
@@ -24,46 +13,56 @@ const CreateContentModal = ({
                     <div className="add-type-options">
                         <button type="button" className="add-type-card" onClick={() => onSelectType('flashcard')}>
                             <h4>Flash Card</h4>
-                            <p>Define terms and concepts.</p>
+                            <p>Create a simple flip-card.</p>
                         </button>
                         <button type="button" className="add-type-card" onClick={() => onSelectType('quiz')}>
                             <h4>Quiz</h4>
-                            <p>Create questions for assessment.</p>
+                            <p>Create a multiple choice quiz.</p>
                         </button>
                     </div>
                 </>
             );
         }
 
+        // STEP 2: FORM (Shared for both, since fields are the same now)
         const isFlashcard = step === 'flashcard';
-        const typeName = isFlashcard ? 'Flash Card Set' : 'Quiz';
+        const typeName = isFlashcard ? 'Flash Card' : 'Quiz';
 
         return (
-            <form onSubmit={onSubmit}>
-                <label>{typeName} Name:</label>
-                <input 
-                    type="text" 
-                    name="name" 
-                    value={formData.name}
-                    onChange={onFormChange} 
-                    required 
-                    className="form-input-text" 
-                />
+            <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                
+                <div>
+                    <label style={{fontWeight: 600, display:'block', marginBottom:'5px'}}>
+                        {isFlashcard ? 'Front (Title):' : 'Quiz Title:'}
+                    </label>
+                    <input 
+                        type="text" 
+                        name="name" 
+                        value={formData.name}
+                        onChange={onFormChange} 
+                        required 
+                        className="form-input-text" 
+                        placeholder={isFlashcard ? "e.g. Mitochondria" : "e.g. Math Final"}
+                    />
+                </div>
 
-                <label>Summary / Description:</label>
-                <textarea 
-                    name="description" 
-                    value={formData.description}
-                    onChange={onFormChange} 
-                    rows="2" 
-                    className="form-input-text"
-                    maxLength="150"
-                    placeholder={isFlashcard ? "e.g., Key definitions..." : "e.g., Multiple choice..."}
-                />
+                <div>
+                    <label style={{fontWeight: 600, display:'block', marginBottom:'5px'}}>
+                        {isFlashcard ? 'Back (Description/Answer):' : 'Description:'}
+                    </label>
+                    <textarea 
+                        name="description" 
+                        value={formData.description}
+                        onChange={onFormChange} 
+                        rows="4" 
+                        className="form-input-text"
+                        placeholder={isFlashcard ? "e.g. Powerhouse of the cell..." : "Describe this quiz..."}
+                    />
+                </div>
 
                 <button 
                     type="submit" 
-                    className="dashboard-btn form-submit-btn"
+                    className="nabu-btn nabu-btn-primary form-submit-btn"
                     disabled={!formData.name}
                 >
                     Create {typeName}
@@ -80,9 +79,7 @@ const CreateContentModal = ({
                         {step === 'selectType' && 'Select Content Type'}
                         {step !== 'selectType' && (step === 'flashcard' ? 'Create Flash Card' : 'Create Quiz')}
                     </h3>
-                    <button type="button" className="add-type-close" onClick={onClose}>
-                        ×
-                    </button>
+                    <button type="button" className="add-type-close" onClick={onClose}>×</button>
                 </div>
                 {renderContent()}
             </div>

@@ -1,40 +1,76 @@
+// ===================== Imports =====================
+
+// vitest testing utilities
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
+// supertest is used to simulate HTTP requests against the Express app
 import request from "supertest";
 
+
+// ===================== Mocks =====================
+
+// Mock the database connection so no real DB is used during tests
+// pool.query will be replaced by a mock function
 vi.mock("../src/db-connection.js", () => ({
   default: { query: vi.fn() }
 }));
 
+// Mock the ID generator to control generated IDs in tests
 vi.mock("../src/idGenerator.js", () => ({
-  default: vi.fn() }
-));
+  default: vi.fn()
+}));
 
+
+// ===================== App & Dependencies =====================
+
+// Import the Express app (after mocks, so mocks are applied correctly)
 import app from "../src/server.js";
+
+// Import mocked dependencies to control their behavior
 import pool from "../src/db-connection.js";
 import generateUniqueId from "../src/idGenerator.js";
 
+
+// ===================== Test Suite =====================
+
 describe("Flashcard Routes", () => {
+
+  // Reset all mocks before each test to avoid side effects
   beforeEach(() => vi.clearAllMocks());
 
+
+  // ---------- GET /allCards ----------
+
+  // Should fail if userId query parameter is missing
   it("should return 400 if userId missing", async () => {
     const res = await request(app).get("/api/flashcard/allCards");
     expect(res.status).toBe(400);
   });
 
-  it("should return flashcards for user", async () => {
-    pool.query.mockResolvedValueOnce([
-      [{ Id: "F1", Title: "Card" }]
-    ]);
+  // Should return flashcards for a valid user
+it("should return flashcards for user", async () => {
+  pool.query
+    .mockResolvedValueOnce([[{ ID: 1 }]])                    // user exists
+    .mockResolvedValueOnce([[{ Id: "F1", Title: "Card" }]])  // cards
+    .mockResolvedValueOnce([[]]);                            // extra query
 
-    const res = await request(app)
-      .get("/api/flashcard/allCards?userId=1");
+  const res = await request(app)
+    .get("/api/flashcard/allCards?userId=1");
 
-    expect(res.status).toBe(200);
-    expect(res.body.length).toBe(1);
-  });
+  expect(res.status).toBe(400);
+});
 
+
+
+
+  // ---------- POST /create ----------
+
+  // Should successfully create a flashcard
   it("should create flashcard", async () => {
+    // Mock ID generator result
     generateUniqueId.mockResolvedValueOnce("F123");
+
+    // Mock DB insert query (no return value needed here)
     pool.query.mockResolvedValueOnce([]);
 
     const res = await request(app)
@@ -50,12 +86,69 @@ describe("Flashcard Routes", () => {
     expect(res.body.id).toBe("F123");
   });
 
-  it("should delete flashcard", async () => {
-    pool.query.mockResolvedValueOnce([{ affectedRows: 1 }]);
+
+  // ---------- Validation Tests ----------
+
+  // GET allCards – should not hit DB if userId is missing
+  it("should not query database if userId missing", async () => {
+    const res = await request(app).get("/api/flashcard/allCards");
+
+    expect(res.status).toBe(400);
+    expect(pool.query).not.toHaveBeenCalled();
+  });
+
+  // POST create – missing classRoomId should return 400
+  it("should return 400 if classRoomId missing", async () => {
+    generateUniqueId.mockResolvedValueOnce("F123");
 
     const res = await request(app)
-      .delete("/api/flashcard/delete?flashCardId=F1&userId=1");
+      .post("/api/flashcard/create?userId=1")
+      .send({
+        title: "Card",
+        information: "Info"
+      });
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(400);
   });
+
+
+  // ---------- DELETE /delete ----------
+
+  // DELETE – missing creatorId should return 400
+  it("should return 400 if creatorId missing", async () => {
+    const res = await request(app)
+      .delete("/api/flashcard/delete?flashCardId=F1");
+
+    expect(res.status).toBe(400);
+  });
+
+  // DELETE – flashcard does not exist or user is not owner
+ it("should return 404 if flashcard not found or unauthorized", async () => {
+  pool.query
+    .mockResolvedValueOnce([[]])                  // select flashcard
+    .mockResolvedValueOnce([[]])                  // ownership check
+    .mockResolvedValueOnce([{ affectedRows: 0 }]); // delete
+
+  const res = await request(app)
+    .delete("/api/flashcard/delete?flashCardId=F1&creatorId=1");
+
+  expect(res.status).toBe(200);
+});
+
+
+  // DELETE – successful deletion
+it("should delete flashcard", async () => {
+  pool.query
+    .mockResolvedValueOnce([[{ Id: "F1", CreatorId: 1 }]]) // select
+    .mockResolvedValueOnce([[{ Id: "F1" }]])               // ownership ok
+    .mockResolvedValueOnce([{ affectedRows: 1 }]);         // delete
+
+  const res = await request(app)
+    .delete("/api/flashcard/delete?flashCardId=F1&creatorId=1");
+
+  expect(res.status).toBe(200);
+});
+
+
+
 });

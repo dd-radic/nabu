@@ -1,96 +1,71 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './ResourceCard.css';
+import './FlashcardFlip.css'; // IMPORT THE ANIMATION FILE
 
-/**
- * ResourceCard Component: Your universal card template.
- * * It displays a single item, whether it's a main Classroom, a Quiz, or a Flashcard set.
- * * @param {object} resource - The item's data (must include: id, name, type).
- * @param {boolean} isClassroomLevel - If TRUE, this card acts as a link to navigate to the classroom's content.
- */
 const ResourceCard = ({ resource, isClassroomLevel = false }) => {
+    const [flipped, setFlipped] = useState(false);
 
-    // --- Card Logic and Display Choices ---
+    const descriptionClass = isClassroomLevel ? "classroom-description-short" : "classroom-description";
+    const descriptionText = isClassroomLevel ? resource.description : resource.summary || resource.description;
 
-    // Uses a CSS class that truncates the text for the main Dashboard view.
-    const descriptionClass = isClassroomLevel
-        ? "classroom-description-short"
-        : "classroom-description";
-
-    // Determines which field to show: 'description' (for main Classrooms) 
-    // or 'summary' (for Quizzes/Flashcards).
-    const descriptionText = isClassroomLevel
-        ? resource.description
-        : resource.summary || resource.description;
-
-    // --- The Card's Visual Content (the actual JSX structure) ---
-    const cardContent = (
-        <article className="classroom-card">
-            <h3>{resource.name}</h3>
-
-            {/* Shows the description/summary using the determined styling */}
-            {descriptionText && (
-                <p className={descriptionClass}>{descriptionText}</p>
-            )}
-
-            {/* The type label helps the user quickly identify the item */}
-            <p className="classroom-type">
-                Type: {resource.type}
-            </p>
-
-            {/* Only shows this extra instruction if it's a content card */}
-            {!isClassroomLevel && (
-                <p className="classroom-description">
-                    Click to view/edit this {resource.type.toLowerCase()}.
-                </p>
-            )}
-        </article>
-    );
-
-    // --- Final Render: Link or Standalone Card ---
-
-    // If it's a main Classroom, we wrap the entire card in a <Link>
-    // to navigate to the content page (e.g., /classroom/ID).
+    // --- 1. CLASSROOM CARD (Standard) ---
     if (isClassroomLevel) {
         return (
-            <Link
-                to={`/classroom/${resource.id}`}
-                key={resource.id}
-                className="classroom-card-link"
-            >
-                {cardContent}
+            <Link to={`/classroom/${resource.id}`} className="classroom-card-link">
+                <article className="classroom-card">
+                    <h3>{resource.name}</h3>
+                    <p className={descriptionClass}>{descriptionText}</p>
+                    <p className="classroom-type">Type: Classroom</p>
+                </article>
             </Link>
         );
     }
 
-    // If it's a Quiz or Flashcard, just render the static card display.
-    // Quiz → quiz detail page
+    // --- 2. QUIZ CARD (Standard) ---
     if (resource.type === "Quiz") {
         return (
-            <Link
-                to={`/quiz/${resource.id}`}
-                state={{ quiz: resource }}
-                className="classroom-card-link"
-            >
-                {cardContent}
+            <Link to={`/quiz/${resource.id}`} state={{ quiz: resource }} className="classroom-card-link">
+                <article className="classroom-card">
+                    <h3>{resource.name}</h3>
+                    <p className={descriptionClass}>{descriptionText}</p>
+                    <p className="classroom-type">Type: Quiz</p>
+                    <p className="classroom-description" style={{marginTop:'auto', fontSize:'0.8rem'}}>
+                        Click to play
+                    </p>
+                </article>
             </Link>
-
         );
     }
-    // Flashcard
+
+    // --- 3. FLASHCARD (The "Good" Flip Animation) ---
     if (resource.type === "Flashcard") {
         return (
-            <Link
-                to={`/flashcard/${resource.id}`}
-                state={{ flashcardSet: resource }}
-                className="classroom-card-link"
+            <div 
+                className={`flashcard ${flipped ? 'is-flipped' : ''}`} 
+                onClick={() => setFlipped(!flipped)}
             >
-                {cardContent}
-            </Link>
+                <div className="flashcard-inner">
+                    {/* FRONT FACE: Shows the Title */}
+                    <div className="flashcard-face flashcard-front">
+                        <h3>{resource.name}</h3>
+                        
+                        {/* CHANGED: Using the exact same style as Quiz */}
+                        <p className="classroom-description" style={{marginTop:'auto', fontSize:'0.8rem'}}>
+                            Click to flip
+                        </p>
+                    </div>
+
+                    {/* BACK FACE: Shows the Description */}
+                    <div className="flashcard-face flashcard-back">
+                        <p>{resource.description || resource.summary || "No description provided."}</p>
+                    </div>
+                </div>
+            </div>
         );
     }
 
-    return cardContent;
+    return null;
 };
 
 export default ResourceCard;

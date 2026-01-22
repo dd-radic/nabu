@@ -96,15 +96,8 @@
 /* Hint Text 
    "Click to flip" instruction at the bottom.
 */
-.flashcard-hint {
-    margin-top: auto;
-    /* Pushes element to the bottom of the flex container */
-    padding-top: 0.5rem;
-    font-size: 0.85rem;
-    color: var(--color-text-light, #888);
-    text-align: center;
-    border-top: 1px solid #f0f0f0;
-}
+/* Hint Text (Updated to match "Click to play") */
+/* Hint Text - Adjusted to match "Click to play" exactly */
 
 /* Back Side Specifics 
    Rotated 180deg initially so it appears correct when flipped.
