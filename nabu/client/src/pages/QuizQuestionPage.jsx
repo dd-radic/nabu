@@ -146,8 +146,7 @@ const QuizQuestionPage = () => {
         (<table className="quiz-table">
             <thead>
                 <tr>
-                    <th style={{ width: "80px" }}>No</th>
-                    <th>Question Text</th>
+                    <th>Questions</th>
                 </tr>
             </thead>
             <tbody>
@@ -159,7 +158,6 @@ const QuizQuestionPage = () => {
                         onMouseLeave={() => setHoveredIndex(null)}
                         style={{ cursor: "pointer", position: "relative" }}
                     >
-                        <td>{index + 1}</td>
                         <td style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <span style={{ maxWidth: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                 {q.text}
