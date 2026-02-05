@@ -59,12 +59,9 @@
     font-size: 0.95rem;
     color: #6B7280;
     line-height: 1.5;
+  white-space: pre-wrap;
     
     /* Truncate Description */
-    display: -webkit-box;
-    -webkit-line-clamp: 3; /* Show max 3 lines */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
     margin-bottom: auto; /* Push footer down */
 }
 
