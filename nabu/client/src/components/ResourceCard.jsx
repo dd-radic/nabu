@@ -52,13 +52,13 @@ const ResourceCard = ({ resource, isClassroomLevel = false }) => {
                         
                         {/* CHANGED: Using the exact same style as Quiz */}
                         <p className="classroom-description" style={{marginTop:'auto', fontSize:'0.8rem'}}>
-                            Click to flip
+                            
                         </p>
                     </div>
 
                     {/* BACK FACE: Shows the Description */}
                     <div className="flashcard-face flashcard-back">
-                        <p>{resource.description || resource.summary || "No description provided."}</p>
+                        <p><br/><br/>{(resource.description || resource.summary || "No description provided.").replace(/\\n/g, "\n")}</p>
                     </div>
                 </div>
             </div>
