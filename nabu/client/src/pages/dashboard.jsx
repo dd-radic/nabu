@@ -164,11 +164,9 @@ const Dashboard = () => {
 
                     {classrooms.length === 0 ? (
                         <p>No classrooms created yet. Click + to add one.</p>
-                    ) : filteredClassrooms.length === 0 ? (
-                        <p>No classrooms match your search.</p>
                     ) : (
                         <div className="classroom-grid">
-                           {filteredClassrooms
+                           {classrooms
                              .filter((room) => {
                                   const roomOwner = room.ownerID || room.ownerId || room.creatorId;
                            return String(userdata.id) === String(roomOwner);
@@ -206,13 +204,11 @@ const Dashboard = () => {
                     <div className="dashboard-box-header">
                         <h2>Joined Classrooms</h2>
                     </div>
-                    {classrooms.length === 0 ? (
+                   {classrooms.length === 0 ? (
                         <p>No classrooms created yet. Click + to add one.</p>
-                    ) : filteredClassrooms.length === 0 ? (
-                        <p>No classrooms match your search.</p>
                     ) : (
                         <div className="classroom-grid">
-                            {filteredClassrooms.map((room) => {
+                           {classrooms.map((room) => {
                                 // 🔒 SECURITY CHECK: Are you the owner?
                                 const roomOwner = room.ownerID || room.ownerId || room.creatorId;
                                 const isOwner = String(userdata.id) === String(roomOwner);
