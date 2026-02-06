@@ -157,8 +157,101 @@ const Dashboard = () => {
             {/* Classrooms List View */}
             {activeTab === 'classrooms' && (
                 <section className="dashboard-box">
+                    
                     <div className="dashboard-box-header">
                         <h2>My Classrooms</h2>
+                    </div>
+
+                    {classrooms.length === 0 ? (
+                        <p>No classrooms created yet. Click + to add one.</p>
+                    ) : filteredClassrooms.length === 0 ? (
+                        <p>No classrooms match your search.</p>
+                    ) : (
+                        <div className="classroom-grid">
+                           {filteredClassrooms
+                             .filter((room) => {
+                                  const roomOwner = room.ownerID || room.ownerId || room.creatorId;
+                           return String(userdata.id) === String(roomOwner);
+                             })
+                              .map((room) => (
+                             <div
+                                key={room.id}
+                                style={{ position: "relative" }}
+                                onMouseEnter={() => setHoveredId(room.id)}
+                                onMouseLeave={() => setHoveredId(null)}
+                                >
+                            <ResourceCard resource={room} isClassroomLevel={true} />
+
+                            {hoveredId === room.id && (
+                                <div style={{ position: "absolute", top: 10, right: 10 }}>
+                                    <Button
+                                     variant="outline"
+                                     size="icon"
+                                     title="Delete"
+                                     type="button"
+                                     onClick={(e) => {
+                                        e.preventDefault();
+                                        setDeleteTarget(room);
+                                        }}
+                                    >
+                                        🗑️
+                                    </Button>
+                                    </div>
+                                )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    <div className="dashboard-box-header">
+                        <h2>Joined Classrooms</h2>
+                    </div>
+                    {classrooms.length === 0 ? (
+                        <p>No classrooms created yet. Click + to add one.</p>
+                    ) : filteredClassrooms.length === 0 ? (
+                        <p>No classrooms match your search.</p>
+                    ) : (
+                        <div className="classroom-grid">
+                            {filteredClassrooms.map((room) => {
+                                // 🔒 SECURITY CHECK: Are you the owner?
+                                const roomOwner = room.ownerID || room.ownerId || room.creatorId;
+                                const isOwner = String(userdata.id) === String(roomOwner);
+
+                                return (
+                                    <div
+                                        key={room.id}
+                                        style={{ position: "relative" }}
+                                        onMouseEnter={() => setHoveredId(room.id)}
+                                        onMouseLeave={() => setHoveredId(null)}
+                                    >
+                                        <ResourceCard resource={room} isClassroomLevel={true} />
+
+                                        {/* Only show DELETE button if hovered AND is owner */}
+                                        {hoveredId === room.id && isOwner && (
+                                            <div style={{ position: "absolute", top: 10, right: 10 }}>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    title="Delete"
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.preventDefault(); // Prevent link click
+                                                        setDeleteTarget(room);
+                                                    }}
+                                                >
+                                                    🗑️
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+
+                    <div className="dashboard-box-header">
+                        <h2>All Classrooms</h2>
                         <SearchBar
                             value={search}
                             onChange={setSearch}
@@ -172,7 +265,6 @@ const Dashboard = () => {
                             </div>
                         )}
                     </div>
-
                     {classrooms.length === 0 ? (
                         <p>No classrooms created yet. Click + to add one.</p>
                     ) : filteredClassrooms.length === 0 ? (
