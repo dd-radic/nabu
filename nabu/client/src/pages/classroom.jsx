@@ -275,7 +275,7 @@ const ClassroomPage = () => {
                                 </div>
                             )}
 
-                            <button type="button" className="floating-add-btn" onClick={handleAddClick}>+</button>
+                            {isOwner && <button type="button" className="floating-add-btn" onClick={handleAddClick}>+</button>}
 
                             <CreateContentModal
                                 step={creationStep}
