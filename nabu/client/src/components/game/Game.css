@@ -1,11 +1,46 @@
 .scalable-div {
-  display: inline-block;  /* Make it inline but still block-level for width/height control */
-  aspect-ratio: 4/3;
-  width: 50%;            /* Full width */
+  display: inline-block;
+  aspect-ratio: 4 / 3;
+  width: 50%;
   padding: 10px;
-  border-radius: 30px;    /* Optional: Rounded corners for a screen-like look */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-  overflow: hidden;       /* Hide overflow if content exceeds the container */
+  border-radius: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
   position: relative;
-  margin: 0;              /* Remove any margins */
+}
+
+/* BLOCK all interactivity when locked */
+.scalable-div.locked {
+  pointer-events: none;
+}
+
+.scalable-div.locked::after {
+  content: "";
+  position: absolute;
+  inset: 0;background: #ff6666;
+  opacity: 0.5;
+  filter: saturate(30%); /* desaturates the entire overlay */
+  border-radius: 30px;
+  pointer-events: auto; /* ensures the overlay captures everything */
+}
+
+/* Button panel */
+.button-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 75%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Buttons */
+.button-panel button {
+  border-radius: 25%;
+  width: 100%;
+  height: 100%;
 }

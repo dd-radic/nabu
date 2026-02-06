@@ -22,19 +22,20 @@ const Game_MultipleChoice = ({question}) => {
     };
 
     return  (
-        <div>
+         <div>
             <h2>{question.text}</h2>
-            {questionArr.map((option, index) => (
-                <Button
-                    key={index}
-                    variant="outline"
-                    onClick={() => handleClick(option)}
-                    style={{ width: "100%", marginBottom: "10px" }}
-                >
-                    {option}
-                </Button>
-            ))}
 
+            <div className="button-panel">
+                 {questionArr.map((option, index) => (
+                     <Button
+                        key={index}
+                        variant="outline"
+                        onClick={() => handleClick(option)}
+                    >
+                    {option}
+             </Button>
+            ))}
+            </div>
         </div>
     )
 };
