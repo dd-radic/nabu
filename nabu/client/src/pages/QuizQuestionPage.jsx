@@ -197,9 +197,10 @@ const QuizQuestionPage = () => {
                 //UPDATE LEADERBOARD
 
                 completeQuiz(quiz.id, userdata.id);
-                alert(quiz.id + userdata.id);
+                alert(`Score: ${score}/${questions.length} (${(score / questions.length) * 100}%) \nQuiz Passed!`);
             }
-            alert(`Score: ${score}/${questions.length} \nPassed: ${passed}\nPercentage:${(score / questions.length) * 100}%`);
+            else
+                alert(`Score: ${score}/${questions.length} (${(score / questions.length) * 100}%) \nQuiz Failed!!`);
         }
         setQuizIsActive(!quizIsActive);
     };
