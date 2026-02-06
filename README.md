@@ -28,6 +28,8 @@ Nabu is a web application that was developed using industry standard JS framewor
 
 ### HOW TO RUN NABU
 
+#### Recommended Software
+
 Nabu requires a THU VPN connection in order to work. In order to run Nabu on your device as intended you will require:
 
 - Cisco AnyConnect (for the THU VPN)
@@ -101,6 +103,10 @@ Nabu requires a THU VPN connection in order to work. In order to run Nabu on you
 - react-script
 - web-vitals
 
-\*This list of npm packages is incomplete, but provides an overview of the packages necessary for this project to function.
+\*This list of npm packages is incomplete, but provides an overview of the packages necessary for this project to function. The launch script runs npm install on both the server and client so it should work without installing them manually
 
-once set up open the project in VS Code and hit Ctr+Shift+B to auto-run the launch script for the server and the client.
+#### Launch Instructions
+
+Open the project in VS Code and hit Ctr+Shift+B to run the launch script for the server and the client.
+
+The app can then be accessed at http://localhost:3000 (The terminal running the client will provide a clickable link)

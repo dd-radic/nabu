@@ -7,7 +7,10 @@ const GameEngine = ({ question }) => {
 
   return (
     <div>
-      {/* Capture first click anywhere inside */}
+      {/* Capture first click anywhere inside 
+          Lock user upon first click
+          Should be changed to lock when the boolean is returned
+      */}
       <div
         className={`scalable-div ${locked ? "locked" : ""}`}
         onClickCapture={() => {
