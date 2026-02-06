@@ -1,44 +1,35 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Button from "../../Button";
 
-const Game_MultipleChoice = ({question}) => {
-    
-    // https://www.geeksforgeeks.org/javascript/how-to-shuffle-the-elements-of-an-array-in-javascript/
-    function shuffleArray(arr) {
-  	arr.sort(function (a, b) {
-    	return Math.random() - 0.5;
-  	});
-    }
+const Game_MultipleChoice = ({ question }) => {
 
-    let questionArr = question.options.slice();
-    shuffleArray(questionArr);
+  const shuffledOptions = useMemo(() => {
+    const arr = [...question.options];
+    arr.sort(() => Math.random() - 0.5);
+    return arr;
+  }, [question]); // reshuffle ONLY when question changes
 
-    const handleClick = (selectedAnswer) => {
-        if (selectedAnswer === question.options[0]) {
-            question.isCorrect = true;
-        } else {
-            question.isCorrect = false;
-        }
-    };
+  const handleClick = (selectedAnswer) => {
+    question.isCorrect = selectedAnswer === question.options[0];
+  };
 
-    return  (
-         <div>
-            <h2>{question.text}</h2>
+  return (
+    <div>
+      <h2>{question.text}</h2>
 
-            <div className="button-panel">
-                 {questionArr.map((option, index) => (
-                     <Button
-                        key={index}
-                        variant="outline"
-                        onClick={() => handleClick(option)}
-                    >
-                    {option}
-             </Button>
-            ))}
-            </div>
-        </div>
-    )
+      <div className="button-panel">
+        {shuffledOptions.map((option, index) => (
+          <Button
+            key={index}
+            variant="outline"
+            onClick={() => handleClick(option)}
+          >
+            {option}
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
 };
-
 
 export default Game_MultipleChoice;
