@@ -3,7 +3,7 @@
 Run the application using CTRL+SHIFT+B
 The user must be connected to the THU VPN to connect to the server
 
-###LEARN AS YOU PLAY
+### LEARN AS YOU PLAY
 
 Interactive Flash Cards help you
 memorize important information
@@ -13,7 +13,7 @@ Compare with friends: Leaderboards
 help promote healthy competition
 between you and fellow students
 
-###A NOVEL LEARNING EXPERIENCE
+### A NOVEL LEARNING EXPERIENCE
 
 Nabu is a project developed by students of the Technische Hochschule Ulm as part of the
 Software Project module. As a gamified learning app it strives to incentivize active learning
